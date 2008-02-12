@@ -10,7 +10,10 @@ class Diggin_Scraper_Simple
 
     protected $_url;
     
+    //以下の変数に関わる処理は適当なので、後で設計しなおす必要が
     protected $_resetUrlFlg = FALSE;
+    protected $_strategyName = "Tidy";
+    protected $_strategyConfig;
     
     private function getUrl()
     {
@@ -31,11 +34,18 @@ class Diggin_Scraper_Simple
     protected static $_httpClient = null;
 
     /**
+     * Scraper Strategy object to use for retrieving
+     *
+     * @var Diggin
+     */
+    protected static $_strategy = null;
+   
+    /**
      * Override HTTP PUT and DELETE request methods?
      *
      * @var boolean
      */
-    protected static $_httpMethodOverride = false;
+    //protected static $_httpMethodOverride = false;
 
     /**
      * Set the HTTP client instance
@@ -66,6 +76,26 @@ class Diggin_Scraper_Simple
         }
 
         return self::$_httpClient;
+    }
+
+   public function changeStrategy($strategyName)
+    {
+        $this->_strategyName = $strategyName;
+//        $this->_strategyConfig = $config;
+    }
+
+    public function getStrategy($body)
+    {
+    
+        if ($this->_strategyName == "Tidy") {
+            require_once 'Diggin/Scraper/Strategy/Tidy.php';
+            self::$_strategy = new Diggin_Scraper_Strategy_Tidy($body);
+        } else if ($this->_strategyName == "Loadhtml"){
+            require_once 'Diggin/Scraper/Strategy/Loadhtml.php';
+            self::$_strategy = new Diggin_Scraper_Strategy_Loadhtml($body);
+        }
+
+        return self::$_strategy;
     }
 
     /**
@@ -102,37 +132,32 @@ class Diggin_Scraper_Simple
                   * @see Diggin_Scraper_Exception
                   */
                  require_once 'Diggin/Scraper/Exception.php';
-                 throw new Diggin_Scraper_Simple("Http client reported an error: '{$response->getMessage()}'");
+                 throw new Diggin_Scraper_Exception("Http client reported an error: '{$response->getMessage()}'");
             }
         } else {
             $response = $this->_client->getLastResponse();
         }
         
         $responseBody = $response->getBody();
-        
-        $tidy = new tidy;
-        $config = array(
-                    'indent'         => false,
-                    'add-xml-decl'   => true,
-                    'output-xml'     => true,
-                    'numeric-entities' => true,
-//                    'wrap'           => 200
-                    );
 
-        $tidy->parseString($responseBody, $config, 'utf8');
-        $tidy->cleanRepair();
-        
-        return $tidy->value;
-    }
-    
-    private function getSimpleXML($tidyValue)
-    {
-        $xml = new SimpleXMLElement($tidyValue);
-       
-        return $xml;
+        return $responseBody;
     }
     
     /**
+     * 
+     */
+    private function getSimpleXML($body)
+    {
+        require_once 'Diggin/Scraper/Context.php';
+        
+        $strategy = $this->getStrategy($body);        
+        $context  = new Diggin_Scraper_Context($strategy);
+               
+        return $context->getSimpleXml();
+    }
+    
+    /**
+     * 
      * 
      * @param string(xpath)
      * @return array
