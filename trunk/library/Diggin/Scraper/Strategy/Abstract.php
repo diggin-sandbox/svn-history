@@ -18,8 +18,16 @@ abstract class Diggin_Scraper_Strategy_Abstract {
      */
     public function getData()
     {
+        //if !is_readble($this->getBody)...
+        
         return $this->readData($this->getBody());
     }
+    
+    public function scrapedData($process)
+    {   
+        return $this->scrape($this->getBody(), $process);
+    }
+    
     
     public function getBody()
     {
@@ -27,5 +35,7 @@ abstract class Diggin_Scraper_Strategy_Abstract {
     }
     
     protected abstract function readData($body);
+    
+    protected abstract function scrape($body, $process);
     
 }

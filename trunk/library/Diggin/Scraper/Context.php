@@ -8,7 +8,7 @@ class Diggin_Scraper_Context {
     /**
      * construct
      * 
-     * @param Diggin_Scraper_Strategy_SimpleXmlStrategy $strategy
+     * @param Diggin_Scraper_Strategy_Abstract $strategy
      */
     public function __construct(Diggin_Scraper_Strategy_Abstract $strategy)
     {
@@ -16,12 +16,17 @@ class Diggin_Scraper_Context {
     }
     
     /**
-     * getting Simple Xml
+     * getting getItems
      * 
-     * @return SimpleXml 
+     * @return void
      */
-    public function getSimpleXml()
+    public function getItems()
     {
         return $this->_strategy->getData();
+    }
+    
+    public function scrape($process)
+    {
+        return $this->_strategy->scrapedData($process);
     }
 }
