@@ -5,19 +5,31 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
 {
     protected static $_adapter = null;
 
-    public function setAdapter(Diggin_Scraper_Strategy_Xpath_Adapter_Interface $adapter)
+    public function __destruct() {
+       self::$_adapter = null;
+       parent::$_adapter = null;
+   }
+    
+    public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
         self::$_adapter = $adapter;
     }
 
     public function getAdapter()
     {
-        if (!self::$_adapter instanceof Diggin_Scraper_Strategy_Xpath_Adapter_Interface) {
+        if(isset(self::$_adapter)){
+            return self::$_adapter;
+        }
+        
+        //コンストラクタで設定されてた時用
+        if (parent::$_adapter instanceof Diggin_Scraper_Adapter_Interface) {
+            return parent::$_adapter;
+        } else { 
             /**
-             * @see Diggin_Scraper_Strategy_Xpath_Adapter
+             * @see Diggin_Scraper_Adapter
              */
-            require_once 'Diggin/Scraper/Strategy/Xpath/Adapter/Tidy.php';
-            self::$_adapter = new Diggin_Scraper_Strategy_Xpath_Adapter_Tidy();
+            require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
+            self::$_adapter = new Diggin_Scraper_Adapter_Htmlscraping();
         }
 
         return self::$_adapter;
@@ -25,25 +37,27 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     
     /**
      * 
-     * @param string $resposeBody
+     * @param Zend_Http_Response $respose
      * @return Object SimpleXMLElement
      */
-    protected function readData($resposeBody)
+    protected function readData($respose)
     {
-        return $this->getAdapter()->readData($resposeBody);
+        //@todo if return !simplexml throw
+        return $this->getAdapter()->readData($respose);
     }
     
     /**
+     * scraping with Xpath
      * 
-     * @param string $resposeBody
+     * @param Zend_Http_Response $respose
      * @param string $process
      * @return void
      */
-    public function scrape($resposeBody, $process)
+    public function scrape($respose, $process)
     {
-        $simplexml = $this->getAdapter()->readData($resposeBody);
- 
-        $results = array();        
+        $simplexml = $this->getAdapter()->readData($respose);
+
+        $results = array();
         foreach ($simplexml->xpath($process) as $count => $result) {
             $results[] = $result; 
         }

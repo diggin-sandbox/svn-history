@@ -1,41 +1,54 @@
 <?php
-
 abstract class Diggin_Scraper_Strategy_Abstract {
-    private $_body;
+    private static $_response;
+    //private static $_adapter;
+    protected static $_adapter;
+    
+    protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
+    
+    protected abstract function getAdapter();
     
     /**
      * construct
      * 
-     * @return 
+     * @param Zend_Http_Response
+     * @param  
      */
-    public function __construct($body)
+    public function __construct($response, $adapter = null)
     {
-        $this->_body = $body;
+        self::$_response = $response;
+        if(is_null($adapter)) {
+            self::$_adapter = $this->getAdapter();
+        } else {
+            self::$_adapter = $adapter;
+        }
     }
     
-    /*
+    /**
      * 
      */
     public function getData()
     {
         //if !is_readble($this->getBody)...
         
-        return $this->readData($this->getBody());
+        return $this->readData($this->getResponse());
     }
     
     public function scrapedData($process)
     {   
-        return $this->scrape($this->getBody(), $process);
+        return $this->scrape($this->getResponse(), $process);
     }
-    
-    
-    public function getBody()
+   
+    public function getResponse()
     {
-        return $this->_body;
+        return self::$_response;
     }
     
-    protected abstract function readData($body);
+    /**
+     * 
+     */
+    protected abstract function readData($response);
     
-    protected abstract function scrape($body, $process);
+    protected abstract function scrape($response, $process);
     
 }

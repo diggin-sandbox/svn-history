@@ -66,9 +66,10 @@ class Diggin_Scraper_Client
     /**
      * 
      * @param string $strategyName
+     * @param Object Diggin_Scraper_Adapter_Interface (optional)
      * @return Object 
      */
-    public function setStrategy($strategyName, $strategyAdapter = null)
+    public function setStrategy($strategyName, $adapter = null)
     {
         require_once 'Zend/Loader.php';
         
@@ -79,10 +80,8 @@ class Diggin_Scraper_Client
         }
         
         $strategy = new $strategyName($this->makeRequest());
-        if ($strategyAdapter) {
-            $strategy->setAdapter($strategyAdapter);
-        }
-        
+        if($adapter) $strategy->setAdapter($adapter);
+
         self::$_strategy = $strategy;
     }
 
@@ -95,13 +94,15 @@ class Diggin_Scraper_Client
             /**
              * @see Diggin_Scraper_Strategy_Abstract
              */
+            require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
+            $scraperAdapter = new Diggin_Scraper_Adapter_Htmlscraping();
+            $scraperAdapter->setConfig(array('url' => $this->_url));
             require_once 'Diggin/Scraper/Strategy/Xpath.php';
-            self::$_strategy = new Diggin_Scraper_Strategy_Xpath($this->makeRequest());
+            self::$_strategy = new Diggin_Scraper_Strategy_Xpath($this->makeRequest(), $scraperAdapter);
         }
-
+        
         return self::$_strategy;
     }
-    
 
     /**
      * construct
@@ -116,8 +117,11 @@ class Diggin_Scraper_Client
 
     /**
      * 
+     * 
+     * @param array $parms
+     * @return Zend_Http_Response
      */
-    public function makeRequest()
+    public function makeRequest($parms = null)
     {
         $this->_client = self::getHttpClient();
         
@@ -131,7 +135,7 @@ class Diggin_Scraper_Client
         
         if ((!$this->_client->getLastResponse()) || ($this->_resetUrlFlg == TRUE)) {
             $response = $this->_client->request('GET');
-            
+
             if (!$response->isSuccessful()) {
                  /**
                   * @see Diggin_Scraper_Exception
@@ -143,11 +147,14 @@ class Diggin_Scraper_Client
             $response = $this->_client->getLastResponse();
         }
         
-        $responseBody = $response->getBody();
-
-        return $responseBody;
+        return $response;
     }
     
+    /**
+     * 
+     * @param string $process "scraping expression"
+     * @return void
+     */
     public function scrape($process)
     {
         require_once 'Diggin/Scraper/Context.php';
