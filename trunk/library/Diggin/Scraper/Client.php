@@ -1,17 +1,11 @@
 <?php
 class Diggin_Scraper_Client
 {
-    /**
-     * Zend_Http_Client Object
-     *
-     * @var Zend_Http_Client
-     */
-    protected $_client;
-
     protected $_url;
+        
+    private static $_processes;
+    public $scrapes;
     
-    //以下の変数に関わる処理は適当なので、後で設計しなおす必要が
-    protected $_resetUrlFlg = FALSE;
     protected static $_strategy = null;
     
     private function getUrl()
@@ -21,7 +15,6 @@ class Diggin_Scraper_Client
 
     public function setUrl ($url) 
     {
-        $this->_resetUrlFlg = TRUE;
         $this->_url = $url;
     }
     
@@ -76,7 +69,7 @@ class Diggin_Scraper_Client
         try {
             Zend_Loader::loadClass($strategyName);
         } catch (Zend_Exception $e) {
-            throw new Zend_Http_Client_Exception("Unable to load strategy '$strategyName': {$e->getMessage()}");
+            throw new Diggin_Scraper_Client_Exception("Unable to load strategy '$strategyName': {$e->getMessage()}");
         }
         
         $strategy = new $strategyName($this->makeRequest());
@@ -88,7 +81,7 @@ class Diggin_Scraper_Client
     /**
      * 
      */
-    public function getStrategy()
+    public function getStrategy($response)
     {
         if (!self::$_strategy instanceof Diggin_Scraper_Strategy_Abstract) {
             /**
@@ -98,7 +91,7 @@ class Diggin_Scraper_Client
             $scraperAdapter = new Diggin_Scraper_Adapter_Htmlscraping();
             $scraperAdapter->setConfig(array('url' => $this->_url));
             require_once 'Diggin/Scraper/Strategy/Xpath.php';
-            self::$_strategy = new Diggin_Scraper_Strategy_Xpath($this->makeRequest(), $scraperAdapter);
+            self::$_strategy = new Diggin_Scraper_Strategy_Xpath($response, $scraperAdapter);
         }
         
         return self::$_strategy;
@@ -121,30 +114,29 @@ class Diggin_Scraper_Client
      * @param array $parms
      * @return Zend_Http_Response
      */
-    public function makeRequest($parms = null)
+    private function makeRequest($url = null)
     {
-        $this->_client = self::getHttpClient();
+        $client = self::getHttpClient();
         
+        if ($url) {
+            $this->setUrl($url);
+        } 
         if ($this->_url) {
-            $this->_client->setUri($this->getUrl());
+            $client->setUri($this->getUrl());
         }
         
         if (isset($parms)){
-            $this->_client->setParameterGet($parms);
+            $client->setParameterGet($parms);
         }
         
-        if ((!$this->_client->getLastResponse()) || ($this->_resetUrlFlg == TRUE)) {
-            $response = $this->_client->request('GET');
+        $response = $client->request('GET');
 
-            if (!$response->isSuccessful()) {
-                 /**
-                  * @see Diggin_Scraper_Exception
-                  */
-                 require_once 'Diggin/Scraper/Exception.php';
-                 throw new Diggin_Scraper_Exception("Http client reported an error: '{$response->getMessage()}'");
-            }
-        } else {
-            $response = $this->_client->getLastResponse();
+        if (!$response->isSuccessful()) {
+             /**
+              * @see Diggin_Scraper_Exception
+              */
+             require_once 'Diggin/Scraper/Exception.php';
+             throw new Diggin_Scraper_Exception("Http client reported an error: '{$response->getMessage()}'");
         }
         
         return $response;
@@ -152,14 +144,31 @@ class Diggin_Scraper_Client
     
     /**
      * 
-     * @param string $process "scraping expression"
-     * @return void
      */
-    public function scrape($process)
+    public function process($filterOrExpression, $name)
     {
-        require_once 'Diggin/Scraper/Context.php';
-        $context  = new Diggin_Scraper_Context($this->getStrategy());
+        if(is_string($filterOrExpression)){
+            require_once 'Diggin/Scraper/Process.php';
+            $filterOrExpression = new Diggin_Scraper_Process($filterOrExpression, $name);
+        }
         
-        return $context->scrape($process);
+        self::$_processes[] = $filterOrExpression;
+        return $this;
+    }
+    
+    public function scrape($url = null)
+    {
+        
+        $response = $this->makeRequest($url);
+
+        require_once 'Diggin/Scraper/Context.php';
+        $context = new Diggin_Scraper_Context($this->getStrategy($response));
+        
+        foreach (self::$_processes as $process) {
+            //@todo gettting TEXT format like using $process->filter['TEXT']
+            $this->scrapes[$process->name] = $context->scrape($process->expression);
+        }
+        
+        return $this->scrapes;
     }
 }
