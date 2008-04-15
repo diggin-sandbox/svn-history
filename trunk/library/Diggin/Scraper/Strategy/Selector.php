@@ -16,12 +16,12 @@
 
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
-class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract 
+class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract 
 {
     protected static $_adapter = null;
     protected static $_adapterconfig = null;
 
-    public function __destruct()
+    public function __destruct() 
     {
        self::$_adapter = null;
        self::$_adapterconfig = null;
@@ -32,23 +32,27 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     {
         self::$_adapter = $adapter;
     }
-
+    
+    public function setAdapterConfig($config)
+    {
+        self::$_adapterconfig = $config;
+    }
+    
     public function getAdapter()
     {
         if (isset(self::$_adapter)) {
+            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
             return self::$_adapter;
         }
-        
         //コンストラクタで設定されてた時用
         if (parent::$_adapter instanceof Diggin_Scraper_Adapter_Interface) {
-            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
             return parent::$_adapter;
         } else { 
             /**
              * @see Diggin_Scraper_Adapter
              */
             require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
-            self::$_adapter = new Diggin_Scraper_Adapter_Htmlscraping();
+            self::$_adapter = new Diggin_Scraper_Adapter_Htmlscraping();            
             if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
         }
 
@@ -56,7 +60,7 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     }
 
     /**
-     * scraping with Xpath
+     * scraping with CssSelector
      * 
      * @param Zend_Http_Response $respose
      * @param string $process
@@ -66,15 +70,20 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     {
         $simplexml = $this->getAdapter()->readData($respose);
  
+        $dom = dom_import_simplexml($simplexml);
+
+        require_once dirname(__FILE__).'/Selector/sfDomCssSelector.class.php';
+        $selector = new sfDomCssSelector($dom);
+        
         $results = array();       
-        foreach ($simplexml->xpath($process->expression) as $count => $result) {
-            $results[] = $result; 
+        foreach ($selector->getElements($process->expression) as $result) {
+            $results[] = simplexml_import_dom($result); 
         }
         
         return $results;
     }
-    
-    /**
+
+	/**
      * get value with DSL
      * 
      * @param Diggin_Scraper_Context
@@ -122,14 +131,12 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
             require_once 'Diggin/Scraper/Exception.php';
             throw new Diggin_Scraper_Exception("can't understand type");
         }
-
+        
         //スクレイプ該当が1件だったときに、
         if (count($strings) === 1) {
             $strings = (string) array_shift($strings);
         }
-        
+
         return $strings;
     }
-
 }
-

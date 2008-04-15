@@ -13,21 +13,28 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_Scraper_Context {
-    private $_strategy;
-    
+class Diggin_Scraper_Autofilter extends FilterIterator
+{
     /**
-     * construct
-     * 
-     * @param Diggin_Scraper_Strategy_Abstract $strategy
+     * @param  Iterator $iterator
      */
-    public function __construct(Diggin_Scraper_Strategy_Abstract $strategy)
+    public function __construct(Iterator $iterator)
     {
-        $this->_strategy = $strategy;
+        parent::__construct($iterator);
     }
-
-    public function scrape($process)
+ 
+    /**
+     * accept 
+     * 
+     * @return boolean
+     */
+    public function accept()
     {
-        return $this->_strategy->scrapedData($process);
+        $value = $this->current();
+        if (preg_match('/2007/', $value)) {
+            return true; 
+        } else {
+            return false;
+        }
     }
 }

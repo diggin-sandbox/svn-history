@@ -36,19 +36,26 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
 
         return self::$_adapter;
     }
-    
-    protected function readData($respose)
-    {
-        return $this->getAdapter()->readData($respose);
-    }
-    
+
     public function scrape($respose, $process)
     {
         $adptBody = $this->getAdapter()->readData($respose);
         
         SimpleTag::setof($markup, $adptBody);
-        $result = $markup->getIn($process);
+        $result = $markup->getIn($process->expression);
         
         return $result;
+    }
+    
+	/**
+     * get value with DSL
+     * 
+     * @param Diggin_Scraper_Context
+     * @param Diggin_Scraper_Process
+     * @return array
+     */
+    public function getValue($context, $process)
+    {
+        return $context->scrape($process);
     }
 }

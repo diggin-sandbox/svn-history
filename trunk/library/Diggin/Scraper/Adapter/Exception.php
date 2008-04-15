@@ -1,11 +1,22 @@
 <?php
 /**
- * @see Zend_Service_Exception
+ * Diggin - Library Of PHP
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_Scraper
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 /**
  * @category   Diggin
- * @package    Diggin_Scraper_Adapter
+ * @package    Diggin_Scraper
  */
-class Diggin_Scraper_Strategy_Xpath_Adapter_Exception extends Exception
+class Diggin_Scraper_Adapter_Exception extends Exception
 {}

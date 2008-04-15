@@ -1,7 +1,21 @@
 <?php
+/**
+ * Diggin - Library Of PHP
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_Scraper
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+
 abstract class Diggin_Scraper_Strategy_Abstract {
     private static $_response;
-    //private static $_adapter;
     protected static $_adapter;
     
     protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
@@ -43,12 +57,8 @@ abstract class Diggin_Scraper_Strategy_Abstract {
     {
         return self::$_response;
     }
-    
-    /**
-     * 
-     */
-    protected abstract function readData($response);
-    
+
     protected abstract function scrape($response, $process);
     
+    protected abstract function getValue($context, $process);
 }

@@ -34,19 +34,7 @@ class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract
 
         return self::$_adapter;
     }
-    
-    /**
-     * 
-     * @param string $resposeBody
-     * @return Object SimpleXMLElement
-     */
-    protected function readData($respose)
-    {        
-        //@todo if return !normalizeddata 
-        
-        return $this->getAdapter()->readData($respose);
-    }
-    
+
     /**
      * 
      * @param string $respose
@@ -55,13 +43,25 @@ class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract
      */
     public function scrape($respose, $process)
     {
-        $adapterBody = $this->readData($respose);
+        $adapterBody = $this->getAdapter()->readData($respose);
         
         $cleanString = self::_cleanString($adapterBody);
         
-        preg_match_all($process, $cleanString , $results);
+        preg_match_all($process->expression, $cleanString , $results);
         
         return $results;
+    }
+
+	/**
+     * get value with DSL
+     * 
+     * @param Diggin_Scraper_Context
+     * @param Diggin_Scraper_Process
+     * @return array
+     */
+    public function getValue($context, $process)
+    {
+        return $context->scrape($process);
     }
     
     /**

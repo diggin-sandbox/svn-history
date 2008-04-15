@@ -13,21 +13,26 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_Scraper_Context {
-    private $_strategy;
+class Diggin_Scraper_Filter
+{
+    private static $_values;
+    private static $_filter;
+    private static $_filterParams;
     
     /**
-     * construct
-     * 
-     * @param Diggin_Scraper_Strategy_Abstract $strategy
+     * @param  
      */
-    public function __construct(Diggin_Scraper_Strategy_Abstract $strategy)
+    public function __construct($values, $filter, $filterParams = null)
     {
-        $this->_strategy = $strategy;
+        self::$_values = $values;
+        self::$_filter = $filter;
+        self::$_filterParams = $filterParams;
     }
-
-    public function scrape($process)
+    
+    public static function runFilter()
     {
-        return $this->_strategy->scrapedData($process);
+        $values = call_user_func_array(self::$_filter, self::$_values);
+        
+        return $values;
     }
 }
