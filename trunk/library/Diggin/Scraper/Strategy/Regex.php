@@ -2,9 +2,9 @@
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
 class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract 
-{
+{    
     protected static $_adapter = null;
-    
+
     public function __destruct() {
        self::$_adapter = null;
        parent::$_adapter = null;

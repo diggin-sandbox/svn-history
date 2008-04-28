@@ -51,7 +51,7 @@ class Diggin_Console_Interactive
      * @param string
      * @return boolean
      */
-    public function yesNo ($showMessage)
+    public function yesNo($showMessage)
     {
         
         while (TRUE) {

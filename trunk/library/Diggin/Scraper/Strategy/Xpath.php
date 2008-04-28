@@ -119,8 +119,8 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
             }
             
         } else {
-            require_once 'Diggin/Scraper/Exception.php';
-            throw new Diggin_Scraper_Exception("can't understand type");
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
 
         //スクレイプ該当が1件だったときに、

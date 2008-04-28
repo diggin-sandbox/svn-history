@@ -14,25 +14,42 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Diggin_Scraper_Filter
-{
-    private static $_values;
-    private static $_filter;
-    private static $_filterParams;
-    
-    /**
-     * @param  
-     */
-    public function __construct($values, $filter, $filterParams = null)
+{  
+    public static function run($values, $filter, $filterParams = null)
     {
-        self::$_values = $values;
-        self::$_filter = $filter;
-        self::$_filterParams = $filterParams;
-    }
-    
-    public static function runFilter()
-    {
-        $values = call_user_func_array(self::$_filter, self::$_values);
+        $argValues = $values;
         
-        return $values;
+        if (!is_array($values)) {
+            $values = array($values);
+        }
+        
+        if (function_exists($filter)) {
+            foreach ($values as $value) {
+                $return[] = call_user_func($filter, $value);
+            }
+        } elseif (!strstr($filter, '_')) {
+            require_once 'Zend/Filter.php';
+            foreach ($values as $value) {
+                $return[] = Zend_Filter::get($value, $filter);
+            }
+        } else {
+            require_once 'Zend/Loader.php';
+            try {
+                Zend_Loader::loadClass($filter);
+            } catch (Zend_Exception $e) {
+                require_once 'Diggin/Scraper/Exception.php';
+                throw new Diggin_Scraper_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+            }
+            $filter = new $filter();
+            foreach ($values as $value) {
+                $return[] = $filter->filter($value);
+            }
+        }
+        
+        if (!is_array($argValues)) {
+            $return = (string) array_shift($return);
+        }
+        
+        return $return;
     }
 }

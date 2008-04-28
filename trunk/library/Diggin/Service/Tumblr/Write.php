@@ -4,7 +4,7 @@
  * @category   Diggin
  * @package    Diggin_Service
  * @subpackage Tumblr
- * @license    MITあたり
+ * @license    
  * @version    $Id:$
  */
 

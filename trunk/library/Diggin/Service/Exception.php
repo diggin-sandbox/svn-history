@@ -9,14 +9,9 @@
  * http://framework.zend.com/license/new-bsd
  * 
  * @category   Diggin
- * @package    Diggin_Scraper
+ * @package    Diggin_Service
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-
-/**
- * @category   Diggin
- * @package    Diggin_Scraper
- */
-class Diggin_Scraper_Strategy_Exception extends Exception
+class Diggin_Service_Exception extends Exception
 {}
