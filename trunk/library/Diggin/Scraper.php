@@ -158,11 +158,11 @@ class Diggin_Scraper
             /**
              * @see Diggin_Scraper_Strategy_Abstract
              */
-            require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
-            $scraperAdapter = new Diggin_Scraper_Adapter_Htmlscraping();
-            $scraperAdapter->setConfig(array('url' => $this->_url));
             require_once 'Diggin/Scraper/Strategy/Xpath.php';
-            self::$_strategy = new Diggin_Scraper_Strategy_Xpath($response, $scraperAdapter);
+            $strategy = new Diggin_Scraper_Strategy_Xpath($response);
+            $strategy->setAdapterConfig(array('url' => $this->_url));
+            
+            self::$_strategy = $strategy;
         }
         
         return self::$_strategy;
@@ -272,21 +272,23 @@ class Diggin_Scraper
     /**
      * scraping
      * 
-     * @param string $url
+     * @param $resource url | Zend_Http_Response
      * @return array scraping data.
      */
-    public function scrape($url = null)
-    {
-        
-        $response = $this->makeRequest($url);
+    public function scrape($resource = null)
+    {        
+        if (!$resource instanceof Zend_Http_Response) {
+            $resource = $this->makeRequest($resource);
+        }
         
         if (!is_null(self::$_strategyName)) {
-            $this->callStrategy($response, self::$_strategyName, self::$_adapter);
+            $this->callStrategy($resource, self::$_strategyName, self::$_adapter);
         }
 
         require_once 'Diggin/Scraper/Context.php';
-        $context = new Diggin_Scraper_Context($this->getStrategy($response));
-
+        //@todo getStrategy($resource) ←strategyが設定されてないときにデフォで呼ぶときに
+        //resourceを渡すようにしているが......
+        $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach (self::$_processes as $process) {
             $values = self::$_strategy->getValue($context, $process);
 
@@ -296,9 +298,23 @@ class Diggin_Scraper
             }
             
             $this->results[$process->name] = $values;
+            
         }
-        
+
         return $this->results;
+    }
+    
+	/**
+     * Class destructor.
+     *
+     * @return void
+     */    
+    public function __destruct()
+    {
+        self::$_processes = null;
+        self::$_strategy = null;
+        self::$_strategyName = null;
+        self::$_adapter = null;
     }
 }
 

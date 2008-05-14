@@ -33,15 +33,21 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         self::$_adapter = $adapter;
     }
 
+    public function setAdapterConfig($config)
+    {
+        self::$_adapterconfig = $config;
+    }
+    
     public function getAdapter()
     {
         if (isset(self::$_adapter)) {
+            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
             return self::$_adapter;
         }
         
         //コンストラクタで設定されてた時用
         if (parent::$_adapter instanceof Diggin_Scraper_Adapter_Interface) {
-            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
+            if (self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
             return parent::$_adapter;
         } else { 
             /**
@@ -107,10 +113,10 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
             foreach ($values as $value) {
-                //@todo
                 if (($process->type == '@href' OR $process->type == '@src')
                     && method_exists($this->getAdapter(), 'getAbsoluteUrl')) {
                     array_push($strings, $this->getAdapter()->getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
+
                     //require_once 'Diggin/Uri/Http.php';
                     //array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
                 } else {
