@@ -101,8 +101,9 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
             $strings = array();
             foreach ($values as $value) {
                 //@todo strict 
-                //array_push($strings, (string) $value);
-                array_push($strings, strip_tags((string) str_replace('&amp;', '&', $value->asXML())));
+                $value = strip_tags((string) str_replace('&amp;', '&', $value->asXML()));
+                $value = str_replace(array(chr(10), chr(13)), '', $value);
+                array_push($strings, $value);
             }
         } elseif (strtoupper(($process->type)) === 'PLAIN') {
             $strings = array();

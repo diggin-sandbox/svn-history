@@ -44,6 +44,7 @@ class Diggin_Scraper
      * adapter for response
      */
     private static $_adapter;
+
     /**
      * startegy for scraping
      */
@@ -75,6 +76,17 @@ class Diggin_Scraper
      * @var Zend_Http_Client
      */
     protected static $_httpClient = null;
+
+    /**
+     * Read only properties accessor
+     *
+     * @param  string $var property to read
+     * @return mixed
+     */
+    public function __get($var)
+    {
+        return $this->results[$var];
+    }
 
     /**
      * Set the HTTP client instance
@@ -212,7 +224,7 @@ class Diggin_Scraper
         
         return $response;
     }
-    
+
     /**
      * setting process like DSL of Web::Scraper
      * 
@@ -296,19 +308,18 @@ class Diggin_Scraper
                 require_once 'Diggin/Scraper/Filter.php';
                 $values = Diggin_Scraper_Filter::run($values, $process->filter);
             }
-            
-            $this->results[$process->name] = $values;
-            
-        }
 
+            $this->results[$process->name] = $values;
+        }
+        
         return $this->results;
     }
-    
-	/**
+
+    /**
      * Class destructor.
      *
      * @return void
-     */    
+     */
     public function __destruct()
     {
         self::$_processes = null;
@@ -321,7 +332,7 @@ class Diggin_Scraper
 class scraper
 {
 
-    public static $processes;
+    public $processes;
 
     public function process($expression, $namestypes, $filterIterator = null)
     {

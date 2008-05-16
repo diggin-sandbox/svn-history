@@ -51,7 +51,7 @@ class Diggin_Debug
         }
 
         // format the label
-        //$label = ($label===null) ? '' : rtrim($label) . ' ';
+        $label = ($config['label']===null) ? '' : rtrim($config['label']) . ' ';
 
         // var_dump the variable into a buffer and keep the output
         ob_start();        
