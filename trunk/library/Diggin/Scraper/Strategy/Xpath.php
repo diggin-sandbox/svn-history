@@ -93,7 +93,14 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
             return $context->scrape($process);
         }
         
-        $values = $context->scrape($process);
+        if ($context instanceof Diggin_Scraper_Context) {
+            $values = $context->scrape($process);
+        } else {
+            //
+//            foreach ($context->xpath($process->expression) as $result) {
+//                $values[] = $result; 
+//            }
+        }
 
         //type
         if (strtoupper(($process->type)) === 'TEXT') {

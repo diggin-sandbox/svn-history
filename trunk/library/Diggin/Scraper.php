@@ -36,7 +36,7 @@ class Diggin_Scraper
     private static $_processes;
     
     /**
-     * startegy name to use for chaning strategy
+     * strategy name to use for chaning strategy
      */
     private static $_strategyName;
     
@@ -94,7 +94,7 @@ class Diggin_Scraper
      * Sets the HTTP client object to use for retrieving the feeds.
      *
      * @param  Zend_Http_Client $httpClient
-     * @return void
+     * @return null
      */
     public static function setHttpClient(Zend_Http_Client $httpClient)
     {
@@ -123,8 +123,8 @@ class Diggin_Scraper
      * changing Startegy
      * 
      * @param string $strategyName
-     * @param Object Diggin_Scraper_Adapter_Interface (optional)
-     * @retrun Diggin_Scraper Provides a fluent interface
+     * @param Diggin_Scraper_Adapter_Interface $adapter
+     * @return Diggin_Scraper Provides a fluent interface
      */
     public function changeStrategy($strategyName, $adapter = null)
     {
@@ -137,6 +137,7 @@ class Diggin_Scraper
     /**
      * calling this scraper's strategy
      * 
+     * @param Zend_Http_Response $response
      * @param string $strategyName
      * @param Object Diggin_Scraper_Adapter_Interface (optional)
      */
@@ -161,7 +162,7 @@ class Diggin_Scraper
     /**
      * Returning this scraper's strategy
      * 
-     * @param Zend_Http_Response
+     * @param Zend_Http_Response $response
      * @return Diggin_Scraper_Strategy
      */
     public function getStrategy($response)
@@ -183,10 +184,9 @@ class Diggin_Scraper
     /**
      * construct
      *
-     * @param string 
-     * @param  array
+     * @param string
      */
-    public function __construct($url = null, array $parms = array())
+    public function __construct($url = null)
     {
         $this->_url = $url;
     }
@@ -194,8 +194,8 @@ class Diggin_Scraper
     /**
      * making request
      * 
-     * @param array $parms
-     * @return Zend_Http_Response
+     * @param string $url
+     * @return Zend_Http_Response $response
      */
     private function makeRequest($url = null)
     {
@@ -206,10 +206,6 @@ class Diggin_Scraper
         } 
         if ($this->_url) {
             $client->setUri($this->getUrl());
-        }
-        
-        if (isset($parms)){
-            $client->setParameterGet($parms);
         }
         
         $response = $client->request('GET');
@@ -284,8 +280,9 @@ class Diggin_Scraper
     /**
      * scraping
      * 
-     * @param $resource url | Zend_Http_Response
-     * @return array scraping data.
+     * @param (string | Zend_Http_Response) $resource
+     * 		setting URL or Zend_Http_Response
+     * @return array $this->results Scraping data.
      */
     public function scrape($resource = null)
     {        
@@ -318,7 +315,7 @@ class Diggin_Scraper
     /**
      * Class destructor.
      *
-     * @return void
+     * @return null
      */
     public function __destruct()
     {

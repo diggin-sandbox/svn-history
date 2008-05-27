@@ -47,7 +47,7 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
      * Constructs a new Tumblr Web Services Client
      *
      * @param  string $target subdomain of tumblr OR Domain
-     * @return void
+     * @return null
      */
     public function __construct($target = null)
     {

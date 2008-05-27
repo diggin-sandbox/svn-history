@@ -7,7 +7,7 @@ class Diggin_Scraper_Adapter_Tidy implements Diggin_Scraper_Adapter_Interface
         'indent'         => false,
         'add-xml-decl'   => true,
         'output-xml'     => true,
-    	'numeric-entities' => true,
+        'numeric-entities' => true,
     );
 
     /**

@@ -39,7 +39,7 @@ class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param string $respose
      * @param string $process
-     * @return void
+     * @return null
      */
     public function scrape($respose, $process)
     {
@@ -52,7 +52,7 @@ class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract
         return $results;
     }
 
-	/**
+    /**
      * get value with DSL
      * 
      * @param Diggin_Scraper_Context
@@ -72,9 +72,9 @@ class Diggin_Scraper_Strategy_Regex extends Diggin_Scraper_Strategy_Abstract
      */
     private static function _cleanString($resposeBody){
         $results = str_replace(array(chr(10), chr(13), chr(9)), chr(32), $resposeBody);
-    	while(strpos($results, str_repeat(chr(32), 2), 0) != FALSE){
-    	    $results = str_replace(str_repeat(chr(32), 2), chr(32), $results);
-    	}
-    	return (trim($results));
+        while(strpos($results, str_repeat(chr(32), 2), 0) != FALSE){
+            $results = str_replace(str_repeat(chr(32), 2), chr(32), $results);
+        }
+        return (trim($results));
     }
 }

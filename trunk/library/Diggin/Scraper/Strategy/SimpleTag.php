@@ -47,7 +47,7 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
         return $result;
     }
     
-	/**
+    /**
      * get value with DSL
      * 
      * @param Diggin_Scraper_Context

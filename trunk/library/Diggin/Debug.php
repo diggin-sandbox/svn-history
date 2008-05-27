@@ -28,7 +28,7 @@ class Diggin_Debug
      * Setting a value of null causes Zend_Debug to use PHP_SAPI.
      *
      * @param string $sapi
-     * @return void;
+     * @return null;
      */
     public static function setSapi($sapi)
     {

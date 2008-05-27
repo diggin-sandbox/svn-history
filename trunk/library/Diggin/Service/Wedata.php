@@ -37,8 +37,8 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     const PATH_CREATE_ITEM = '/databases/%s/items'; //dbname
     const PATH_UPDATE_ITEM = '/items/%s'; //item id
     const PATH_DELETE_ITEM = '/items/%s'; //item id
-    
-	/**
+
+    /**
      * Zend_Http_Client Object
      *
      * @var Zend_Http_Client
@@ -55,7 +55,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      *
      * @param  
      * @param boolean | string @see Zend_Json
-     * @return void
+     * @return null
      */
     public function __construct(array $params = null, $decodetype = null)
     {
@@ -155,9 +155,11 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     }
     
     /**
+     * 
+     * 
      * @param string path
      * @param string Prease,using Zend_Http_Client's const
-     * 
+     * @return mixed
      */
     public static function makeRequest($path, $method, array $params = null)
     {

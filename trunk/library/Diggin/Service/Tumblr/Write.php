@@ -12,9 +12,9 @@
  * = how to use=
  * require_once 'Diggin/Service/Tumblr/Write.php';
  * $tumblr = new Diggin_Service_Tumblr_Write();
- * 		//$client = new Zend_Http_Client();
- * 		//$client->setConfig(array('timeout'=> 500));
- * 		//$tumblr->setHttpClient($client);
+ *         //$client = new Zend_Http_Client();
+ *         //$client->setConfig(array('timeout'=> 500));
+ *         //$tumblr->setHttpClient($client);
  * $tumblr->setAuth('sample@sample.com', 'password');
  * $tumblr->writeRegular('title', 'body messages');
  */
@@ -75,7 +75,7 @@ class Diggin_Service_Tumblr_Write extends Zend_Service_Abstract
      *
      * @param  string $tumblrEmail
      * @param  string $$tumblrPassword
-     * @return void
+     * @return null
      */
     public function __construct($tumblrEmail = null, $tumblrPassword = null)
     {
@@ -192,8 +192,8 @@ class Diggin_Service_Tumblr_Write extends Zend_Service_Abstract
      * 
      * @param string type ('source' or 'data') 
      * @param string $sourceOrData
-     * 			source - The URL of the photo to copy.
-	 * 			data - The binary data of the requested image. 
+     *             source - The URL of the photo to copy.
+     *             data - The binary data of the requested image. 
      * @param string $caption (optional)
      * @return Diggin_Service_Tumblr_Write Provides a fluent interface  
      */

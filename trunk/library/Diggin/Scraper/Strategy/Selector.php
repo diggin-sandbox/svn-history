@@ -83,7 +83,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         return $results;
     }
 
-	/**
+    /**
      * get value with DSL
      * 
      * @param Diggin_Scraper_Context

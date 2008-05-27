@@ -31,7 +31,7 @@ class Diggin_Scraper_Client
      * Sets the HTTP client object to use for retrieving the feeds.
      *
      * @param  Zend_Http_Client $httpClient
-     * @return void
+     * @return null
      */
     public static function setHttpClient(Zend_Http_Client $httpClient)
     {
