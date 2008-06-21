@@ -184,7 +184,7 @@ class Diggin_Scraper
     /**
      * construct
      *
-     * @param string
+     * @param string $url
      */
     public function __construct($url = null)
     {

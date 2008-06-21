@@ -53,7 +53,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     /**
      * Constructs a new Wedata Web Service Client
      *
-     * @param  
+     * @param array $params parameter acording Wedata
      * @param boolean | string @see Zend_Json
      * @return null
      */
@@ -155,7 +155,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     }
     
     /**
-     * 
+     * Handles all requests to a web service
      * 
      * @param string path
      * @param string Prease,using Zend_Http_Client's const
@@ -297,8 +297,9 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
 
     /**
      * 
-     * @param string
-     * 
+     * @param string $itemId
+     * @param string $page
+     * @return array Decording Result
      */
     public static function getItem($itemId = null, $page = null)
     {
