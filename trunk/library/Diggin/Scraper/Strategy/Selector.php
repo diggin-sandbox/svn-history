@@ -77,7 +77,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         
         $results = array();       
         foreach ($selector->getElements($process->expression) as $result) {
-            $results[] = simplexml_import_dom($result, "SimpleXMLIterator"); 
+            $results[] = simplexml_import_dom($result); 
         }
         
         return $results;
