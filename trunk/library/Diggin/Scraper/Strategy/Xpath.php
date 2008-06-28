@@ -66,7 +66,7 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param Zend_Http_Response $respose
      * @param string $process
-     * @return 
+     * @return array $results
      */
     public function scrape($respose, $process)
     {
@@ -85,7 +85,7 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param Diggin_Scraper_Context
      * @param Diggin_Scraper_Process
-     * @return array
+     * @return mixed
      */
     public function getValue($context, $process)
     {
@@ -95,11 +95,6 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         
         if ($context instanceof Diggin_Scraper_Context) {
             $values = $context->scrape($process);
-        } else {
-            //
-//            foreach ($context->xpath($process->expression) as $result) {
-//                $values[] = $result; 
-//            }
         }
 
         //type

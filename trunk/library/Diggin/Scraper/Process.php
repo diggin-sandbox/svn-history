@@ -18,19 +18,13 @@ class Diggin_Scraper_Process
     public $expression;
     public $name;
     public $type;
-    public $filter;
-    public $filterParams;
+    public $filters;
 
-    public function __construct($expression, $name, $type = null, $filter = false)
+    public function __construct($expression, $name, $type = null, $filters = false)
     {
         $this->expression = $expression;
         $this->name = $name;
         $this->type = $type;
-        if(!is_array($filter)) {
-            $this->filter = $filter;
-        } else {
-            $this->filter = array_shift($filter);
-            $this->filterParams = $filter;
-        }
+        $this->filters = $filters;
     }
 }

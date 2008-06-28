@@ -113,8 +113,8 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     /**
      * adding parameter
      * 
-     * @param string
-     * @param string
+     * @param string $key
+     * @param string $value
      */
     public static function setParamDatabase($key, $value)
     {
@@ -146,8 +146,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     /**
      * adding parameter
      * 
-     * @param string
-     * @param string
+     * @param string $itemId
      */
     public static function setItemId($itemId)
     {

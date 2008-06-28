@@ -15,12 +15,17 @@
  */
 class Diggin_Scraper_Autofilter extends FilterIterator
 {
+    public static $filter;
+    public static $prefixFlag;
+
     /**
      * @param  Iterator $iterator
      */
-    public function __construct(Iterator $iterator)
+    public function __construct(Iterator $iterator, $filter, $prefixFlag)
     {
         parent::__construct($iterator);
+        self::$filter = $filter;
+        self::$prefixFlag = $prefixFlag;
     }
  
     /**
@@ -31,10 +36,37 @@ class Diggin_Scraper_Autofilter extends FilterIterator
     public function accept()
     {
         $value = $this->current();
-        if (preg_match('/2007/', $value)) {
-            return true; 
+        
+        if (function_exists(self::$filter)) {
+            $filterValue = call_user_func(self::$filter, $value);
+        } else if (!strstr(self::$filter, '_')) {
+            require_once 'Zend/Filter.php';
+            $filterValue = Zend_Filter::get($value, self::$filter);
         } else {
-            return false;
+            require_once 'Zend/Loader.php';
+            $filter = self::$filter;
+            try {
+                Zend_Loader::loadClass($filter);
+            } catch (Zend_Exception $e) {
+                require_once 'Diggin/Scraper/Exception.php';
+                throw new Diggin_Scraper_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+            }
+            $filter = new $filter();
+            $filterValue = $filter->filter($value);
+        }
+        
+        if (self::$prefixFlag === true) {
+            if ($filterValue != $value) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+             if ($filterValue != $value) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }

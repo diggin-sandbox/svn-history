@@ -225,42 +225,44 @@ class Diggin_Scraper
      * setting process like DSL of Web::Scraper
      * 
      * @param string (xpath etc)
-     * @param dsl1, dsl2, dsl3,,,
-     * @param 
+     * @params mixed args1, args2, args3,,,
+     * @param string $autofilter
      * @return Diggin_Scraper Provides a fluent interface
      */
-    public function process($expression, $dsl1, $autofilter = null)
+    public function process($expression, $args, $autofilter = false)
     {
-        $getargs = func_get_args();
-
-        $lastarg = array_slice($getargs, -1);
-    
-        $namestypes = array_slice($getargs, 1);
+        $namestypes = array_slice(func_get_args(), 1);
+        $lastarg = array_slice(func_get_args(), -1);
+        
+//        if (substr($lastarg[0], 0, 1) === "*" || substr($lastarg[0], 0, 1) === "!") {
+//            $autofilter = substr($lastarg[0], 1);
+//            array_pop($namestypes);
+//        }
         
         require_once 'Diggin/Scraper/Process.php';
         foreach ($namestypes as $nametype) {
-            if(is_string($nametype)) {
-                if(strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
-                if(!isset($types)) {
+            if (is_string($nametype)) {
+                if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
+                if (!isset($types)) {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype));
                 } else {
                     $types = trim($types, " '\"");
-                    if(strpos($types, ',') !== false) $types = explode(',', $types);
-                    if(count($types) === 1) {
+                    if (strpos($types, ',') !== false) $types = explode(',', $types);
+                    if (count($types) === 1) {
                         self::$_processes[] = 
                         new Diggin_Scraper_Process($expression, trim($name), $types);
                     } else {
                         foreach ($types as $count => $type) {
-                            if ($count !== 0) $filter[] = trim($type, " []'\"");
+                            if ($count !== 0) $filters[] = trim($type, " []'\"");
                         }
                         self::$_processes[] = 
                         new Diggin_Scraper_Process($expression, trim($name),
-                                                   trim($types[0], " []'\""), $filter);
+                                                   trim($types[0], " []'\""), $filters);
                     }
                 }
             } elseif (is_array($nametype)) {
                 self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
-            } elseif (is_object($nametype)) {
+            } elseif ($nametype instanceof scraper) {
                 foreach ($nametype->processes as $process) {
                     ///突貫処置
                     if (self::$_strategyName == "Diggin_Scraper_Strategy_Selector") {
@@ -269,7 +271,7 @@ class Diggin_Scraper
                         $separeter = "/";
                     }
                     $this->process($expression.$separeter.$process->expression,
-                                   array($process->name, $process->type, $process->filter));
+                                   array($process->name, $process->type, $process->filters));
                 }
             }
         }
@@ -301,9 +303,9 @@ class Diggin_Scraper
         foreach (self::$_processes as $process) {
             $values = self::$_strategy->getValue($context, $process);
 
-            if ($process->filter) {
+            if ($process->filters) {
                 require_once 'Diggin/Scraper/Filter.php';
-                $values = Diggin_Scraper_Filter::run($values, $process->filter);
+                $values = Diggin_Scraper_Filter::run($values, $process->filters);
             }
 
             $this->results[$process->name] = $values;
@@ -362,7 +364,7 @@ class scraper
             } elseif (is_object($nametype)) {
                 foreach ($nametype->processes as $process) {
                     $this->process($expression.$process->expression,
-                                   array($process->name, $process->type, $process->filter));
+                                   array($process->name, $process->type, $process->filters));
                 }
             }
         }

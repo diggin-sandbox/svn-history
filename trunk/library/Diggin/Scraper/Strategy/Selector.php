@@ -64,12 +64,12 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param Zend_Http_Response $respose
      * @param string $process
-     * @return 
+     * @return array $results
      */
     public function scrape($respose, $process)
     {
         $simplexml = $this->getAdapter()->readData($respose);
- 
+
         $dom = dom_import_simplexml($simplexml);
 
         require_once dirname(__FILE__).'/Selector/sfDomCssSelector.class.php';
@@ -77,7 +77,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         
         $results = array();       
         foreach ($selector->getElements($process->expression) as $result) {
-            $results[] = simplexml_import_dom($result); 
+            $results[] = simplexml_import_dom($result, "SimpleXMLIterator"); 
         }
         
         return $results;
@@ -88,7 +88,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param Diggin_Scraper_Context
      * @param Diggin_Scraper_Process
-     * @return array
+     * @return mixed
      */
     public function getValue($context, $process)
     {
