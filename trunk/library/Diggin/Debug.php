@@ -9,18 +9,22 @@
  * http://framework.zend.com/license/new-bsd
  * 
  * @category   Diggin
- * @package    Diggin_Scraper
+ * @package    Diggin_Debug
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 class Diggin_Debug
 {
-
     /**
      * @var string
      */
     protected static $_sapi = null;
+    
+    /**
+     * @var string
+     */
+    protected static $_os = null;
 
     /**
      * Get the current value of the debug output environment.
@@ -48,16 +52,35 @@ class Diggin_Debug
         self::$_sapi = $sapi;
     }
 
+    public static function getOs()
+    {
+        if (self::$_os === null) {
+            self::$_os = PHP_OS;
+        }
+        return self::$_os;
+    }
+    
+    
     public static function dump($var, $configs = array())
     {
-        $config = array(
-                    'label'        => null,
-                    'echo'         => TRUE,
-                    'toEncoding'   => 'sjis',
-                    'fromEncoding' => 'utf-8',
-                    'start'        => 0,
-                    'length'       => 80000,
-        );
+        if (self::getOs() === 'WINNT') {
+        
+            $config = array(
+                        'label'        => null,
+                        'echo'         => TRUE,
+                        'toEncoding'   => 'sjis',
+                        'fromEncoding' => 'utf-8',
+                        'start'        => 0,
+                        'length'       => 80000,
+            );
+        } else {
+             $config = array(
+                        'label'        => null,
+                        'echo'         => TRUE,
+                        'start'        => 0,
+                        'length'       => 80000,
+            );
+        }
 
         foreach ($configs as $conf => $setting) {
             $config[strtolower($conf)] = $setting;
@@ -70,7 +93,9 @@ class Diggin_Debug
         ob_start();        
         var_dump($var);
         $output = ob_get_clean();
-        $output = mb_convert_encoding($output, $config['toEncoding'], $config['fromEncoding']);
+        if (self::getOs() === 'WINNT') {
+            $output = mb_convert_encoding($output, $config['toEncoding'], $config['fromEncoding']);
+        }
         $output= substr($output, $config['start'], $config['length']);
 
         // neaten the newlines and indents
