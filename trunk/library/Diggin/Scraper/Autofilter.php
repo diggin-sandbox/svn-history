@@ -13,13 +13,16 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
 class Diggin_Scraper_Autofilter extends FilterIterator
 {
     public static $filter;
     public static $prefixFlag;
 
     /**
-     * @param  Iterator $iterator
+     * @param Iterator $iterator
+     * @param String $filter
+     * @param boolean $prefixFlag
      */
     public function __construct(Iterator $iterator, $filter, $prefixFlag)
     {
@@ -27,7 +30,7 @@ class Diggin_Scraper_Autofilter extends FilterIterator
         self::$filter = $filter;
         self::$prefixFlag = $prefixFlag;
     }
- 
+
     /**
      * accept 
      * 

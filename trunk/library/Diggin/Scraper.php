@@ -226,18 +226,11 @@ class Diggin_Scraper
      * 
      * @param string (xpath etc)
      * @params mixed args1, args2, args3,,,
-     * @param string $autofilter
      * @return Diggin_Scraper Provides a fluent interface
      */
-    public function process($expression, $args, $autofilter = false)
+    public function process($expression, $args)
     {
         $namestypes = array_slice(func_get_args(), 1);
-        $lastarg = array_slice(func_get_args(), -1);
-        
-//        if (substr($lastarg[0], 0, 1) === "*" || substr($lastarg[0], 0, 1) === "!") {
-//            $autofilter = substr($lastarg[0], 1);
-//            array_pop($namestypes);
-//        }
         
         require_once 'Diggin/Scraper/Process.php';
         foreach ($namestypes as $nametype) {
@@ -261,17 +254,10 @@ class Diggin_Scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
-            } elseif ($nametype instanceof scraper) {
-                foreach ($nametype->processes as $process) {
-                    ///突貫処置
-                    if (self::$_strategyName == "Diggin_Scraper_Strategy_Selector") {
-                        $separeter = " ";
-                    } else {
-                        $separeter = "/";
-                    }
-                    $this->process($expression.$separeter.$process->expression,
-                                   array($process->name, $process->type, $process->filters));
+                if(!is_numeric(key($nametype))) {
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), array_shift($nametype));
+                } else {
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
                 }
             }
         }
@@ -297,18 +283,34 @@ class Diggin_Scraper
         }
 
         require_once 'Diggin/Scraper/Context.php';
-        //@todo getStrategy($resource) ←strategyが設定されてないときにデフォで呼ぶときに
-        //resourceを渡すようにしているが......
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach (self::$_processes as $process) {
             $values = self::$_strategy->getValue($context, $process);
+            
+            if ($process->type instanceof scraper) {
+                foreach ($process->type->processes as $processcount => $proc) {
+                    $innerValues[] = self::$_strategy->getRecursiveValue($values, $proc);
+                }
 
+                $valueCount = count($values);
+                
+                for($i=0; $i <$valueCount; $i++) {
+                    for($n =0; $n <= $processcount; $n ++) {
+                        $returns[$i][key($innerValues[$n][$i])] = array_shift($innerValues[$n][$i]);
+                    }
+                }
+            }
+                        
             if ($process->filters) {
                 require_once 'Diggin/Scraper/Filter.php';
                 $values = Diggin_Scraper_Filter::run($values, $process->filters);
             }
 
-            $this->results[$process->name] = $values;
+            if ($process->type instanceof scraper) {
+                  $this->results[$process->name] = $returns;
+            } else {    
+                $this->results[$process->name] = $values;
+            }
         }
         
         return $this->results;
