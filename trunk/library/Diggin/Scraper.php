@@ -242,8 +242,7 @@ class Diggin_Scraper
                     $arrayflag = true;
                 } else {
                     $arrayflag = false;
-                }
-                var_dump($arrayflag);  
+                }  
                 if (!isset($types)) {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
                 } else {

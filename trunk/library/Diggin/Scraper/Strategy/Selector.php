@@ -160,7 +160,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
         
-        if (strtoupper($process->type) === 'RAW') {
+        if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
             $strings = array_shift($strings);
         } elseif ($process->arrayflag === false) {
             $strings = (string) array_shift($strings);
