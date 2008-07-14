@@ -116,6 +116,10 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
                 }
             }
             
+            if($process->arrayflag === false) {
+                $returns = array_shift($returns);
+            }
+            
            return $returns;
         }
         
@@ -154,7 +158,6 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
         
-        //スクレイプ該当が1件だったときに、
         if ($process->arrayflag === false) {
             $strings = (string) array_shift($strings);
         }

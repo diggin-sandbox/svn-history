@@ -261,8 +261,15 @@ class Diggin_Scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                if(!is_numeric(key($nametype))) {            
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), true, array_shift($nametype));
+                if(!is_numeric(key($nametype))) {
+                    if ((substr(key($nametype), -2) == '[]')) {
+                        $name = substr(key($nametype), 0, -2);
+                        $arrayflag = true;
+                    } else {
+                        $name = key($nametype);
+                        $arrayflag = false;
+                    }
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, array_shift($nametype));
                 } else {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
                 }
@@ -364,8 +371,15 @@ class scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                if(!is_numeric(key($nametype))) {            
-                    $this->processes[] = new Diggin_Scraper_Process($expression, key($nametype), true, array_shift($nametype));
+                if(!is_numeric(key($nametype))) {
+                    if ((substr(key($nametype), -2) == '[]')) {
+                        $name = substr(key($nametype), 0, -2);
+                        $arrayflag = true;
+                    } else {
+                        $name = key($nametype);
+                        $arrayflag = false;
+                    }                                
+                    $this->processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, array_shift($nametype));
                 } else {
                     $this->processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
                 }

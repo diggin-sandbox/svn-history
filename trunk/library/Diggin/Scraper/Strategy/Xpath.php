@@ -109,6 +109,10 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
                     $returns[$count][$proc->name] = $this->getValue($val, $proc);
                 }
             }
+            
+            if($process->arrayflag === false) {
+                $returns = array_shift($returns);
+            }
            return $returns;
         }
 
