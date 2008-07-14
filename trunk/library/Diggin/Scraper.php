@@ -243,11 +243,13 @@ class Diggin_Scraper
                 } else {
                     $arrayflag = false;
                 }
+                var_dump($arrayflag);  
                 if (!isset($types)) {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
                 } else {
                     $types = trim($types, " '\"");
                     if (strpos($types, ',') !== false) $types = explode(',', $types);
+                    
                     if (count($types) === 1) {
                         self::$_processes[] = 
                         new Diggin_Scraper_Process($expression, trim($name), $arrayflag, $types);
@@ -345,6 +347,7 @@ class scraper
         require_once 'Diggin/Scraper/Process.php';
         foreach ($namestypes as $nametype) {
             if(is_string($nametype)) {
+                //$types = null;
                 if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
                 if (!isset($types)) $name = $nametype;
                 if ((substr(trim($name), -2) == '[]')) {

@@ -124,7 +124,9 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         }
         
         //type
-        if (strtoupper(($process->type)) === 'TEXT') {
+        if (strtoupper(($process->type)) === 'RAW'){
+            $strings = $values;
+        } elseif (strtoupper(($process->type)) === 'TEXT') {
             
             $strings = array();
             foreach ($values as $value) {
@@ -158,7 +160,9 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
         
-        if ($process->arrayflag === false) {
+        if (strtoupper($process->type) === 'RAW') {
+            $strings = array_shift($strings);
+        } elseif ($process->arrayflag === false) {
             $strings = (string) array_shift($strings);
         }
 
