@@ -92,6 +92,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
      */
     public function getValue($context, $process)
     {
+        
         if (!isset($process->type)) {
             return $context->scrape($process);
         }
@@ -99,13 +100,25 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         if ($context instanceof Diggin_Scraper_Context) {
             $values = $context->scrape($process);
         } else {
-            $values = $context;
+            $dom = dom_import_simplexml($context); 
+            $selector = new sfDomCssSelector($dom);
+            
+            $values = array();       
+            foreach ($selector->getElements($process->expression) as $result) {
+                $values[] = simplexml_import_dom($result); 
+            }
         }
 
         if ($process->type instanceof scraper) {
-           return $values;
+            foreach ($values as $count => $val) {
+                foreach ($process->type->processes as $proc) {
+                    $returns[$count][$proc->name] = $this->getValue($val, $proc);
+                }
+            }
+            
+           return $returns;
         }
-
+        
         //type
         if (strtoupper(($process->type)) === 'TEXT') {
             
@@ -148,42 +161,5 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
 
         return $strings;
     }
-    
-    //testing
-    public function getRecursiveValue($values, $process)
-    {
-        
-        foreach ($values as $simplexml) {
-            $dom = dom_import_simplexml($simplexml);
-    
-            $selector = new sfDomCssSelector($dom);
-            
-            foreach ($selector->getElements($process->expression) as $count => $result) {
-                if($count == 0) {
-                    $value = simplexml_import_dom($result);
-                      
-                        if (strtoupper(($process->type)) === 'TEXT') {
-                            $value = strip_tags((string) str_replace('&amp;', '&', $value->asXML()));
-                            $value = str_replace(array(chr(10), chr(13)), '', $value);
-                        } elseif (strtoupper(($process->type)) === 'PLAIN') {
-                                $value = (string) str_replace('&amp;', '&', $value->asXML());                
-                        } elseif (strpos($process->type, '@') === 0) {
-                            if (($process->type == '@href' OR $process->type == '@src')
-                                && method_exists($this->getAdapter(), 'getAbsoluteUrl')) {
-                                $value = $this->getAdapter()->getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']);
-                            } else {
-                                $value = (string) $value[substr($process->type, 1)];
-                            }
-                        } else {
-                            require_once 'Diggin/Scraper/Strategy/Exception.php';
-                            throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
-                        }
-                      
-                    $returns[][$process->name] = $value;
-                }
-            }
-        }
-        
-        return $returns;
-    }
+
 }

@@ -15,7 +15,6 @@
  */
 interface Diggin_Scraper_Adapter_Interface
 {
-    
     /**
      * Set the configuration array for the adapter
      *

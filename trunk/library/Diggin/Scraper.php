@@ -254,7 +254,7 @@ class Diggin_Scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                if(!is_numeric(key($nametype))) {
+                if(!is_numeric(key($nametype))) {            
                     self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), array_shift($nametype));
                 } else {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
@@ -270,12 +270,17 @@ class Diggin_Scraper
      * 
      * @param (string | Zend_Http_Response) $resource
      * 		setting URL or Zend_Http_Response
+     * @param string (if $resource is not URL, please set URL for recognize)
      * @return array $this->results Scraping data.
      */
-    public function scrape($resource = null)
+    public function scrape($resource = null, $targetUrl = null)
     {        
         if (!$resource instanceof Zend_Http_Response) {
             $resource = $this->makeRequest($resource);
+        }
+        
+        if (isset($targetUrl)) {
+            $this->setUrl($targetUrl);
         }
         
         if (!is_null(self::$_strategyName)) {
@@ -286,33 +291,15 @@ class Diggin_Scraper
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach (self::$_processes as $process) {
             $values = self::$_strategy->getValue($context, $process);
-            
-            if ($process->type instanceof scraper) {
-                foreach ($process->type->processes as $processcount => $proc) {
-                    $innerValues[] = self::$_strategy->getRecursiveValue($values, $proc);
-                }
 
-                $valueCount = count($values);
-                
-                for($i=0; $i <$valueCount; $i++) {
-                    for($n =0; $n <= $processcount; $n ++) {
-                        $returns[$i][key($innerValues[$n][$i])] = array_shift($innerValues[$n][$i]);
-                    }
-                }
-            }
-                        
             if ($process->filters) {
                 require_once 'Diggin/Scraper/Filter.php';
                 $values = Diggin_Scraper_Filter::run($values, $process->filters);
             }
-
-            if ($process->type instanceof scraper) {
-                  $this->results[$process->name] = $returns;
-            } else {    
-                $this->results[$process->name] = $values;
-            }
+  
+            $this->results[$process->name] = $values;
         }
-        
+
         return $this->results;
     }
 
@@ -362,7 +349,11 @@ class scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                $this->processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
+                if(!is_numeric(key($nametype))) {            
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), array_shift($nametype));
+                } else {
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
+                }
             } elseif (is_object($nametype)) {
                 foreach ($nametype->processes as $process) {
                     $this->process($expression.$process->expression,
