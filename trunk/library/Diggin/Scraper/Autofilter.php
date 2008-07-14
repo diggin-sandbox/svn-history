@@ -57,7 +57,7 @@ class Diggin_Scraper_Autofilter extends FilterIterator
             $filter = new $filter();
             $filterValue = $filter->filter($value);
         }
-        
+
         if (self::$prefixFlag === true) {
             if ($filterValue != $value) {
                 return false;

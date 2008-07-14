@@ -155,7 +155,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         }
         
         //スクレイプ該当が1件だったときに、
-        if (count($strings) === 1) {
+        if ($process->arrayflag === false) {
             $strings = (string) array_shift($strings);
         }
 

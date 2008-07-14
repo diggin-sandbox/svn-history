@@ -236,28 +236,35 @@ class Diggin_Scraper
         foreach ($namestypes as $nametype) {
             if (is_string($nametype)) {
                 if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
+                if (!isset($types)) $name = $nametype;
+                if ((substr(trim($name), -2) == '[]')) {
+                    $name = substr(trim($name), 0, -2);
+                    $arrayflag = true;
+                } else {
+                    $arrayflag = false;
+                }
                 if (!isset($types)) {
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype));
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
                 } else {
                     $types = trim($types, " '\"");
                     if (strpos($types, ',') !== false) $types = explode(',', $types);
                     if (count($types) === 1) {
                         self::$_processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name), $types);
+                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag, $types);
                     } else {
                         foreach ($types as $count => $type) {
                             if ($count !== 0) $filters[] = trim($type, " []'\"");
                         }
                         self::$_processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name),
+                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag,
                                                    trim($types[0], " []'\""), $filters);
                     }
                 }
             } elseif (is_array($nametype)) {
                 if(!is_numeric(key($nametype))) {            
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), array_shift($nametype));
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), true, array_shift($nametype));
                 } else {
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
+                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
                 }
             }
         }
@@ -331,33 +338,36 @@ class scraper
         require_once 'Diggin/Scraper/Process.php';
         foreach ($namestypes as $nametype) {
             if(is_string($nametype)) {
-                $nameorandtype = explode('=>', $nametype);
-                if((count($nameorandtype)) === 1) {
-                    $this->processes[] = new Diggin_Scraper_Process($expression, trim($nameorandtype[0]));
+                if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
+                if (!isset($types)) $name = $nametype;
+                if ((substr(trim($name), -2) == '[]')) {
+                    $name = substr(trim($name), 0, -2);
+                    $arrayflag = true;
                 } else {
-                    $type = trim($nameorandtype[1], " '\"");
-                    $typef = explode(',', $type);
-                    if((count($typef)) === 1) {
+                    $arrayflag = false;
+                }
+                if (!isset($types)) {
+                    $this->processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
+                } else {
+                    $types = trim($types, " '\"");
+                    if (strpos($types, ',') !== false) $types = explode(',', $types);
+                    if (count($types) === 1) {
                         $this->processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($nameorandtype[0]), $type);
+                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag, $types);
                     } else {
+                        foreach ($types as $count => $type) {
+                            if ($count !== 0) $filters[] = trim($type, " []'\"");
+                        }
                         $this->processes[] = 
-                        new Diggin_Scraper_Process($expression, 
-                                                   trim($nameorandtype[0]),
-                                                   trim($typef[0], " []'\""),
-                                                   trim($typef[1], " []'\""));
+                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag,
+                                                   trim($types[0], " []'\""), $filters);
                     }
                 }
             } elseif (is_array($nametype)) {
                 if(!is_numeric(key($nametype))) {            
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, key($nametype), array_shift($nametype));
+                    $this->processes[] = new Diggin_Scraper_Process($expression, key($nametype), true, array_shift($nametype));
                 } else {
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2]);
-                }
-            } elseif (is_object($nametype)) {
-                foreach ($nametype->processes as $process) {
-                    $this->process($expression.$process->expression,
-                                   array($process->name, $process->type, $process->filters));
+                    $this->processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
                 }
             }
         }
