@@ -14,6 +14,15 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * @see Diggin_Scraper_Process
+ */       
+require_once 'Diggin/Scraper/Process.php';
+/**
+ * @see Diggin_Scraper_Context
+ */
+require_once 'Diggin/Scraper/Context.php';
+
 class Diggin_Scraper
 {
     /**
@@ -231,8 +240,7 @@ class Diggin_Scraper
     public function process($expression, $args)
     {
         $namestypes = array_slice(func_get_args(), 1);
-        
-        require_once 'Diggin/Scraper/Process.php';
+
         foreach ($namestypes as $nametype) {
             if (is_string($nametype)) {
                 if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
@@ -302,7 +310,6 @@ class Diggin_Scraper
             $this->callStrategy($resource, self::$_strategyName, self::$_adapter);
         }
 
-        require_once 'Diggin/Scraper/Context.php';
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach (self::$_processes as $process) {
             $values = self::$_strategy->getValues($context, $process);
