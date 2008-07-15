@@ -38,16 +38,6 @@ abstract class Diggin_Scraper_Strategy_Abstract {
         }
     }
     
-    /**
-     * 
-     */
-    public function getData()
-    {
-        //if !is_readble($this->getBody)...
-        
-        return $this->readData($this->getResponse());
-    }
-    
     public function scrapedData($process)
     {   
         return $this->scrape($this->getResponse(), $process);
@@ -60,5 +50,46 @@ abstract class Diggin_Scraper_Strategy_Abstract {
 
     protected abstract function scrape($response, $process);
     
-    protected abstract function getValue($context, $process);
+    protected abstract function getValue($values, $process);
+    
+    protected abstract static function extract($values, $process);
+
+    public function getValues($context, $process)
+    {
+        if (!isset($process->type)) {
+            return $context->scrape($process);
+        }
+        
+        if ($context instanceof Diggin_Scraper_Context) {
+            $values = $context->scrape($process);
+        } else {
+            $values = $this->extract($context, $process);
+        }
+                
+        if ($process->type instanceof scraper) {
+            foreach ($values as $count => $val) {
+                foreach ($process->type->processes as $proc) {
+                    $returns[$count][$proc->name] = $this->getValues($val, $proc);
+                }
+                
+                if (($process->arrayflag === false) && $count === 0) break;
+            }
+           return $returns;
+        }
+        
+        $values = $this->getValue($values, $process);
+        
+        if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
+            $values = array_shift($values);
+        } elseif ($process->arrayflag === false) {
+            $values = (string) array_shift($values);
+        }
+        
+        if ($process->filters) {
+            require_once 'Diggin/Scraper/Filter.php';
+            $values = Diggin_Scraper_Filter::run($values, $process->filters);
+        }
+        
+        return $values;
+    }
 }

@@ -15,7 +15,7 @@
  */
 
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
-
+require_once dirname(__FILE__).'/Selector/sfDomCssSelector.class.php';
 class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract 
 {    
     protected static $_adapter = null;
@@ -70,9 +70,13 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
     {
         $simplexml = $this->getAdapter()->readData($respose);
 
+        return self::extract($simplexml, $process);
+    }
+    
+    public static function extract($simplexml, $process)
+    {
         $dom = dom_import_simplexml($simplexml);
-
-        require_once dirname(__FILE__).'/Selector/sfDomCssSelector.class.php';
+        
         $selector = new sfDomCssSelector($dom);
         
         $results = array();       
@@ -82,6 +86,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         
         return $results;
     }
+    
 
     /**
      * get value with DSL
@@ -90,39 +95,8 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
      * @param Diggin_Scraper_Process
      * @return mixed
      */
-    public function getValue($context, $process)
-    {
-        
-        if (!isset($process->type)) {
-            return $context->scrape($process);
-        }
-        
-        if ($context instanceof Diggin_Scraper_Context) {
-            $values = $context->scrape($process);
-        } else {
-            $dom = dom_import_simplexml($context); 
-            $selector = new sfDomCssSelector($dom);
-            
-            $values = array();       
-            foreach ($selector->getElements($process->expression) as $result) {
-                $values[] = simplexml_import_dom($result); 
-            }
-        }
-
-        if ($process->type instanceof scraper) {
-            foreach ($values as $count => $val) {
-                foreach ($process->type->processes as $proc) {
-                    $returns[$count][$proc->name] = $this->getValue($val, $proc);
-                }
-            }
-            
-            if($process->arrayflag === false) {
-                $returns = array_shift($returns);
-            }
-            
-           return $returns;
-        }
-        
+    public function getValue($values, $process)
+    {        
         //type
         if (strtoupper(($process->type)) === 'RAW'){
             $strings = $values;
@@ -160,12 +134,6 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
         
-        if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
-            $strings = array_shift($strings);
-        } elseif ($process->arrayflag === false) {
-            $strings = (string) array_shift($strings);
-        }
-
         return $strings;
     }
 

@@ -305,13 +305,8 @@ class Diggin_Scraper
         require_once 'Diggin/Scraper/Context.php';
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach (self::$_processes as $process) {
-            $values = self::$_strategy->getValue($context, $process);
+            $values = self::$_strategy->getValues($context, $process);
 
-            if ($process->filters) {
-                require_once 'Diggin/Scraper/Filter.php';
-                $values = Diggin_Scraper_Filter::run($values, $process->filters);
-            }
-  
             $this->results[$process->name] = $values;
         }
 

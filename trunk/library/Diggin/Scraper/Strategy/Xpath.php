@@ -71,15 +71,20 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     public function scrape($respose, $process)
     {
         $simplexml = $this->getAdapter()->readData($respose);
- 
-        $results = array();       
-        foreach ($simplexml->xpath($process->expression) as $result) {
+        
+        return self::extract($simplexml, $process);
+    }
+    
+    public static function extract($values, $process)
+    {
+        $results = array();
+        foreach ($values->xpath($process->expression) as $result) {
             $results[] = $result; 
         }
         
         return $results;
     }
-    
+
     /**
      * get value with DSL
      * 
@@ -87,40 +92,12 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
      * @param Diggin_Scraper_Process
      * @return mixed
      */
-    public function getValue($context, $process)
+    public function getValue($values, $process)
     {
-        if (!isset($process->type)) {
-            return $context->scrape($process);
-        }
-        
-        if ($context instanceof Diggin_Scraper_Context) {
-            $values = $context->scrape($process);
-        } else {
-            
-            $values = array();
-            foreach ($context->xpath($process->expression) as $result) {
-                $values[] = $result; 
-            }
-        }
-                
-        if ($process->type instanceof scraper) {
-            foreach ($values as $count => $val) {
-                foreach ($process->type->processes as $proc) {
-                    $returns[$count][$proc->name] = $this->getValue($val, $proc);
-                }
-            }
-            
-            if($process->arrayflag === false) {
-                $returns = array_shift($returns);
-            }
-           return $returns;
-        }
-
         //type
         if (strtoupper(($process->type)) === 'RAW') {
             $strings = $values;
         } elseif (strtoupper(($process->type)) === 'TEXT') {
-            
             $strings = array();
             foreach ($values as $value) {
                 //@todo strict 
@@ -152,14 +129,9 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
         }
-
-        if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
-            $strings = array_shift($strings);
-        } elseif ($process->arrayflag === false) {
-            $strings = (string) array_shift($strings);
-        }
         
         return $strings;
     }
+
 }
 
