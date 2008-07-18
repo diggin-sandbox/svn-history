@@ -65,7 +65,6 @@ abstract class Diggin_Scraper_Strategy_Abstract {
         } else {
             $values = $this->extract($context, $process);
         }
-                
         if ($process->type instanceof scraper) {
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {
@@ -76,13 +75,12 @@ abstract class Diggin_Scraper_Strategy_Abstract {
             }
            return $returns;
         }
-        
         $values = $this->getValue($values, $process);
         
         if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
-            $values = array_shift($values);
+            $values = current($values);
         } elseif ($process->arrayflag === false) {
-            $values = (string) array_shift($values);
+            $values = (string) current($values);
         }
         
         if ($process->filters) {
