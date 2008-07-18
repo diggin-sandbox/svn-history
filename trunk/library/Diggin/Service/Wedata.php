@@ -67,11 +67,13 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     {
         if (self::$_decodetype === false) {
             //nothig to do
-        } elseif (self::$_decodetype === null) {
-            require_once 'Zend/Json.php';
-            $value = Zend_Json::decode($value, Zend_Json::TYPE_ARRAY);
         } else {
-            $value = Zend_Json::decode($value, self::$_decodetype);
+            require_once 'Zend/Json.php';
+            if (self::$_decodetype === null) {
+                $value = Zend_Json::decode($value, Zend_Json::TYPE_ARRAY);
+            } else {
+                $value = Zend_Json::decode($value, self::$_decodetype);
+            }    
         }
         
         return $value;
