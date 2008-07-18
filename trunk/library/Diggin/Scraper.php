@@ -233,14 +233,23 @@ class Diggin_Scraper
     /**
      * setting process like DSL of Web::Scraper
      * 
-     * @param string (xpath etc)
      * @params mixed args1, args2, args3,,,
      * @return Diggin_Scraper Provides a fluent interface
      */
-    public function process($expression, $args)
+    public function process($args)
     {
-        $namestypes = array_slice(func_get_args(), 1);
-
+        $args = func_get_args();
+        
+        if (count($args) === 1) {
+            require_once 'Diggin/Json.php';
+            foreach ($args as $arg) {
+                self::$_processes[] = Diggin_Json::decode($arg, Diggin_Json::TYPE_SCRAPEROBJECT);
+            }
+            return $this;
+        }
+        
+        $expression = array_shift($args);
+        $namestypes = $args;
         foreach ($namestypes as $nametype) {
             if (is_string($nametype)) {
                 if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
@@ -271,14 +280,15 @@ class Diggin_Scraper
                 }
             } elseif (is_array($nametype)) {
                 if(!is_numeric(key($nametype))) {
-                    if ((substr(key($nametype), -2) == '[]')) {
-                        $name = substr(key($nametype), 0, -2);
-                        $arrayflag = true;
-                    } else {
-                        $name = key($nametype);
-                        $arrayflag = false;
+                    foreach ($nametype as $name => $nm) {
+                        if ((substr($name, -2) == '[]')) {
+                            $name = substr($name, 0, -2);
+                            $arrayflag = true;
+                        } else {
+                            $arrayflag = false;
+                        }
+                        self::$_processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, $nm);
                     }
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, array_shift($nametype));
                 } else {
                     self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
                 }
@@ -339,11 +349,15 @@ class scraper
 
     public $processes;
 
-    public function process($expression, $namestypes, $filterIterator = null)
+    public function process($args)
     {
-        $getargs = func_get_args();
-        $lastarg = array_slice($getargs, -1);
-        $namestypes = array_slice($getargs, 1);
+        $args = func_get_args();
+        
+        if(count($args) === 1) {
+            $this->processes = $args;            
+        }
+        $expression = array_shift($args);
+        $namestypes = $args;
         
         require_once 'Diggin/Scraper/Process.php';
         foreach ($namestypes as $nametype) {
@@ -382,7 +396,7 @@ class scraper
                     } else {
                         $name = key($nametype);
                         $arrayflag = false;
-                    }                                
+                    }
                     $this->processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, array_shift($nametype));
                 } else {
                     $this->processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
