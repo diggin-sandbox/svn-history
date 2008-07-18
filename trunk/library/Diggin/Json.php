@@ -44,7 +44,14 @@ class Diggin_Json
                     $scraper = new scraper();
                     foreach (current($decode) as $key => $val) {
                         foreach ($val as $k => $v) {
-                            $scraper->processes[] = new Diggin_Scraper_Process($key, $k, false, $v);
+                            if ((substr($k, -2) == '[]')) {
+                                $k = substr($k, 0, -2);
+                                $arrayflag = true;
+                            } else {
+                                $arrayflag = false;
+                            }
+                            
+                            $scraper->processes[] = new Diggin_Scraper_Process($key, $k, $arrayflag, $v);
                         }
                     }
                     
@@ -81,6 +88,7 @@ class Diggin_Json
         $pattern = array('/{(\w+)/i', '/,(\w+)/i');
         $replacement = array('{"${1}"', ',"${1}"');
         $json = preg_replace($pattern, $replacement, $json);
+        $json = str_replace('"[]', '[]"', $json);
         
         return $json;
     }
