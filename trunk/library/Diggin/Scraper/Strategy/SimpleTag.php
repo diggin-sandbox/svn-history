@@ -41,21 +41,49 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
     {
         $adptBody = $this->getAdapter()->readData($respose);
         
-        SimpleTag::setof($markup, $adptBody);
-        $result = $markup->getIn($process->expression);
+        return self::extract($adptBody, $process);
+    }
+    
+    public static function extract($values, $process)
+    {
         
-        return $result;
+        if(!is_string($values)) $values = $values->plain;
+        
+        SimpleTag::setof($markup, $values);
+        $results = $markup->getIn($process->expression);
+        return $results;
     }
     
     /**
      * get value with DSL
      * 
-     * @param Diggin_Scraper_Context
+     * @param array
      * @param Diggin_Scraper_Process
      * @return array
      */
-    public function getValue($context, $process)
+    public function getValue($values, $process)
     {
-        return $context->scrape($process);
+        if (strtoupper(($process->type)) === 'RAW') {
+            $strings = $values;
+        } elseif (strtoupper(($process->type)) === 'TEXT') {
+            $strings = array();
+            foreach($values as $value) {
+                $strings[] = $value->value;
+            }
+        } elseif (strpos($process->type, '@') === 0) {
+            $strings = array();
+            foreach ($values as $value) {
+                foreach($value->parameterList as $parameter) {
+                    if($parameter->id == substr($process->type, 1)) {
+                        $strings[] = $parameter->value;
+                    }
+                }
+            }
+        } else {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
+        }
+        
+        return $strings;
     }
 }
