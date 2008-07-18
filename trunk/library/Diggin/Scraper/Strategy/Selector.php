@@ -131,7 +131,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            throw new Diggin_Scraper_Strategy_Exception("can not understand type :".$process->type);
+            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
         }
         
         return $strings;
