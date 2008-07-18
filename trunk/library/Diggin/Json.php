@@ -59,7 +59,7 @@ class Diggin_Json
                         $name = substr(trim(key($decode)), 0, -2);
                         $arrayflag = true;
                     } else {
-                        $name = trim($decode);
+                        $name = trim(key($decode));
                         $arrayflag = false;
                     }
                     

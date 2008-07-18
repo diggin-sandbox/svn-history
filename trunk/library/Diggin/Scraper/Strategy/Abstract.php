@@ -71,8 +71,11 @@ abstract class Diggin_Scraper_Strategy_Abstract {
                     $returns[$count][$proc->name] = $this->getValues($val, $proc);
                 }
                 
-                if (($process->arrayflag === false) && $count === 0) break;
+                if (($process->arrayflag === false) && $count === 0) {
+                    $returns = current($returns); break;
+                }
             }
+            
            return $returns;
         }
         $values = $this->getValue($values, $process);
