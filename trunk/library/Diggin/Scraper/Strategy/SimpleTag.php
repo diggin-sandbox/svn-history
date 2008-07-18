@@ -30,8 +30,8 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
             /**
              * @see Diggin_Scraper_Adapter
              */
-            require_once 'Diggin/Scraper/Adapter/Raw.php';
-            self::$_adapter = new Diggin_Scraper_Adapter_Raw();
+            require_once 'Diggin/Scraper/Adapter/Normal.php';
+            self::$_adapter = new Diggin_Scraper_Adapter_Normal();
         }
 
         return self::$_adapter;
