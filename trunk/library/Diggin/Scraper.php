@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *
@@ -64,7 +64,7 @@ class Diggin_Scraper
      * 
      * @return string $this->_url
      */
-    private function getUrl()
+    private function _getUrl()
     {
         return $this->_url;
     }
@@ -150,7 +150,7 @@ class Diggin_Scraper
      * @param string $strategyName
      * @param Object Diggin_Scraper_Adapter_Interface (optional)
      */
-    private function callStrategy($response, $strategyName, $adapter = null)
+    private function _callStrategy($response, $strategyName, $adapter = null)
     {
         require_once 'Zend/Loader.php';
 
@@ -206,7 +206,7 @@ class Diggin_Scraper
      * @param string $url
      * @return Zend_Http_Response $response
      */
-    private function makeRequest($url = null)
+    private function _makeRequest($url = null)
     {
         $client = self::getHttpClient();
         
@@ -214,7 +214,7 @@ class Diggin_Scraper
             $this->setUrl($url);
         } 
         if ($this->_url) {
-            $client->setUri($this->getUrl());
+            $client->setUri($this->_getUrl());
         }
         
         $response = $client->request('GET');
@@ -309,7 +309,7 @@ class Diggin_Scraper
     public function scrape($resource = null, $targetUrl = null)
     {        
         if (!$resource instanceof Zend_Http_Response) {
-            $resource = $this->makeRequest($resource);
+            $resource = $this->_makeRequest($resource);
         }
         
         if (isset($targetUrl)) {
@@ -317,7 +317,7 @@ class Diggin_Scraper
         }
         
         if (!is_null(self::$_strategyName)) {
-            $this->callStrategy($resource, self::$_strategyName, self::$_adapter);
+            $this->_callStrategy($resource, self::$_strategyName, self::$_adapter);
         }
 
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));

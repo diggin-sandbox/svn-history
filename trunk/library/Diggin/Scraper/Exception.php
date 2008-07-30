@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *
@@ -13,5 +13,11 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_Scraper_Exception extends Exception
+
+/**
+ * Diggin_Exectpion
+ */
+require_once 'Diggin/Exception.php';
+
+class Diggin_Scraper_Exception extends Diggin_Exception
 {}

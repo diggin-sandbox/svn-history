@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *
@@ -9,7 +9,7 @@
  * http://framework.zend.com/license/new-bsd
  * 
  * @category   Diggin
- * @package    Diggin_Scraper
+ * @package    Diggin_Json
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */

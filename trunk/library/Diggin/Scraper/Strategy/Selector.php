@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *

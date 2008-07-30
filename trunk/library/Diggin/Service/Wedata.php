@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *
@@ -63,7 +63,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         self::$_decodetype = $decodetype;
     }
     
-    protected static function decode($value)
+    protected static function _decode($value)
     {
         if (self::$_decodetype === false) {
             //nothig to do
@@ -208,7 +208,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         
         $responseBody = self::makeRequest(self::PATH_GET_DATABASES, Zend_Http_Client::GET, self::$_params);
         
-        return self::decode($responseBody);
+        return self::_decode($responseBody);
     }
 
     public static function getDatabase($databaseName = null, $page = null)
@@ -219,7 +219,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         $path = sprintf(self::PATH_GET_DATABASE, rawurlencode(self::$_params['database']['name']));
         $responseBody = self::makeRequest($path, Zend_Http_Client::GET, self::$_params);
         
-        return self::decode($responseBody);
+        return self::_decode($responseBody);
     }
 
     public static function createDatabase(array $params = null)
@@ -293,7 +293,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         $path = sprintf(self::PATH_GET_ITEMS, rawurlencode(self::$_params['database']['name']));
         $responseBody = self::makeRequest($path, Zend_Http_Client::GET, $params);
         
-        return self::decode($responseBody);
+        return self::_decode($responseBody);
     }
 
     /**
@@ -320,7 +320,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         $path = sprintf(self::PATH_GET_ITEM, self::$_itemId);
         $responseBody = self::makeRequest($path, Zend_Http_Client::GET, $params);
         
-        return self::decode($responseBody);
+        return self::_decode($responseBody);
     }
     
     public static function insertItem($databaseName = null, array $params = null)

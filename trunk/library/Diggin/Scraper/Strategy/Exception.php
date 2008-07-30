@@ -1,6 +1,6 @@
 <?php
 /**
- * Diggin - Library Of PHP
+ * Diggin - Simplicity PHP Library
  * 
  * LICENSE
  *
@@ -15,8 +15,9 @@
  */
 
 /**
- * @category   Diggin
- * @package    Diggin_Scraper
+ * Diggin_Exectpion
  */
-class Diggin_Scraper_Strategy_Exception extends Exception
+require_once 'Diggin/Exception.php';
+
+class Diggin_Scraper_Strategy_Exception extends Diggin_Exception
 {}
