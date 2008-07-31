@@ -21,8 +21,20 @@ class Diggin_Scraper_Process
     public $type;
     public $filters;
 
+    public function __toString()
+    {
+        return '"'.$this->expression.' , '.
+               $this->name.' => '.
+               $this->type.'"';
+    }
+    
     public function __construct($expression, $name, $arrayflag = false, $type = null, $filters = false)
     {
+        if (strtolower(($name)) === 'results') {
+            require_once 'Diggin/Scraper/Exception.php';
+            throw new Diggin_Scraper_Exception('key "results" is not allowed');
+        }
+        
         $this->expression = $expression;
         $this->name = $name;
         $this->arrayflag = $arrayflag;

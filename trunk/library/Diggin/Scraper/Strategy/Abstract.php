@@ -63,8 +63,10 @@ abstract class Diggin_Scraper_Strategy_Abstract {
         if ($context instanceof Diggin_Scraper_Context) {
             $values = $context->scrape($process);
         } else {
+            $values = null;
             $values = $this->extract($context, $process);
         }
+        
         if ($process->type instanceof scraper) {
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {

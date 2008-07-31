@@ -77,10 +77,25 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
     
     public static function extract($values, $process)
     {
-        $results = array();
-        foreach ($values->xpath($process->expression) as $result) {
-            $results[] = $result; 
-        }
+        //↓このハンドリングはxpathの記述自体が間違ってたとき（いらないかな？）
+        set_error_handler(
+            create_function('$errno, $errstr',
+            'if($errno) require_once "Diggin/Scraper/Strategy/Xpath/Exception.php"; 
+            	throw new Diggin_Scraper_Strategy_Xpath_Exception($errstr, $errno);'
+            )
+        );
+        $results = (array) $values->xpath($process->expression);
+        restore_error_handler();
+
+        //        if (count($results) === 0) {
+        //        //@todo notice error
+        //            require_once 'Diggin/Scraper/Strategy/Exception.php';
+        //            throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
+        //        }
+//        if ((isset($results[0])) && ($results[0] === false)) {//これはxpath記述自体が間違ってたとき
+//            require_once 'Diggin/Scraper/Strategy/Exception.php';
+//            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
+//        }
         
         return $results;
     }
@@ -100,7 +115,6 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                //@todo strict 
                 $value = strip_tags((string) str_replace('&amp;', '&', $value->asXML()));
                 $value = str_replace(array(chr(10), chr(13)), '', $value);
                 array_push($strings, $value);
@@ -113,10 +127,10 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
                 
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
+            require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
             foreach ($values as $value) {
-                if (($process->type == '@href' OR $process->type == '@src')
-                    && method_exists($this->getAdapter(), 'getAbsoluteUrl')) {
-                    array_push($strings, $this->getAdapter()->getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
+                if (($process->type == '@href' OR $process->type == '@src')) {
+                    array_push($strings, Diggin_Scraper_Adapter_Htmlscraping::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
 
                     //require_once 'Diggin/Uri/Http.php';
                     //array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
