@@ -52,7 +52,7 @@ abstract class Diggin_Scraper_Strategy_Abstract {
     
     protected abstract function getValue($values, $process);
     
-    protected abstract static function extract($values, $process);
+    protected abstract function extract($values, $process);
 
     public function getValues($context, $process)
     {
@@ -63,14 +63,20 @@ abstract class Diggin_Scraper_Strategy_Abstract {
         if ($context instanceof Diggin_Scraper_Context) {
             $values = $context->scrape($process);
         } else {
-            $values = null;
-            $values = $this->extract($context, $process);
+            try {
+                $values = $this->extract($context, $process);
+            } catch (Diggin_Scraper_Strategy_Exception $e) {
+                echo "error";echo PHP_EOL; return false;
+            }
         }
         
         if ($process->type instanceof scraper) {
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {
-                    $returns[$count][$proc->name] = $this->getValues($val, $proc);
+                    //@todo 値がとれなかったとき、格納しないか空かどうかはconfigでやるべきかな
+                    if (false !== $getval =$this->getValues($val, $proc)) {
+                        $returns[$count][$proc->name] = $getval;
+                    }
                 }
                 
                 if (($process->arrayflag === false) && $count === 0) {

@@ -349,6 +349,11 @@ class scraper
 
     public $processes;
 
+    public function __toString()
+    {
+        return 'Object scraper';
+    }
+    
     public function process($args)
     {
         $args = func_get_args();

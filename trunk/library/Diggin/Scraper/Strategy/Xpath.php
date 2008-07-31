@@ -75,27 +75,22 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         return self::extract($simplexml, $process);
     }
     
-    public static function extract($values, $process)
+    public function extract($values, $process)
     {
         //↓このハンドリングはxpathの記述自体が間違ってたとき（いらないかな？）
         set_error_handler(
             create_function('$errno, $errstr',
-            'if($errno) require_once "Diggin/Scraper/Strategy/Xpath/Exception.php"; 
-            	throw new Diggin_Scraper_Strategy_Xpath_Exception($errstr, $errno);'
+            'if($errno) require_once "Diggin/Scraper/Strategy/Exception.php"; 
+            	throw new Diggin_Scraper_Strategy_Exception($errstr, $errno);'
             )
         );
         $results = (array) $values->xpath($process->expression);
         restore_error_handler();
 
-        //        if (count($results) === 0) {
-        //        //@todo notice error
-        //            require_once 'Diggin/Scraper/Strategy/Exception.php';
-        //            throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
-        //        }
-//        if ((isset($results[0])) && ($results[0] === false)) {//これはxpath記述自体が間違ってたとき
-//            require_once 'Diggin/Scraper/Strategy/Exception.php';
-//            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
-//        }
+        if (count($results) === 0) {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
+        }
         
         return $results;
     }

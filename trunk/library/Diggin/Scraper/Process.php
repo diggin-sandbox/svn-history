@@ -23,9 +23,8 @@ class Diggin_Scraper_Process
 
     public function __toString()
     {
-        return '"'.$this->expression.' , '.
-               $this->name.' => '.
-               $this->type.'"';
+        return '\''.$this->expression.'\' , '.
+               $this->name.' => '. $this->type. '"';
     }
     
     public function __construct($expression, $name, $arrayflag = false, $type = null, $filters = false)
