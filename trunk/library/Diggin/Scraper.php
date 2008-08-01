@@ -306,14 +306,14 @@ class Diggin_Scraper
      * @param string (if $resource is not URL, please set URL for recognize)
      * @return array $this->results Scraping data.
      */
-    public function scrape($resource = null, $targetUrl = null)
+    public function scrape($resource = null, $baseUrl = null)
     {        
         if (!$resource instanceof Zend_Http_Response) {
             $resource = $this->_makeRequest($resource);
         }
         
-        if (isset($targetUrl)) {
-            $this->setUrl($targetUrl);
+        if (isset($baseUrl)) {
+            $this->setUrl($baseUrl);
         }
         
         if (!is_null(self::$_strategyName)) {

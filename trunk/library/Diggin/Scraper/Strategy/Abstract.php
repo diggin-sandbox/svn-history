@@ -74,7 +74,7 @@ abstract class Diggin_Scraper_Strategy_Abstract {
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {
                     //@todo 値がとれなかったとき、格納しないか空かどうかはconfigでやるべきかな
-                    if (false !== $getval =$this->getValues($val, $proc)) {
+                    if (false !== $getval = $this->getValues($val, $proc)) {
                         $returns[$count][$proc->name] = $getval;
                     }
                 }
@@ -86,6 +86,7 @@ abstract class Diggin_Scraper_Strategy_Abstract {
             
            return $returns;
         }
+        
         $values = $this->getValue($values, $process);
         
         if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
