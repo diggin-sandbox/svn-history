@@ -1,15 +1,27 @@
 <?php
 /**
- * Diggin_Service_EventCast
+ * Diggin - Simplicity PHP Library
  * 
- * Author: Mika Sasezaki
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
  * 
- * あとでじっくりなおす。
+ * @category   Diggin
+ * @package    Diggin_Service
+ * @subpackage EventCast
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+/**
+ * @see Zend_Service_Abstract
+ */
+require_once 'Zend/Service/Abstract.php';
 
-class Diggin_Service_EventCast
+class Diggin_Service_Eventcast extends Zend_Service_Abstract
 {
-    const EVENTCAST_BASE_URL = 'http://clip.eventcast.jp/api/v1/Search?';
+    const API_URL = 'http://clip.eventcast.jp/api/v1/Search?';
     
     //今日：0、昨日から:-1
     const EVENTCAST_START_DATE_LINE = 0;
@@ -33,17 +45,21 @@ class Diggin_Service_EventCast
     protected $_start = null;
     protected $_results = null;
     protected $_trim = null;
+
+    /**
+     * Zend_Http_Client Object
+     *
+     * @var Zend_Http_Client
+     */
+    protected static $_client;
     
     /**
-     * コンストラクタ
+     * Constructs a new Eventcast Service Client
      * 
-     * @param Array
+     * @param array | string $request
      */
-    public function __construct($request) {
-        if(!is_array($request)){
-            $request = array($request);
-        }
-        
+    public function __construct(array $request)
+    {        
         $this->_keyword = trim($request['keyword']);
         $this->_username = trim($request['username']);
         $this->_tag = trim($request['tag']);
@@ -55,7 +71,7 @@ class Diggin_Service_EventCast
         $this->_results = trim($request['results']);
         $this->_trim = trim($request['trim']);
     }
-    
+   
     /**
      * EventCastへのリクエスト用URL生成
      * 
@@ -122,34 +138,51 @@ class Diggin_Service_EventCast
         
         $query = substr_replace($query, '', 0, 1);
         
-        return self::EVENTCAST_BASE_URL.$query;
+        return $query."&Format=php";
     }
-    
-    /**
-     * PHPオブジェクト取得
-     * 
-     * @pararm String URL
-     * @return Array
+
+
+	/**
+     * Handles all GET requests to a web service
+     *
+     * @param  array $params  Parameter
+     * @return mixed  decoded response from web service
      */
-    public function getEventCastPhpArray () {
-        $url = $this->getRequestUrl()."&Format=php";
-        return unserialize(file_get_contents($url));
+    public function makeRequest()
+    {
+        self::$_client = self::getHttpClient();
+        
+        require_once 'Zend/Uri/Http.php';
+        $uri = Zend_Uri_Http::factory(self::API_URL);
+        
+        $uri->setQuery($this->getRequestUrl());
+        
+        return $uri->getUri();
     }
-    
-    /**
-     * キーワード、タグにセットした地名とlocation.addressが
-     * 一致しているものを配列として返す
-     * …にしたい
-     * 
-     * @return Array
-     */
-    public function getItems() {
-        $ecArray = $this->getEventCastPhpArray(); 
-//        foreach($items["Items"] as $item){
-//            if (isset($this->_keyword) || isset($this->_tag)) {
-//            $item["Location"]["Address"]; 
-//        }
-        return $ecArray["Items"];
-    }
-    
+//    /**
+//     * PHPオブジェクト取得
+//     * 
+//     * @pararm String URL
+//     * @return Array
+//     */
+//    public function getEventCastPhpArray () {
+//        $url = $this->getRequestUrl()."&Format=php";
+//        return unserialize(file_get_contents($url));
+//    }
+//    
+//    /**
+//     * キーワード、タグにセットした地名とlocation.addressが
+//     * 一致しているものを配列として返す
+//     * …にしたい
+//     * 
+//     * @return Array
+//     */
+//    public function getItems() {
+//        $ecArray = $this->getEventCastPhpArray(); 
+////        foreach($items["Items"] as $item){
+////            if (isset($this->_keyword) || isset($this->_tag)) {
+////            $item["Location"]["Address"]; 
+////        }
+//        return $ecArray["Items"];
+//    }
 }
