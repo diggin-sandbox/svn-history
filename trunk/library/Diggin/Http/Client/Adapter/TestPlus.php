@@ -1,26 +1,5 @@
 <?php
 /**
- * つくりかけ
- * 
- * 
-== how to use == 
-require_once 'Zend/Http/Client.php';
-require_once 'Diggin/Http/Client/Adapter/TestPlus.php';
-
-$testplus = new Diggin_Http_Client_Adapter_TestPlus();
-$testplus->setResponseSize(500);
-$testplus->setStatusRandom();
-
-$client = new Zend_Http_Client('http://yahoo.com/', array('adapter' => $testplus));
-
-$client->request();
-var_dump(strlen($client->getLastResponse()->asString())); //int(500)
-var_dump($client->getLastResponse()->asString());    // random status will return
-
-
- */
-
-/**
  * This class is remodeling of Zend_Http_Client_Adapter_Test
  * 
  * Zend Framework : 
@@ -34,7 +13,6 @@ var_dump($client->getLastResponse()->asString());    // random status will retur
  * LICENSE
  *
  * This source file is subject to the new BSD license.
- * It is also available through the world-wide-web at this URL:
  * http://framework.zend.com/license/new-bsd
  * 
  * @category   Diggin
@@ -89,17 +67,36 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
      * @var unknown_type
      */
     protected $_statusRandom;
+    
+	/**     *
+     * @var unknown_type
+     */
+    protected $_randomResponseBodyInterval;
 
+    
+    protected $_testResponseBody = array();
+    
     /**
      * Adapter constructor
      *
-     * @param string responseHereDoc
-     * LFのみの改行じゃないとサイズがずれる
+     * @param string responseBody (optional)
+     * @param string responseHeader (optional)
      */
-    public function __construct($resposeHereDoc = null)
+    public function __construct($resposeBody = null, $responseHeader = null)
     {
-        if (is_null($resposeHereDoc)) {
-            $resposeHereDoc = <<<RESPONSE
+        if (is_null($resposeBody)) {
+            $resposeBody = <<<RESPONSEBODY
+<html lang="ja">
+<head>
+<body>
+this is testplus<br />
+</body>
+</html>
+RESPONSEBODY;
+        }
+        
+        if (is_null($responseHeader)) {
+           $responseHeader = <<<RESPONSEHEADER
 HTTP/1.1 200 OK
 Date: Sat, 02 Aug 2008 15:17:11 GMT
 Server: Apache/2.2.6 (Win32) mod_ssl/2.2.6 OpenSSL/0.9.8e PHP/5.2.5
@@ -108,16 +105,10 @@ Accept-ranges: bytes
 Content-length: 1000
 Connection: close
 Content-type: text/html
-
-<html lang="ja">
-<head>
-<body>
-</body>
-</html>
-RESPONSE;
+RESPONSEHEADER;
         }
         
-        $this->setResponse($resposeHereDoc);
+        $this->setResponse($responseHeader."\r\n\r\n".$resposeBody);
     }
 
     /**
@@ -194,12 +185,17 @@ RESPONSE;
         $response_str = $this->responses[$this->responseIndex];
         $this->responseIndex++;
         
-        //statusをconfigで適度な頻度になるようにする。
         if ($this->_statusRandom)
         {
-            $responseCode = Zend_Http_Response::responseCodeAsText();
             
-            $keys = array_keys($responseCode);
+            
+            $keys = array();
+            $start_index = 0;
+            foreach ($this->_statusRandom as $code => $num) {
+                $keys = array_merge($keys, array_fill($start_index, $num, $code));
+                $start_index = $start_index + $num;
+            }            
+            
             $randkey = mt_rand(0, count($keys)-1);
             $code = $keys[$randkey];
             
@@ -210,11 +206,21 @@ RESPONSE;
             $response_str = $response->asString();            
         }
         
+        if ($this->_randomResponseBodyInterval)
+        {
+            if(time() % 2 == 1) {
+                $code = Zend_Http_Response::extractCode($response_str);
+                $headers = Zend_Http_Response::extractHeaders($response_str);
+                $response = new Zend_Http_Response($code, $headers, $this->_testResponseBody[1]);
+                $response_str = $response->asString();
+            }
+        }
+        
         if ($this->_resposesize)
         {
             $response_str = str_pad($response_str, $this->_resposesize);
         }
-        
+             
         return $response_str;
     }
 
@@ -267,7 +273,7 @@ RESPONSE;
     }
     
     /**
-     * Enter description here...
+     * Sets fake response size(by strlen oops..) 
      *
      * @param int $size
      */
@@ -277,19 +283,53 @@ RESPONSE;
     }
     
     /**
-     * @param mixed $config
+     * statusがkeyで、頻度をvalueにセットした配列を渡す
+     * 
+     * @param mixed 
      */
-    public function setStatusRandom($config = true)
+    public function setStatusRandom(array $config = 
+                                        array(200 => 10, 404 => 1, 500 =>1))
     {
-        //if (is_array($config))
+        
+        //$responseCode = Zend_Http_Response::responseCodeAsText();
+        //@todoステータスコードにないものをキーに設定したときexception
+        
         $this->_statusRandom = $config;
     }
-    
-    
+  
     //@todo
-    public function connectionTime($time, $randomFlg = false)
+    public function setConnectionTime($time, $randomFlg = false)
     {
+                
+    }
+    
+    public function setResponseBodyRandom($timeInterval = 5, $addResponseBody = null)
+    {
+        $this->_randomResponseBodyInterval = $timeInterval;
         
-        
+
+        //@todo array_shift(func_get_args)        
+        if (is_null($addResponseBody)) {
+        $addResponseBody = <<<RESPONSEBODY
+<html lang="ja">
+<head>
+<body>
+This is testplus <br />
+222222222222222222
+</body>
+</html>
+RESPONSEBODY;
+//$_testResponseBody[2] = <<<RESPONSEBODY
+//<html lang="ja">
+//<head>
+//<body>
+//this is testplus <br />
+//test!test!
+//</body>
+//</html>
+//RESPONSEBODY;
+        }
+
+      $this->_testResponseBody[1] = $addResponseBody;
     }
 }
