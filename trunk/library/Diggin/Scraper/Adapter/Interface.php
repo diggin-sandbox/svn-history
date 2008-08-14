@@ -13,6 +13,7 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+
 interface Diggin_Scraper_Adapter_Interface
 {
     /**

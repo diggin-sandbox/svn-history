@@ -27,7 +27,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
      * construct
      * 
      * @param Zend_Http_Response
-     * @param  
+     * @param Diggin_Scraper_Adapter_Interface
      */
     public function __construct($response, $adapter = null)
     {
@@ -55,6 +55,15 @@ abstract class Diggin_Scraper_Strategy_Abstract
     
     protected abstract function extract($values, $process);
 
+    /**
+     * get values (Recursive)
+     *
+     * @param mixed $context 
+     * 			[first:Diggin_Scraper_Context
+     * 			 second:array]
+     * @param Diggin_Scraper_Process $process
+     * @return mixed $values
+     */
     public function getValues($context, $process)
     {
         if (!isset($process->type)) {
@@ -67,7 +76,8 @@ abstract class Diggin_Scraper_Strategy_Abstract
             try {
                 $values = $this->extract($context, $process);
             } catch (Diggin_Scraper_Strategy_Exception $e) {
-                echo "error";echo PHP_EOL; return false;
+                //@todo debug::dump('ERROR') vs E_USER_NOTICE vs $_error[]
+                return false;
             }
         }
         
