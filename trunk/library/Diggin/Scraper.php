@@ -149,6 +149,7 @@ class Diggin_Scraper
      * @param Zend_Http_Response $response
      * @param string $strategyName
      * @param Object Diggin_Scraper_Adapter_Interface (optional)
+     * @throws Diggin_Scraper_Exception
      */
     private function _callStrategy($response, $strategyName, $adapter = null)
     {
@@ -205,6 +206,7 @@ class Diggin_Scraper
      * 
      * @param string $url
      * @return Zend_Http_Response $response
+     * @throws Diggin_Scraper_Exception
      */
     private function _makeRequest($url = null)
     {
