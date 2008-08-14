@@ -14,7 +14,8 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-abstract class Diggin_Scraper_Strategy_Abstract {
+abstract class Diggin_Scraper_Strategy_Abstract
+{
     private static $_response;
     protected static $_adapter;
     
