@@ -73,7 +73,7 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
         return self::extract($simplexml, $process);
     }
     
-    public static function extract($simplexml, $process)
+    public function extract($simplexml, $process)
     {
         $dom = dom_import_simplexml($simplexml);
         
