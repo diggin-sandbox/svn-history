@@ -33,6 +33,7 @@ class Diggin_Http_CookieJar_Loader_Firefox3
      * 		  (falseの場合は全件fetch)
      * @param string $use_topppp_domain //@todo
      * @return Zend_Http_CookieJar
+     * @throws Diggin_Http_CookieJar_Loader_Exception
      */
     public static function load($path, $ref_uri = true, $use_topppp_domain = false)
     {
@@ -59,14 +60,23 @@ class Diggin_Http_CookieJar_Loader_Firefox3
         }
         
         require_once 'Zend/Db.php';
-        $db = Zend_Db::factory('Pdo_Sqlite', array('dbname' => $path) );
-        $db->setFetchMode(Zend_Db::FETCH_OBJ);
-        $select = $db->select()->from(self::TABLENAME);
-        if ($ref_uri !== false) {
-            $select = $select->where('host = ?', $host)->orWhere('host = ?', '.'.$host);
+        try {
+            $db = Zend_Db::factory('Pdo_Sqlite', array('dbname' => $path) );
+            $db->setFetchMode(Zend_Db::FETCH_OBJ);
+            $select = $db->select()->from(self::TABLENAME);
+            if ($ref_uri !== false) {
+                $select = $select->where('host = ?', $host)->orWhere('host = ?', '.'.$host);
+            
+                if (is_string($use_topppp_domain)) {
+                    $select = $select->orWhere('host = ?', $use_topppp_domain);
+                }
+            }
+    
+            $fetch = $db->fetchAll($select);
+        } catch (Zend_Db_Exception $e) {
+            require_once 'Diggin/Http/CookieJar/Loader/Exception.php';
+            throw new Diggin_Http_CookieJar_Loader_Exception($e);
         }
-
-        $fetch = $db->fetchAll($select);
 
         if (count($fetch) === 0) {
             require_once 'Diggin/Http/CookieJar/Loader/Exception.php';
