@@ -84,6 +84,10 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
             $results[] = simplexml_import_dom($result); 
         }
         
+        if (count($results) === 0) {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
+        }
         return $results;
     }
     
