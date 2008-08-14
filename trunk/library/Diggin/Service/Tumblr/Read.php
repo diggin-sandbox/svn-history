@@ -1,14 +1,25 @@
 <?php
+/**
+ * Diggin - Simplicity PHP Library
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_Service
+ * @subpackage Tumblr
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 
 /**
  * @see Zend_Service_Abstract
  */
 require_once 'Zend/Service/Abstract.php';
 
-/**
- * @see Zend_Service_Exception
- */
-require_once 'Zend/Service/Exception.php';
 
 /**
  * @category   Diggin
@@ -17,7 +28,7 @@ require_once 'Zend/Service/Exception.php';
  * @author     sasezaki
  */
 
-class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
+class Diggin_Service_Tumblr_Read extends Diggin_Service_Abstract
 {
     
     const API_LOCATION = '.tumblr.com/api/read';
@@ -214,7 +225,7 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
              /**
               * @see Diggin_Service_Tumblr_Exception
               */
-             require_once 'Zend/Service/Exception.php';
+            require_once 'Diggin/Service/Tumblr/Exception.php';
              throw new Diggin_Service_Tumblr_Exception("Http client reported an error: '{$response->getMessage()}'");
         }
 
