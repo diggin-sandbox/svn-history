@@ -15,9 +15,9 @@
  */
 
 /**
- * Diggin_Exectpion
+ * Diggin_Scraper_Exception
  */
-require_once 'Diggin/Exception.php';
+require_once 'Diggin/Scraper/Exception.php';
 
-class Diggin_Scraper_Strategy_Exception extends Diggin_Exception
+class Diggin_Scraper_Strategy_Exception extends Diggin_Scraper_Exception
 {}
