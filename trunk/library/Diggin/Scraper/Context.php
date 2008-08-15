@@ -13,7 +13,8 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_Scraper_Context {
+class Diggin_Scraper_Context
+{
     private $_strategy;
     
     /**
