@@ -18,10 +18,11 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
 {    
     protected static $_adapter = null;
 
-    public function __destruct() {
+    public function __destruct()
+    {
        self::$_adapter = null;
        parent::$_adapter = null;
-   }
+    }
     
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {

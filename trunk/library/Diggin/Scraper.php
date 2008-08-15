@@ -16,7 +16,7 @@
 
 /**
  * @see Diggin_Scraper_Process
- */       
+ */  
 require_once 'Diggin/Scraper/Process.php';
 /**
  * @see Diggin_Scraper_Context

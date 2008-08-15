@@ -141,6 +141,4 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         
         return $strings;
     }
-
 }
-
