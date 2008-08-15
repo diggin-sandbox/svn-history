@@ -44,7 +44,7 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
         return self::extract($adptBody, $process);
     }
     
-    public static function extract($values, $process)
+    public function extract($values, $process)
     {
         
         if(!is_string($values)) $values = $values->plain;

@@ -63,7 +63,7 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
         return self::extract($cleanString, $process);
     }
     
-    public static function extract($cleanString, $process)
+    public function extract($cleanString, $process)
     {
         preg_match_all($process->expression, $cleanString , $results);
         
