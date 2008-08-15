@@ -41,7 +41,7 @@ class Diggin_Json
         if ($objectDecodeType === Diggin_Json::TYPE_SCRAPEROBJECT) {
             foreach ($decodes as $keys => $decode) {
                 if(is_array(current($decode))) {
-                    $scraper = new scraper();
+                    $scraper = new Diggin_Scraper_Process();
                     foreach (current($decode) as $key => $val) {
                         foreach ($val as $k => $v) {
                             if ((substr($k, -2) == '[]')) {
