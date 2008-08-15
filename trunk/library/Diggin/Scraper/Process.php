@@ -48,7 +48,7 @@ class Diggin_Scraper_Process
         $args = func_get_args();
         
         if(count($args) === 1) {
-            $this->processes = $args;            
+            $this->processes = $args;
         }
         $expression = array_shift($args);
         $namestypes = $args;

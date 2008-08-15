@@ -10,7 +10,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Service
- * @subpackage Tumblr
+ * @subpackage Munoh
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */

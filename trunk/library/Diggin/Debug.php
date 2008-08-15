@@ -126,4 +126,3 @@ class Diggin_Debug
     }
 
 }
-
