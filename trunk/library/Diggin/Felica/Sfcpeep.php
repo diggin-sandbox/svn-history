@@ -1,9 +1,18 @@
 <?php
 /**
- * Diggin_Felica_Sfcpeep
+ * Diggin - Simplicity PHP Library
  * 
- * @category Diggin
- * @package  Diggin_Felica
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_Felica
+ * @subpackage Sfcpeep
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
 require_once 'Diggin/Felica/Exception.php';
@@ -139,7 +148,7 @@ class Diggin_Felica_Sfcpeep
     protected function _parseSfcPeepLine($line, $lineNum)
     {
         if($this->_to_encoding){
-            $line = mb_convert_encoding($line, $this->_to_encoding, 'SJIS');           
+            $line = mb_convert_encoding($line, $this->_to_encoding, 'SJIS');
         }
         $item = explode("\t", $line);
         $this->sfcpeepArray[$lineNum]["terminalHt"] = substr($item[0], 0, 4);
