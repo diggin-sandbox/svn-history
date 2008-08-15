@@ -14,6 +14,9 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * @see Diggin_Http_Exception
+ */
 require_once 'Diggin/Http/Exception.php';
 
 class Diggin_Http_CookieJar_Exception extends Diggin_Http_Exception

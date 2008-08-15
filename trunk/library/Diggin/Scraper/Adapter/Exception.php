@@ -15,7 +15,7 @@
  */
 
 /** 
- * Diggin_Scraper_Exception
+ * @see Diggin_Scraper_Exception
  */
 require_once 'Diggin/Scraper/Exception.php';
 

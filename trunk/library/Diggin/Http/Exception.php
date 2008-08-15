@@ -13,7 +13,9 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-
+/**
+ * @see Diggin_Exception
+ */
 require_once 'Diggin/Exception.php';
 
 class Diggin_Http_Exception extends Diggin_Exception

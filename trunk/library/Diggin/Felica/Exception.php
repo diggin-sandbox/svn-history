@@ -14,7 +14,7 @@
  */
 
 /**
- * Diggin_Exectpion
+ * @see Diggin_Exception
  */
 require_once 'Diggin/Exception.php';
 
