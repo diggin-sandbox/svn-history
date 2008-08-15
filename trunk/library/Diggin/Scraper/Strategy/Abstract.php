@@ -81,7 +81,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
             }
         }
         
-        if ($process->type instanceof scraper) {
+        if ($process->type instanceof Diggin_Scraper_Process) {
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {
                     //@todo 値がとれなかったとき、格納しないか空かどうかはconfigでやるべきかな

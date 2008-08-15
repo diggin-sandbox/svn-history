@@ -20,14 +20,16 @@ class Diggin_Scraper_Process
     public $arrayflag;
     public $type;
     public $filters;
-
+    
+    public $processes;
+    
     public function __toString()
     {
         return '\''.$this->expression.'\' , '.
                $this->name.' => '. $this->type. '"';
     }
     
-    public function __construct($expression, $name, $arrayflag = false, $type = null, $filters = false)
+    public function __construct($expression = null, $name = null, $arrayflag = false, $type = null, $filters = false)
     {
         if (strtolower(($name)) === 'results') {
             require_once 'Diggin/Scraper/Exception.php';
@@ -40,19 +42,8 @@ class Diggin_Scraper_Process
         $this->type = $type;
         $this->filters = $filters;
     }
-}
-
-class scraper
-{
-
-    public $processes;
-
-    public function __toString()
-    {
-        return 'Object scraper';
-    }
     
-    public function process($args)
+    public function addProcess($args)
     {
         $args = func_get_args();
         
@@ -61,8 +52,7 @@ class scraper
         }
         $expression = array_shift($args);
         $namestypes = $args;
-        
-        require_once 'Diggin/Scraper/Process.php';
+
         foreach ($namestypes as $nametype) {
             if(is_string($nametype)) {
                 //$types = null;
