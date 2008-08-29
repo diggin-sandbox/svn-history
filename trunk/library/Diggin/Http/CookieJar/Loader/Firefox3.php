@@ -85,14 +85,16 @@ class Diggin_Http_CookieJar_Loader_Firefox3
         
         require_once 'Zend/Http/CookieJar.php';
         $cookieJar = new Zend_Http_CookieJar();
-        foreach ($fetch as $result) {  
-            $cookie = new Zend_Http_Cookie($result->name,  //cookie->name
-                                           $result->value, //cookie->value
-                                           $result->host,   //cookie->domain
-                                           $result->expiry, // exipry / cookie->expires
-                                           $result->path,   //cookie->path = null, 
-                                           (boolean)$result->isSecure);
-            $cookieJar->addCookie($cookie);
+        foreach ($fetch as $result) {
+            if ($result->name and $result->value and $result->host) {  
+                $cookie = new Zend_Http_Cookie($result->name,  //cookie->name
+                                               $result->value, //cookie->value
+                                               $result->host,   //cookie->domain
+                                               $result->expiry, // exipry / cookie->expires
+                                               $result->path,   //cookie->path = null, 
+                                               (boolean)$result->isSecure);
+                $cookieJar->addCookie($cookie);
+            }
         }
         
         return $cookieJar;
