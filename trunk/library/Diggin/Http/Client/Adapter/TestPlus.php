@@ -85,27 +85,25 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
     public function __construct($resposeBody = null, $responseHeader = null)
     {
         if (is_null($resposeBody)) {
-            $resposeBody = <<<RESPONSEBODY
-<html lang="ja">
-<head>
-<body>
-this is testplus<br />
-</body>
-</html>
-RESPONSEBODY;
+            $resposeBody = '<html lang="ja">'.PHP_EOL.
+                           '<head>'.PHP_EOL.
+                           '<body>'.PHP_EOL.
+                           'this is testplus<br />'.PHP_EOL.
+                           '</body>'.PHP_EOL.
+                           '</html>';
         }
         
         if (is_null($responseHeader)) {
-           $responseHeader = <<<RESPONSEHEADER
-HTTP/1.1 200 OK
-Date: Sat, 02 Aug 2008 15:17:11 GMT
-Server: Apache/2.2.6 (Win32) mod_ssl/2.2.6 OpenSSL/0.9.8e PHP/5.2.5
-Last-modified: Sun, 29 Jun 2008 21:20:50 GMT
-Accept-ranges: bytes
-Content-length: 1000
-Connection: close
-Content-type: text/html
-RESPONSEHEADER;
+           $responseHeader = 
+           "HTTP/1.1 200 OK"        ."\r\n".
+           "Date: Sat, 02 Aug 2008 15:17:11 GMT"."\r\n".
+           "Server: Apache/2.2.6 (Win32) mod_ssl/2.2.6 OpenSSL/0.9.8e PHP/5.2.5"."\r\n".
+           "Last-modified: Sun, 29 Jun 2008 21:20:50 GMT"."\r\n".
+           "Accept-ranges: bytes"   . "\r\n" .
+           "Content-length: 1000"   . "\r\n" .
+           "Connection: close"      . "\r\n" .
+           "Content-type: text/xml";
+           
         }
         
         $this->setResponse($responseHeader."\r\n\r\n".$resposeBody);
@@ -138,7 +136,10 @@ RESPONSEHEADER;
      * @param int     $timeout
      */
     public function connect($host, $port = 80, $secure = false)
-    { }
+    { 
+        //require_once 'Zend/Http/Client/Adapter/Exception.php';
+        //throw new Zend_Http_Client_Adapter_Exception('Unable to set the connection timeout');
+    }
 
     /**
      * Send request to the remote server
@@ -196,8 +197,8 @@ RESPONSEHEADER;
                 $start_index = $start_index + $num;
             }            
             
-            $randkey = mt_rand(0, count($keys)-1);
-            $code = $keys[$randkey];
+            shuffle($keys);
+            $code = current($keys);
             
             $headers = Zend_Http_Response::extractHeaders($response_str);
             $body = Zend_Http_Response::extractBody($response_str);
@@ -310,24 +311,12 @@ RESPONSEHEADER;
 
         //@todo array_shift(func_get_args)        
         if (is_null($addResponseBody)) {
-        $addResponseBody = <<<RESPONSEBODY
-<html lang="ja">
-<head>
-<body>
-This is testplus <br />
-222222222222222222
-</body>
-</html>
-RESPONSEBODY;
-//$_testResponseBody[2] = <<<RESPONSEBODY
-//<html lang="ja">
-//<head>
-//<body>
-//this is testplus <br />
-//test!test!
-//</body>
-//</html>
-//RESPONSEBODY;
+        $addResponseBody = '<html lang="ja">'.
+                           '<head>'.
+                           '<body>'.
+                           'this is testplus!!!!!<br />'.
+                           '</body>'.
+                           '</html>';
         }
 
       $this->_testResponseBody[1] = $addResponseBody;
