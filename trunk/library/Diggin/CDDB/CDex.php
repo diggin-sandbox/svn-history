@@ -140,7 +140,7 @@ class Diggin_CDDB_CDex
                 $end = $splFileObject->key() -1;
             }
             
-            if (preg_match('/^DISCID.*$/s', $splFileObject->current())) {
+            if (preg_match('/^DTITLE.*$/s', $splFileObject->current())) {
                 return array('start' => ($line - $i), 'end' => $end);
             }
             
@@ -154,7 +154,6 @@ class Diggin_CDDB_CDex
      * @param array 
      * sample:
      * $disc = array(
-     *     'discid' => "abcdef78", 
      *     'dtitle' => "Album Title",
      *     'dartist'=> "Artist Name",
      *     'dyear' => "2008",
@@ -184,8 +183,7 @@ class Diggin_CDDB_CDex
         $fileArray = file($rewritefile);
 
         $rewriteStr = implode('', array_slice($fileArray, 0, $points['start']));
-        $rewriteStr .= 'DISCID='.$discArray['discid'].PHP_EOL.
-                        'DTITLE='.$discArray['dartist'].' / '.$discArray['dtitle'].PHP_EOL.
+        $rewriteStr .=  'DTITLE='.$discArray['dartist'].' / '.$discArray['dtitle'].PHP_EOL.
                         'DYEAR='.$discArray['dyear'].PHP_EOL.
                         'DGENRE='.$discArray['dgenre'].PHP_EOL;
         $trackStr = '';
