@@ -179,24 +179,24 @@ class Diggin_CDDB_CDex
         return true;
     }
     
-	/**
-	 * 
-	 * @param string | SPLFileInfo
-	 * @param array 
-	 * @param array $disc
-	 * 
-	 * 
-	 * NOTES:
-	 * 0
-	 * 1
-	 * 2 <<if'start' ==3  'length' of array_slice is here
-	 * 3 DTITLE <=rewrite_points['start'])
-	 * 4 DYEAR
-	 * 5 DGENRE
-	 * 6 TTITLE0
-	 * 7 TTITLE1 <=$rewrite_points['end'] (last track )
-	 * 8 EXTD= 
-	 */
+    /**
+     * 
+     * @param string | SPLFileInfo
+     * @param array 
+     * @param array $disc
+     * 
+     * 
+     * NOTES:
+     * 0
+     * 1
+     * 2 <<if'start' ==3  'length' of array_slice is here
+     * 3 DTITLE <=rewrite_points['start'])
+     * 4 DYEAR
+     * 5 DGENRE
+     * 6 TTITLE0
+     * 7 TTITLE1 <=$rewrite_points['end'] (last track )
+     * 8 EXTD= 
+     */
     public function getRewriteStr($file, $rewrite_points, $disc)
     {
         $fileArray = file($file);
