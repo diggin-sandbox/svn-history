@@ -1,5 +1,19 @@
 <?php
 //とちゅう
+/**
+ * Diggin - Simplicity PHP Library
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_CDDB
+ * @subpackage CDex
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Diggin_CDDB_CDex
 {
 
@@ -8,16 +22,38 @@ class Diggin_CDDB_CDex
      */
     protected $_lastDiscSeek;
     
-    /*
-     * @var Disc (Net_CDDB_Disc)
-     */
-    public $disc;
-    
     public $_localCddbPath;
     
     public function __construct($path = null)
     {
+        $this->setLocalCDDBDirPath($path);
+    }
+    
+    public function setLocalCDDBDirPath($path)
+    {
+        $path = realpath($path);
+        if ($path === false) {
+            require_once 'Diggin/CDDB/Exception.php';
+            throw new Diggin_CDDB_Exception('not valid path');
+        }
+        
         $this->_localCddbPath = $path;
+    }
+    
+    /**
+     * get LocalCDDBDirPath
+     *
+     * @return string $this->_localCddbPath
+     * @throws Diggin_CDDB_Exception
+     */
+    public function getLocalCDDBDirPath()
+    {
+        if (!isset($this->_localCddbPath)) {
+            require_once 'Diggin/CDDB/Exception.php';
+            throw new Diggin_CDDB_Exception('not set path');
+        }
+        
+        return $this->_localCddbPath;
     }
     
     /**
@@ -27,15 +63,9 @@ class Diggin_CDDB_CDex
      * @return SPLFileInfo $fileInfo;
      * @throws Diggin_CDDB_Exception
      */
-    public static function getLastFile($path)
-    {
-        $path = realpath($path);
-        if ($path === false) {
-            require_once 'Diggin/CDDB/Exception.php';
-            throw new Diggin_CDDB_Exception('not valid path');
-        }
-        
-        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(realpath($path)));
+    public function getLastFile()
+    {       
+        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getLocalCDDBDirPath()));
         
         $ai = new ArrayIterator(array());
         do {
@@ -45,7 +75,7 @@ class Diggin_CDDB_CDex
             $rii->next();
         } while ($rii->valid());
         
-        $ai->ksort(); //oops! ArrayIterator::krsort is not defined!
+        $ai->ksort();
         $ai->rewind();
         $c = count($ai);
         for ($i = 1; $i < $c; $i++) {
@@ -59,76 +89,113 @@ class Diggin_CDDB_CDex
         
         //if not found
         require_once 'Diggin/CDDB/Exception.php';
-        throw new Diggin_CDDB_Exception('not valid LocalCDDB path, etc. c:\cdex_151\LocalCDDB');
+        throw new Diggin_CDDB_Exception('LocalCDDB Foramt text not found, etc. c:\cdex_151\LocalCDDB');
     }
     
     /**
      * get - last modified Disc info .
      *
      * @param string $path "LocalCDDB"path -like 'c:\cdex_151\LocalCDDB'
-     * @return Net_CDDB_Disc
+     * @return array
      */
-    public function getLastDiscInfo($path)
-    {
-        $fileInfo = self::getLastFile($path);
-                
-        $splFileObject = $fileInfo->openFile();
+    public function getLastDiscInfo()
+    {                
+        $splFileObject = $this->getLastFile()->openFile();
         
-        $splFileObject->seek($this->_getSeekStartLatestOfFile($splFileObject));
+        $points = $this->getSeekPointsLatestOfFile($splFileObject);
+        $splFileObject->seek($points['start']);
         
         $disc = array();
-        $disc['discid'] = rtrim(ltrim($splFileObject->getCurrentLine(), 'DISCID='));
-        list($disc['dartist'], $disc['dtitle']) = explode(' / ', $splFileObject->getCurrentLine(), 2);
+        $disc['discid'] = trim(preg_replace('/^DISCID=(.*)(\s)$/i', '$1', $splFileObject->current()));
+        list($disc['dartist'], $disc['dtitle']) = explode(' / ', $splFileObject->fgets(), 2);
         $disc['dtitle'] = trim($disc['dtitle']);
         $disc['dartist'] = ltrim($disc['dartist'], 'DTITLE=');
-        $disc['dyear'] = rtrim(ltrim($splFileObject->getCurrentLine(), 'DYEAR='));
-        $disc['dgenre'] = rtrim(ltrim($splFileObject->getCurrentLine(), 'DGENRE='));
+        $disc['dyear'] = rtrim(ltrim($splFileObject->fgets(), 'DYEAR='));
+        $disc['dgenre'] = rtrim(ltrim($splFileObject->fgets(), 'DGENRE='));
         
-        $tracks = array('0');
-        //
         do {
-            $title = trim(preg_replace('/^TTITLE(\d*)=/s', '${2}', $splFileObject->getCurrentLine()));
-            if (preg_match('/^EXTD=/s', $title)) break;
-            $tracks[] = $title;
+            $title = preg_replace('/^TTITLE(\d*)=(.*)(\s)$/', '$2', $splFileObject->fgets());
+
+            //if (preg_match('/^EXTD=/s', $title)) break;
+            if ($splFileObject->key() > $points['end']) break;
+            $disc['tracks'][] = trim($title);
         } while ($splFileObject->valid());
         
-        require_once 'Net/CDDB/Disc.php';
-        $ncd = new Net_CDDB_Disc();
-        $ncd->Net_CDDB_Disc($disc);
-        $ncd->_tracks = $tracks;
-        return $ncd;
+        return $disc;
     }
     
-    private function _getSeekStartLatestOfFile(SplFileObject $splFileObject)
+    /**
+     * get Seek point From => DISCID, TO => TTITLE{X}
+     * 
+     * @param SplFileObject $splFileObject
+     * @return array $points 
+     */
+    public function getSeekPointsLatestOfFile(SplFileObject $splFileObject)
     {
         $line = count(file($splFileObject->getPathName()));
-        for ($i = 2; $i < $line; $i++) {
-            $splFileObject->seek($line-$i);
+        for ($i = 1; $i < $line; $i++) {
+            $splFileObject->seek($line - $i);
             //cdex comment is /^#FILE/
-            if (preg_match('/^DISCID.*$/s', $splFileObject->getCurrentLine())) {
-                return $line-$i;
+            if (preg_match('/^EXTD.*/i', $splFileObject->current())) {
+                $end = $splFileObject->key() -1;
             }
+            
+            if (preg_match('/^DISCID.*$/s', $splFileObject->current())) {
+                return array('start' => ($line - $i), 'end' => $end);
+            }
+            
+            $splFileObject->next();
         }
+    }  
+
+    /**
+     * Rewrite lastest Disc Info under LocalCDDB
+     *
+     * @param array 
+     * sample:
+     * $disc = array(
+     *     'discid' => "abcdef78", 
+     *     'dtitle' => "Album Title",
+     *     'dartist'=> "Artist Name",
+     *     'dyear' => "2008",
+     *     'dgenre' =>"Unknown", 
+     *     'tracks' => array('title1','test2','test3','test4')
+     * );
+     * @return boolean
+     * @throws Diggin_CDDB_Exception
+     */
+    public function rewriteLastDiscInfo(array $discArray)
+    {
+        $points = $this->getSeekPointsLatestOfFile($this->getLastFile()->openFile());
+        
+        if (!file_put_contents($this->getLastFile(), 
+                               $this->getRewriteStr($this->getLastFile(), $points, $discArray))) {
+            require_once 'Diggin/CDDB/Exception.php';
+            throw new Diggin_CDDB_Exception('couldnt rewrite');
+        }
+        
+        return true;
     }
     
-    
-    public function rewriteLastDiscInfo(Net_CDDB_Disc $ncd)
+    public function getRewriteStr($rewritefile, $points, $discArray)
     {
-        if (!$this->_localCddbPath) {
-            require_once 'Diggin/CDDB/Exception.php';
-            throw new Diggin_CDDB_Exception('must set Path, before calling this method');
+        $fileArray = file($rewritefile);
+
+        $rewriteStr = implode('', array_slice($fileArray, 0, $points['start']));
+        $rewriteStr .= 'DISCID='.$discArray['discid'].PHP_EOL.
+                        'DTITLE='.$discArray['dartist'].' / '.$discArray['dtitle'].PHP_EOL.
+                        'DYEAR='.$discArray['dyear'].PHP_EOL.
+                        'DGENRE='.$discArray['dgenre'].PHP_EOL;
+        $trackStr = '';
+        foreach ($discArray['tracks'] as $count => $track) {
+            $trackStr .= "TTITLE$count=".$track.PHP_EOL;
         }
-        
-        $fileInfo = self::getLastFile($this->_localCddbPath);
-        
-        $splFileObject = $fileInfo->openFile();
-        
-        $splFileObject->seek($this->_getSeekStartLatestOfFile($splFileObject));
-        
-//        return $splFileObject;
+        $rewriteStr .= $trackStr;
+        $rewriteStr .= implode('', array_slice($fileArray, $points['end'] +1));
+
+        //@todo
+        //mb_convert_encoding($rewriteStr, '?', 'utf8');
+        //
+        return mb_convert_encoding($rewriteStr, 'SJIS', 'utf8');  
     }
 }
-
-$path = 'D:\zip\cdex_151\LocalCDDB';
-$cddb = new Diggin_CDDB_CDex();
-var_dump($cddb->rewriteLastDiscInfo($path));
