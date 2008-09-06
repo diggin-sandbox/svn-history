@@ -166,10 +166,12 @@ class Diggin_CDDB_CDex
      */
     public function rewriteLastDiscInfo(array $discArray)
     {
-        $points = $this->getSeekPointsLatestOfFile($this->getLastFile()->openFile());
+        $lastFile = $this->getLastFile();
+        
+        $points = $this->getSeekPointsLatestOfFile($lastFile->openFile());
         
         if (!file_put_contents($this->getLastFile(), 
-                               $this->getRewriteStr($this->getLastFile(), $points, $discArray))) {
+                               $this->getRewriteStr($lastFile, $points, $discArray))) {
             require_once 'Diggin/CDDB/Exception.php';
             throw new Diggin_CDDB_Exception('couldnt rewrite');
         }
