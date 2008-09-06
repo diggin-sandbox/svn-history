@@ -65,7 +65,8 @@ class Diggin_CDDB_CDex
      */
     public function getLastFile()
     {       
-        $rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getLocalCDDBDirPath()));
+        $rii = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($this->getLocalCDDBDirPath()));
         
         $ai = new ArrayIterator(array());
         do {
@@ -89,7 +90,9 @@ class Diggin_CDDB_CDex
         
         //if not found
         require_once 'Diggin/CDDB/Exception.php';
-        throw new Diggin_CDDB_Exception('LocalCDDB Foramt text not found, etc. c:\cdex_151\LocalCDDB');
+        $errorMsg = sprintf('LocalCDDB Foramt text not found at %s',
+                             $this->getLocalCDDBDirPath());
+        throw new Diggin_CDDB_Exception($errorMsg);
     }
     
     /**
@@ -100,26 +103,26 @@ class Diggin_CDDB_CDex
      */
     public function getLastDiscInfo()
     {                
-        $splFileObject = $this->getLastFile()->openFile();
+        $lastFile = $this->getLastFile()->openFile();
         
-        $points = $this->getSeekPointsLatestOfFile($splFileObject);
-        $splFileObject->seek($points['start']);
+        $points = $this->getSeekPointsLatestOfFile($lastFile);
+        $lastFile->seek($points['start']);
         
         $disc = array();
-        $disc['discid'] = trim(preg_replace('/^DISCID=(.*)(\s)$/i', '$1', $splFileObject->current()));
-        list($disc['dartist'], $disc['dtitle']) = explode(' / ', $splFileObject->fgets(), 2);
+        $disc['discid'] = trim(preg_replace('/^DISCID=(.*)(\s)$/i', '$1', $lastFile->current()));
+        list($disc['dartist'], $disc['dtitle']) = explode(' / ', $lastFile->fgets(), 2);
         $disc['dtitle'] = trim($disc['dtitle']);
         $disc['dartist'] = ltrim($disc['dartist'], 'DTITLE=');
-        $disc['dyear'] = rtrim(ltrim($splFileObject->fgets(), 'DYEAR='));
-        $disc['dgenre'] = rtrim(ltrim($splFileObject->fgets(), 'DGENRE='));
+        $disc['dyear'] = rtrim(ltrim($lastFile->fgets(), 'DYEAR='));
+        $disc['dgenre'] = rtrim(ltrim($lastFile->fgets(), 'DGENRE='));
         
         do {
-            $title = preg_replace('/^TTITLE(\d*)=(.*)(\s)$/', '$2', $splFileObject->fgets());
+            $title = preg_replace('/^TTITLE(\d*)=(.*)(\s)$/', '$2', $lastFile->fgets());
 
             //if (preg_match('/^EXTD=/s', $title)) break;
-            if ($splFileObject->key() > $points['end']) break;
+            if ($lastFile->key() > $points['end']) break;
             $disc['tracks'][] = trim($title);
-        } while ($splFileObject->valid());
+        } while ($lastFile->valid());
         
         return $disc;
     }
@@ -143,8 +146,6 @@ class Diggin_CDDB_CDex
             if (preg_match('/^DTITLE.*$/s', $splFileObject->current())) {
                 return array('start' => ($line - $i), 'end' => $end);
             }
-            
-            $splFileObject->next();
         }
     }  
 
@@ -178,20 +179,45 @@ class Diggin_CDDB_CDex
         return true;
     }
     
-    public function getRewriteStr($rewritefile, $points, $discArray)
+	/**
+	 * 
+	 * @param string | SPLFileInfo
+	 * @param array 
+	 * @param array $disc
+	 * 
+	 * 
+	 * NOTES:
+	 * 0
+	 * 1
+	 * 2 <<if'start' ==3  'length' of array_slice is here
+	 * 3 DTITLE <=rewrite_points['start'])
+	 * 4 DYEAR
+	 * 5 DGENRE
+	 * 6 TTITLE0
+	 * 7 TTITLE1 <=$rewrite_points['end'] (last track )
+	 * 8 EXTD= 
+	 */
+    public function getRewriteStr($file, $rewrite_points, $disc)
     {
-        $fileArray = file($rewritefile);
+        $fileArray = file($file);
 
-        $rewriteStr = implode('', array_slice($fileArray, 0, $points['start']));
-        $rewriteStr .=  'DTITLE='.$discArray['dartist'].' / '.$discArray['dtitle'].PHP_EOL.
-                        'DYEAR='.$discArray['dyear'].PHP_EOL.
-                        'DGENRE='.$discArray['dgenre'].PHP_EOL;
+        $rewriteStr = implode('', array_slice($fileArray, 0, $rewrite_points['start']));
+        $rewriteStr .=  'DTITLE='.$disc['dartist'].' / '.$disc['dtitle'].PHP_EOL.
+                        'DYEAR='.$disc['dyear'].PHP_EOL.
+                        'DGENRE='.$disc['dgenre'].PHP_EOL;
         $trackStr = '';
-        foreach ($discArray['tracks'] as $count => $track) {
-            $trackStr .= "TTITLE$count=".$track.PHP_EOL;
+        $trackCount = $rewrite_points['end'] - $rewrite_points['start'] - 3;
+        for ($i = 0; $i <= $trackCount; $i++) {
+            $track = isset($disc['tracks'][$i]) ? $disc['tracks'][$i] : false;
+            if (!$track) {
+                //@todo various fomart by sprintf
+                $trackStr .= "TTITLE$i=".$disc['dtitle'].'_'.($i+1).PHP_EOL;
+            } else {
+                $trackStr .= "TTITLE$i=".$track.PHP_EOL;
+            }
         }
         $rewriteStr .= $trackStr;
-        $rewriteStr .= implode('', array_slice($fileArray, $points['end'] +1));
+        $rewriteStr .= implode('', array_slice($fileArray, $rewrite_points['end'] +1));
 
         //@todo
         //mb_convert_encoding($rewriteStr, '?', 'utf8');
