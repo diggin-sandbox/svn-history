@@ -101,49 +101,62 @@ class Diggin_CDDB_CDex
      * @param string $path "LocalCDDB"path -like 'c:\cdex_151\LocalCDDB'
      * @return array
      */
-    public function getLastDiscInfo()
+    public function getLastDisc($style = 'Net_CDDB_Disc')
     {                
         $lastFile = $this->getLastFile()->openFile();
         
-        $points = $this->getSeekPointsLatestOfFile($lastFile);
-        $lastFile->seek($points['start']);
+        if ($style == 'Net_CDDB_Disc') {
+            $points = $this->getSeekPointsLatestOfFile($lastFile, '#FILENAME', 'PLAYORDER');
+            //oops! FILENAME not defined Net_CDDB_Utilities, so I plus 1 for start point.
+            $discStr = implode('', array_slice(file($lastFile), $points['start'] +1, $points['end']));
+            
+            require_once 'Net/CDDB/Utilities.php';
+            $ncu = new Net_CDDB_Utilities();
+            $parse = $ncu->parseRecord($discStr);
+            require_once 'Net/CDDB/Disc.php';
+            $disc = new Net_CDDB_Disc($parse);
+        } else {
+            $points = $this->getSeekPointsLatestOfFile($lastFile, 'DISCID');
+            $lastFile->seek($points['start']);
+            
+            $disc = array();
+            $disc['discid'] = trim(preg_replace('/^DISCID=(.*)(\s)$/i', '$1', $lastFile->current()));
+            list($disc['dartist'], $disc['dtitle']) = explode(' / ', $lastFile->fgets(), 2);
+            $disc['dtitle'] = trim($disc['dtitle']);
+            $disc['dartist'] = ltrim($disc['dartist'], 'DTITLE=');
+            $disc['dyear'] = rtrim(ltrim($lastFile->fgets(), 'DYEAR='));
+            $disc['dgenre'] = rtrim(ltrim($lastFile->fgets(), 'DGENRE='));
+            
+            do {
+                $title = preg_replace('/^TTITLE(\d*)=(.*)(\s)$/', '$2', $lastFile->fgets());
+    
+                //if (preg_match('/^EXTD=/s', $title)) break;
+                if ($lastFile->key() > $points['end']) break;
+                $disc['tracks'][] = trim($title);
+            } while ($lastFile->valid());
+        }
         
-        $disc = array();
-        $disc['discid'] = trim(preg_replace('/^DISCID=(.*)(\s)$/i', '$1', $lastFile->current()));
-        list($disc['dartist'], $disc['dtitle']) = explode(' / ', $lastFile->fgets(), 2);
-        $disc['dtitle'] = trim($disc['dtitle']);
-        $disc['dartist'] = ltrim($disc['dartist'], 'DTITLE=');
-        $disc['dyear'] = rtrim(ltrim($lastFile->fgets(), 'DYEAR='));
-        $disc['dgenre'] = rtrim(ltrim($lastFile->fgets(), 'DGENRE='));
-        
-        do {
-            $title = preg_replace('/^TTITLE(\d*)=(.*)(\s)$/', '$2', $lastFile->fgets());
-
-            //if (preg_match('/^EXTD=/s', $title)) break;
-            if ($lastFile->key() > $points['end']) break;
-            $disc['tracks'][] = trim($title);
-        } while ($lastFile->valid());
+        //$disc = mb_convert_variables()
         
         return $disc;
     }
-    
+
     /**
      * get Seek point From => DISCID, TO => TTITLE{X}
      * 
      * @param SplFileObject $splFileObject
      * @return array $points 
      */
-    public function getSeekPointsLatestOfFile(SplFileObject $splFileObject)
+    public function getSeekPointsLatestOfFile(SplFileObject $splFileObject, $start = 'DTITLE', $end = 'EXTD')
     {
         $line = count(file($splFileObject->getPathName()));
-        for ($i = 1; $i < $line; $i++) {
+        for ($i = 1; $i <= $line; $i++) {
             $splFileObject->seek($line - $i);
             //cdex comment is /^#FILE/
-            if (preg_match('/^EXTD.*/i', $splFileObject->current())) {
+            if (preg_match("/^$end.*/i", $splFileObject->current())) {
                 $end = $splFileObject->key() -1;
             }
-            
-            if (preg_match('/^DTITLE.*$/s', $splFileObject->current())) {
+            if (preg_match("/^$start.*/i", $splFileObject->current())) {
                 return array('start' => ($line - $i), 'end' => $end);
             }
         }
