@@ -28,15 +28,19 @@ class Diggin_CDDB_Application_CDex
     
     public function __construct($path = null)
     {
-        $this->setLocalCDDBDirPath($path);
+        if ($path) $this->setLocalCDDBDirPath($path);
     }
     
     public function setLocalCDDBDirPath($path)
     {
-        $path = realpath($path);
-        if ($path === false) {
+        if (!$path) {
             require_once 'Diggin/CDDB/Application/Exception.php';
-            throw new Diggin_CDDB_Application_Exception('not valid path');
+            throw new Diggin_CDDB_Application_Exception('Not valid path name'.$path);
+        } else {            
+            if (!$path = realpath($path)) {
+                require_once 'Diggin/CDDB/Application/Exception.php';
+                throw new Diggin_CDDB_Application_Exception('not valid path'.$path);                
+            }
         }
         
         $this->_localCddbPath = $path;
