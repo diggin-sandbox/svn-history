@@ -13,14 +13,18 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_CDDB_Disc_Decoder implements Diggin_CDDB_Disc_Interface
-{    
+class Diggin_CDDB_Disc_Decoder
+{
+    const TYPE_ARRAY  = 1;
+    const TYPE_OBJECT = 0;
+    
     /**
      * decoding CDDB format
      *
      * @param string $encodedValue
      * @param int $objectDecodeType Optional; flag indicating how to decode
      * objects.
+     * @param string $encoding (from
      * @return mixed
      */
     public static function decode($encodedValue, $objectDecodeType = Diggin_CDDB_Disc_Decoder::TYPE_OBJECT, $encoding = 'SJIS')

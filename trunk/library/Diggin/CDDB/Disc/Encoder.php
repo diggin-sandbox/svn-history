@@ -13,8 +13,11 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Diggin_CDDB_Disc_Encoder implements Diggin_CDDB_Disc_Interface
-{    
+class Diggin_CDDB_Disc_Encoder
+{
+    const TYPE_ARRAY  = 1;
+    const TYPE_OBJECT = 0;
+    
     /**
      * Enter description here...
      *

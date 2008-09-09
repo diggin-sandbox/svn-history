@@ -13,6 +13,14 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
+/**
+ * @see Diggin_CDDB_Disc_Encoder
+ */
+require_once 'Diggin/CDDB/Disc/Encoder.php';
+/**
+ * @see Diggin_CDDB_Disc_Decoder
+ */
+require_once 'Diggin/CDDB/Disc/Decoder.php';
 
 class Diggin_CDDB_Application_CDex
 {
@@ -95,14 +103,14 @@ class Diggin_CDDB_Application_CDex
      * @param SplFileObject $splFileObject
      * @return array $points 
      */
-    public function getSeekPointsLatestOfFile(SplFileObject $splFileObject, $start = 'DTITLE', $end = 'EXTD', $endBacklineNum = 1)
+    public function getSeekPointsLatestOfFile(SplFileObject $splFileObject, $start = '#FILENAME', $end = 'PLAYORDER')
     {
         $line = count(file($splFileObject->getPathName()));
         for ($i = 1; $i <= $line; $i++) {
             $splFileObject->seek($line - $i);
             //cdex comment is /^#FILE/
             if (preg_match("/^$end.*/i", $splFileObject->current())) {
-                $end = $splFileObject->key() - $endBacklineNum;
+                $end = $splFileObject->key();
             }
             if (preg_match("/^$start.*/i", $splFileObject->current())) {
                 return array('start' => ($line - $i), 'end' => $end);
@@ -126,7 +134,6 @@ class Diggin_CDDB_Application_CDex
         $points = $this->getSeekPointsLatestOfFile($lastFile, '#FILENAME', 'PLAYORDER');
         $discStr = implode('', array_slice(file($lastFile), $points['start'] +1, $points['end']));
 
-        require_once 'Diggin/CDDB/Disc/Decoder.php';
         return Diggin_CDDB_Disc_Decoder::decode($discStr, $decodeType);
     }
     
@@ -149,10 +156,8 @@ class Diggin_CDDB_Application_CDex
     {
         $lastFile = $this->getLastFile();
         
-        $points = $this->getSeekPointsLatestOfFile($lastFile->openFile(), '# xmcd CD', 'PLAYORDER');
-        
-        
-        return $this->getRewriteStr($lastFile, $points, $discArray);
+        $points = $this->getSeekPointsLatestOfFile($lastFile->openFile(), '#FILENAME', 'PLAYORDER');
+
         if (!file_put_contents($lastFile, 
                                $this->getRewriteStr($lastFile, $points, $discArray))) {
             require_once 'Diggin/CDDB/Application/Exception.php';
@@ -185,9 +190,8 @@ class Diggin_CDDB_Application_CDex
     public function getRewriteStr($file, $rewrite_points, $disc)
     {
         //extract rewritepart string
-        $rewriteStr = implode('', array_slice(file($file), $rewrite_points['start'], $rewrite_points['end'] + 1));
+        $rewriteStr = implode('', array_slice(file($file), $rewrite_points['start'] +1 , $rewrite_points['end']));
 
-        require_once 'Diggin/CDDB/Disc/Decoder.php';
         $decode = Diggin_CDDB_Disc_Decoder::decode($rewriteStr, Diggin_CDDB_Disc_Decoder::TYPE_ARRAY, 'SJIS');
 
         //merge
@@ -195,7 +199,6 @@ class Diggin_CDDB_Application_CDex
             if ($k === 'tracks') {
                 foreach ($v as $c => $track) {
                     $decode['tracks'][$c]['ttitle'] = $track;
-                    $decode['tracks'][$c]['tartist'] = $disc['dartist'];
                 }
             } else {
                 $decode[$k] = $v;
@@ -203,12 +206,11 @@ class Diggin_CDDB_Application_CDex
         }
         
         //__toString
-        require_once 'Diggin/CDDB/Disc/Encoder.php';
         $rewriteStr = Diggin_CDDB_Disc_Encoder::encode($decode);
         
         //#filename line add
-        $file->openFile()->seek($rewrite_points['start'] -1);
-        $rewriteStr = $file->openFile()->current().$rewriteStr;
+        $file->openFile()->seek($rewrite_points['start'] );
+        $rewriteStr = $file->openFile()->current().$rewriteStr.PHP_EOL;
         
         return $rewriteStr;
     }
