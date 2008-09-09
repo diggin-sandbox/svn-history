@@ -171,7 +171,7 @@ class Diggin_CDDB_Application_CDex
      * 
      * @todo merge Net_CDDB_Disc object | array
      * 
-     * @param string | SPLFileInfo
+     * @param SPLFileInfo
      * @param array 
      * @param array $disc
      * 
@@ -187,7 +187,7 @@ class Diggin_CDDB_Application_CDex
      * 7 TTITLE1 <=$rewrite_points['end'] (last track )
      * 8 EXTD= 
      */
-    public function getRewriteStr($file, $rewrite_points, $disc)
+    public function getRewriteStr(SplFileInfo $file, $rewrite_points, $disc)
     {
         //extract rewritepart string
         $rewriteStr = implode('', array_slice(file($file), $rewrite_points['start'] +1 , $rewrite_points['end']));
@@ -209,8 +209,9 @@ class Diggin_CDDB_Application_CDex
         $rewriteStr = Diggin_CDDB_Disc_Encoder::encode($decode);
         
         //#filename line add
-        $file->openFile()->seek($rewrite_points['start'] );
-        $rewriteStr = $file->openFile()->current().$rewriteStr.PHP_EOL;
+        $splFileObject = $file->openFile();
+        $splFileObject->seek($rewrite_points['start'] );
+        $rewriteStr = $splFileObject->current().$rewriteStr.PHP_EOL;
         
         return $rewriteStr;
     }
