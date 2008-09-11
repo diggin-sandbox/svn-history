@@ -62,18 +62,25 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
     protected $_resposesize;
     
     /**
-     * size of response
+     * random status
      *
-     * @var unknown_type
+     * @var array
      */
     protected $_statusRandom;
+    
+    
+    protected $_connectiingTime = 0;
     
 	/**     *
      * @var unknown_type
      */
     protected $_randomResponseBodyInterval;
 
-    
+    /**
+     * test response Body
+     *
+     * @var array
+     */
     protected $_testResponseBody = array();
     
     /**
@@ -137,8 +144,12 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
      */
     public function connect($host, $port = 80, $secure = false)
     { 
-        //require_once 'Zend/Http/Client/Adapter/Exception.php';
-        //throw new Zend_Http_Client_Adapter_Exception('Unable to set the connection timeout');
+        //fake time out
+        sleep($this->_connectiingTime);
+        if ($this->_connectiingTime > (int) $this->config['timeout']) {
+            require_once 'Diggin/Http/Client/Adapter/Exception.php';
+            throw new Diggin_Http_Client_Adapter_Exception('Unable to set the connection timeout(fake)');
+        }
     }
 
     /**
@@ -297,11 +308,15 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
         
         $this->_statusRandom = $config;
     }
-  
-    //@todo
-    public function setConnectionTime($time, $randomFlg = false)
+    
+    /**
+     * set connect time
+     *
+     * @param int $time 
+     */
+    public function setConnectingTime($time)
     {
-                
+        $this->_connectiingTime = $time;
     }
     
     public function setResponseBodyRandom($timeInterval = 5, $addResponseBody = null)
