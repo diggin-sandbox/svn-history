@@ -193,8 +193,10 @@ class Diggin_CDDB_Application_CDex
      */
     public function getRewriteStr(SplFileInfo $file, $rewrite_points, $disc)
     {
+    	$fileArray = file($file);
+    
         //extract rewritepart string
-        $rewriteStr = implode('', array_slice(file($file), $rewrite_points['start'] +1 , $rewrite_points['end']));
+        $rewriteStr = implode('', array_slice($fileArray, $rewrite_points['start'] +1 , $rewrite_points['end']));
 
         $decode = Diggin_CDDB_Disc_Decoder::decode($rewriteStr, Diggin_CDDB_Disc_Decoder::TYPE_ARRAY, 'SJIS');
 
@@ -212,12 +214,27 @@ class Diggin_CDDB_Application_CDex
         //__toString
         $rewriteStr = Diggin_CDDB_Disc_Encoder::encode($decode);
         
+        
         //#filename line add
         $splFileObject = $file->openFile();
         $splFileObject->seek($rewrite_points['start'] );
-        $rewriteStr = $splFileObject->current().$rewriteStr.PHP_EOL;
+        $rewriteStr = $splFileObject->current().$rewriteStr;
         
-        return $rewriteStr;
+        //if rewriting is not first(head of file),   add before of rewrite
+        if ($rewrite_points['start'] !== 0) {
+            $before = implode('', array_slice($fileArray, 0, $rewrite_points['start']));
+            $rewriteStr = $before.$rewriteStr;
+        }
+        
+        if ($rewrite_points['end']  !== count($fileArray)-1 ) {
+            $after = implode('', array_slice($fileArray, $rewrite_points['end']+1));
+            $rewriteStr = $rewriteStr.PHP_EOL.$after;
+            $end = ''; //afterをつける場合、EOFの行まで含まれるので調整。
+        } else {            
+            $end = PHP_EOL;
+        }
+        
+        return $rewriteStr.$end;
     }
 
 }
