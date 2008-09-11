@@ -114,15 +114,18 @@ class Diggin_CDDB_Application_CDex
             $splFileObject->seek($line - $i);
             //cdex comment is /^#FILE/
             if (preg_match("/^$end.*/i", $splFileObject->current())) {
-                $end = $splFileObject->key();
+                $endkey = $splFileObject->key();
             }
             if (preg_match("/^$start.*/i", $splFileObject->current())) {
-                return array('start' => ($line - $i), 'end' => $end);
+                if (isset($endkey)) {
+                    return array('start' => ($line - $i), 'end' => $endkey);
+                }
             }
         }
         
         //if none
-        
+        require_once 'Diggin/CDDB/Application/Exception.php';
+        throw new Diggin_CDDB_Application_Exception("there is no seek points, $splFileObject,(start:$start, end:$end)");
     } 
         
     /**
