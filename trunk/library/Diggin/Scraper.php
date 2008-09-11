@@ -208,7 +208,7 @@ class Diggin_Scraper
      * @return Zend_Http_Response $response
      * @throws Diggin_Scraper_Exception
      */
-    private function _makeRequest($url = null)
+    protected function _makeRequest($url = null)
     {
         $client = self::getHttpClient();
         
