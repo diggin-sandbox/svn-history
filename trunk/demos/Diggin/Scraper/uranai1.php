@@ -13,7 +13,7 @@ try {
 
         $scraper = new Diggin_Scraper();
         $scraper->process('//td[@class="day" and @height < 100]', 'date => "TEXT"')
-                ->process('//table[@width="306"]', array('ranking[]' => $ranking))
+                ->process('//table[contains(@background, "item/rank")]', array('ranking[]' => $ranking))
                 ->scrape($url);
 } catch (Diggin_Scraper_Exception $e) {
          die($e->getMessage());
