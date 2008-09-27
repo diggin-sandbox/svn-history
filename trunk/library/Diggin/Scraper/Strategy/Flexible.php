@@ -82,11 +82,12 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         set_error_handler(
             create_function('$errno, $errstr',
             'if($errno) require_once "Diggin/Scraper/Strategy/Exception.php"; 
-            	throw new Diggin_Scraper_Strategy_Exception($errstr, $errno);'
+               throw new Diggin_Scraper_Strategy_Exception($errstr, $errno);'
             )
         );
-	
-	$results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->expression));
+
+        $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->expression));
+        restore_error_handler();
 
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
