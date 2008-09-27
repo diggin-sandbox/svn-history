@@ -181,8 +181,8 @@ class Diggin_Scraper
             /**
              * @see Diggin_Scraper_Strategy_Abstract
              */
-            require_once 'Diggin/Scraper/Strategy/Xpath.php';
-            $strategy = new Diggin_Scraper_Strategy_Xpath($response);
+            require_once 'Diggin/Scraper/Strategy/Flexible.php';
+            $strategy = new Diggin_Scraper_Strategy_Flexible($response);
             $strategy->setAdapterConfig(array('url' => $this->_url));
             
             self::$_strategy = $strategy;
