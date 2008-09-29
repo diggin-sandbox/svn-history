@@ -121,13 +121,10 @@ class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract
                 
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
+            require_once 'Diggin/Uri/Http.php';
             foreach ($values as $value) {
-                //@todo
-                if (($process->type == '@href' OR $process->type == '@src')
-                    && method_exists($this->getAdapter(), 'getAbsoluteUrl')) {
-                    array_push($strings, $this->getAdapter()->getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
-                    //require_once 'Diggin/Uri/Http.php';
-                    //array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
+                if (($process->type == '@href' OR $process->type == '@src')) {
+                    array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
                 } else {
                     array_push($strings, (string) $value[substr($process->type, 1)]);
                 }
