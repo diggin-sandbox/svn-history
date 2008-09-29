@@ -122,13 +122,10 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
                 
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
-            require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
+            require_once 'Diggin/Uri/Http.php';
             foreach ($values as $value) {
                 if (($process->type == '@href' OR $process->type == '@src')) {
-                    array_push($strings, Diggin_Scraper_Adapter_Htmlscraping::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
-
-                    //require_once 'Diggin/Uri/Http.php';
-                    //array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
+                    array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
                 } else {
                     array_push($strings, (string) $value[substr($process->type, 1)]);
                 }
