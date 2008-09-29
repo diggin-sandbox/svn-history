@@ -27,21 +27,26 @@ class Diggin_Uri_Http
      */
     public static function getAbsoluteUrl($url, $base_url)
     {
-        $parse = parse_url($url);
-        if (isset($parse["host"])) {
-            $build = $url;
-        } else {
-            $uridir = pathinfo(parse_url($base_url, PHP_URL_PATH), PATHINFO_DIRNAME);
-            $slash = strpos($uridir, '/');
-            if ($slash === false) {
-                $build = http_build_url($base_url, array("path" => $url,),
-                HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
-            } else {            
-                $build = http_build_url($base_url, array("path" => $url,), 
-                HTTP_URL_JOIN_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
+        //using pecl_http
+        if (extension_loaded('http')) {
+            static $base_url;
+            if (array_key_exists('host', parse_url($url))) {
+                return $url;
+            } else {
+                if (strpos(pathinfo(parse_url($base_url, PHP_URL_PATH), PATHINFO_DIRNAME), '/') === false) {
+                    return http_build_url($base_url, array("path" => $url,),
+                    HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
+                } else {            
+                    return http_build_url($base_url, array("path" => $url,), 
+                    HTTP_URL_JOIN_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
+                }
             }
+        //Net_URL2 ver 0.2.0
+        } else {
+            if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
+            $neturl2 = new Net_URL2($base_url);
+            return $neturl2->resolve($url)->getUrl();
         }
-        
-        return $build;
     }
 }
+
