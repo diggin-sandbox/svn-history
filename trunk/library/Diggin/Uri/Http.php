@@ -14,6 +14,9 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * Utils For Http
+ */
 class Diggin_Uri_Http
 {
     /**
@@ -34,19 +37,20 @@ class Diggin_Uri_Http
                 return $url;
             } else {
                 if (strpos(pathinfo(parse_url($base_url, PHP_URL_PATH), PATHINFO_DIRNAME), '/') === false) {
-                    return http_build_url($base_url, array("path" => $url,),
+                    return http_build_url($base_url, array("path" => $url),
                     HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
                 } else {            
-                    return http_build_url($base_url, array("path" => $url,), 
+                    return http_build_url($base_url, array("path" => $url), 
                     HTTP_URL_JOIN_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
                 }
             }
         //Net_URL2 ver 0.2.0
         } else {
-            if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
+			if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
+			static $neturl2;
             $neturl2 = new Net_URL2($base_url);
-            return $neturl2->resolve($url)->getUrl();
-        }
+            return $neturl2->resolve(str_replace(chr(32), '%20', $url))->getUrl();
+        } 
     }
 }
 

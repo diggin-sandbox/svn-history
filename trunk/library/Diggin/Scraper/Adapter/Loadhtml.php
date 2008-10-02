@@ -21,7 +21,7 @@ require_once 'Diggin/Scraper/Adapter/Interface.php';
 
 class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interface
 {
-    protected $config = array(
+    protected $_config = array(
         'xml_manifesto' => false,
     );
     
@@ -36,7 +36,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
         
         // ここまででもいいのだけど。
         // XML宣言が付いていないので付与する。
-        if ($this->config["xml_manifesto"] === true) {
+        if ($this->_config["xml_manifesto"] === true) {
             $str = $simplexml->asXML();
             {
                 // XML宣言付与
@@ -44,7 +44,8 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
                     $str = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . $str;
                 }
                 
-                //@see http://goungoun.dip.jp/app/fswiki/wiki.cgi/devnotebook?page=PHP5%A1%A2%CC%A4%C0%B0%B7%C1HTML%A4%F2SimpleXML%A4%D8%CA%D1%B4%B9
+                //@see http://goungoun.dip.jp/app/fswiki/wiki.cgi/devnotebook?
+                // page=PHP5%A1%A2%CC%A4%C0%B0%B7%C1HTML%A4%F2SimpleXML%A4%D8%CA%D1%B4%B9
                 // HTML中の改行が数値文字参照になってしまったので、
                 // 文字に戻す。
                 $str = $this->_numentToChar($str);
@@ -61,7 +62,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
             throw new Diggin_Scraper_Adapter_Exception('Expected array parameter, given ' . gettype($config));
 
         foreach ($config as $k => $v)
-            $this->config[strtolower($k)] = $v;
+            $this->_config[strtolower($k)] = $v;
 
         return $this;
     }
@@ -75,7 +76,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
      * @param string $string
      * @return string
      */
-    private static function _numentToChar($string)
+    protected static function _numentToChar($string)
     {
         $excluded_hex = $string;
         if (preg_match("/&#[xX][0-9a-zA-Z]{2,8};/", $string)) {
@@ -88,3 +89,4 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
                                        "UTF-8");
     }
 }
+

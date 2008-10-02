@@ -99,7 +99,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
     protected static function _xpathOrCss2Xpath($exp){
         if (preg_match('!^(?:/|id\()!', $exp)) {
-            return $exp;
+            return '.'.$exp;
         } else {
             if ($exp === '.') {
                 return $exp;

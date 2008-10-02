@@ -39,12 +39,15 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
     /**
      * check getting absoluteUrl
      *
-     *
-     * import from rhaco's doc-test
-     * @see http://rhaco.googlecode.com/svn/trunk/1_6_1/network/Url.php
      */
     public function testGetAbsoluteUrl()
     {
+    	//if 
+    	$this->assertEquals('http://yahoo.com/test/', 
+                             $this->object->getAbsoluteUrl('http://yahoo.com/test/', 'http://www.rhaco.org/'));
+    	
+    	// import from rhaco's doc-test
+     	// @see http://rhaco.googlecode.com/svn/trunk/1_6_1/network/Url.php
         $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
                              $this->object->getAbsoluteUrl('/doc/ja/index.html', 'http://www.rhaco.org/'));
         $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
@@ -52,23 +55,33 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
                              $this->object->getAbsoluteUrl('./doc/ja/index.html', 'http://www.rhaco.org/'));
         $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                                                $this->object->getAbsoluteUrl('./index.html', 'http://www.rhaco.org/doc/ja/'));
+                             $this->object->getAbsoluteUrl('./index.html', 'http://www.rhaco.org/doc/ja/'));
         $this->assertEquals('http://www.rhaco.org/doc/index.html', 
-                                                $this->object->getAbsoluteUrl('../index.html', 'http://www.rhaco.org/doc/ja/'));
+                             $this->object->getAbsoluteUrl('../index.html', 'http://www.rhaco.org/doc/ja/'));
         $this->assertEquals('http://www.rhaco.org/index.html', 
-                                                $this->object->getAbsoluteUrl('../../index.html', 'http://www.rhaco.org/doc/ja/'));
+                             $this->object->getAbsoluteUrl('../../index.html', 'http://www.rhaco.org/doc/ja/'));
         $this->assertEquals('http://www.rhaco.org/index.html', 
-                                                $this->object->getAbsoluteUrl('../././.././index.html', 'http://www.rhaco.org/doc/ja/'));
+                             $this->object->getAbsoluteUrl('../././.././index.html', 'http://www.rhaco.org/doc/ja/')); 
         //$this->assertEquals('/www.rhaco.org/doc/index.html', 
-        //                                        $this->object->getAbsoluteUrl('../index.html', '/www.rhaco.org/doc/ja/'));
+        //                     $this->object->getAbsoluteUrl('../index.html', '/www.rhaco.org/doc/ja/'));
         //$this->assertEquals('/www.rhaco.org/index.html', 
         //                     $this->object->getAbsoluteUrl('../../index.html','/www.rhaco.org/doc/ja/'));
         //$this->assertEquals('/www.rhaco.org/index.html', 
-        //                                       $this->object->getAbsoluteUrl('../././.././index.html', '/www.rhaco.org/doc/ja/'));
+        //                     $this->object->getAbsoluteUrl('../././.././index.html', '/www.rhaco.org/doc/ja/'));
         //$this->assertEquals('c:/www.rhaco.org/doc/index.html', 
-        //                                        $this->object->getAbsoluteUrl('../index.html', 'c:/www.rhaco.org/doc/ja/'));
+        //                     $this->object->getAbsoluteUrl('../index.html', 'c:/www.rhaco.org/doc/ja/'));
         $this->assertEquals('http://www.rhaco.org/index.html', 
-                                                $this->object->getAbsoluteUrl('/index.html', 'http://www.rhaco.org/doc/ja'));
+                             $this->object->getAbsoluteUrl('/index.html', 'http://www.rhaco.org/doc/ja'));
+                             
+		//@see http://d.hatena.ne.jp/kitamomonga/20080410/ruby_mechanize_percent_url_bug
+        $this->assertEquals('http://test.org/doc/ja/index.cgi?param=hoge', 
+                             $this->object->getAbsoluteUrl('?param=hoge', 'http://test.org/doc/ja/index.cgi?test=bar'));
+        $this->assertEquals('http://test.org/index.php?param=hoge', 
+                             $this->object->getAbsoluteUrl('?param=hoge', 'http://test.org/index.php'));		
+        //if space,
+        $this->assertEquals('http://www.rhaco.org/doc/ja/'.rawurlencode('test space.html'),
+                             $this->object->getAbsoluteUrl('test space.html', 'http://www.rhaco.org/doc/ja/'));
+        
     }
 }
 ?>

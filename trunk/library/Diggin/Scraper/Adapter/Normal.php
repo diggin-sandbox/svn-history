@@ -17,7 +17,7 @@ require_once 'Diggin/Scraper/Adapter/Interface.php';
 
 class Diggin_Scraper_Adapter_Normal implements Diggin_Scraper_Adapter_Interface
 {
-    protected $config = array();
+    protected $_config = array();
     
     /**
      * Readdata as just getBody() 
@@ -37,7 +37,7 @@ class Diggin_Scraper_Adapter_Normal implements Diggin_Scraper_Adapter_Interface
             throw new Diggin_Scraper_Adapter_Exception('Expected array parameter, given ' . gettype($config));
 
         foreach ($config as $k => $v)
-            $this->config[strtolower($k)] = $v;
+            $this->_config[strtolower($k)] = $v;
 
         return $this;
     }
