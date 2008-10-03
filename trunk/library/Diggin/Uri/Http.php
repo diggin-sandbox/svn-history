@@ -46,8 +46,8 @@ class Diggin_Uri_Http
             }
         //Net_URL2 ver 0.2.0
         } else {
-			if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
-			static $neturl2;
+            if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
+            static $neturl2;
             $neturl2 = new Net_URL2($base_url);
             return $neturl2->resolve(str_replace(chr(32), '%20', $url))->getUrl();
         } 
