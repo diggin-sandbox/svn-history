@@ -91,7 +91,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
+            
+            $process->expression = self::_xpathOrCss2Xpath($process->expression);
+            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
         }
         
         return $results;
@@ -108,7 +110,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             } else if (0 === strncasecmp('./', $exp, 2)) {
                 return $exp;
             } else {
-                return '.'.preg_replace('#///#', '//' , str_replace(chr(32), '', Zend_Dom_Query_Css2Xpath::transform($exp)) );
+                return '.'.preg_replace('#//+#', '//', str_replace(chr(32), '', Zend_Dom_Query_Css2Xpath::transform($exp)));
             }
         }
     }
