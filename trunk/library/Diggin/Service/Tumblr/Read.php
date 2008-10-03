@@ -5,7 +5,6 @@
  * LICENSE
  *
  * This source file is subject to the new BSD license.
- * It is also available through the world-wide-web at this URL:
  * http://framework.zend.com/license/new-bsd
  * 
  * @category   Diggin
@@ -26,12 +25,13 @@ require_once 'Zend/Service/Abstract.php';
  * @package    Diggin_Service_Tumblr
  * @subpackage Tumblr
  * @author     sasezaki
+ * @see http://www.tumblr.com/api
  */
 
-class Diggin_Service_Tumblr_Read extends Diggin_Service_Abstract
+class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
 {
     
-    const API_LOCATION = '.tumblr.com/api/read';
+    const API_URL = 'http://%s.tumblr.com/api/read';
     
     /**
      * Zend_Http_Client Object
@@ -90,8 +90,12 @@ class Diggin_Service_Tumblr_Read extends Diggin_Service_Abstract
         
     public function getApiUrl()
     {
-        $apiUrl = 'http://'.$this->getTarget().self::API_LOCATION;
-        
+    	if (parse_url($this->getTarget(), PHP_URL_HOST)) {
+    		$apiUrl = $this->getTarget();
+    	} else {
+            $apiUrl = sprintf(self::API_URL, $this->getTarget());
+    	}
+    	
         return $apiUrl;
     }
 
@@ -215,7 +219,7 @@ class Diggin_Service_Tumblr_Read extends Diggin_Service_Abstract
         $this->_client = self::getHttpClient();
         $this->_client->setUri(self::getApiUrl());
         if(isset($parms)){
-        $this->_client->setParameterGet($parms);
+            $this->_client->setParameterGet($parms);
         }
         
         self::$_lastRequestTime = microtime(true);
@@ -255,7 +259,7 @@ class Diggin_Service_Tumblr_Read extends Diggin_Service_Abstract
      * @param  string      $attValue Attribute of child tag to be used as a value
      * @return array
      */
-    private static function _xmlResponseToPostArray(DOMDocument $response, $maxWidth = '500')
+    protected static function _xmlResponseToPostArray(DOMDocument $response, $maxWidth = '500')
     {
         $child = 'posts';   //childには　tumblelog, posts
         $arrOut = array();
