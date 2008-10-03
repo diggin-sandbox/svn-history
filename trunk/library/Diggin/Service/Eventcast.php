@@ -47,7 +47,7 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
     protected static $_parameter = array('Sort' => 'date',
                                          'Order' => 'asc',
                                          'Start' => 1,
-                                         'Results' => 100,
+                                         'Results' => 50,
                                          'Trim' => 0,
                                          'Format' => 'php');
     
@@ -58,8 +58,24 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
      */
     public static function setParameter(array $parameter)
     {
+    	$parameter = array_change_key_case($parameter, CASE_LOWER);
+    	
+    	self::checkParameter($parameter);
         self::$_parameter = array_merge(array_change_key_case(self::$_parameter, CASE_LOWER), 
-                                        array_change_key_case($parameter, CASE_LOWER));
+                                        $parameter);
+    }
+    
+    /**
+     * @todo
+     *
+     * @param unknown_type $parameter
+     */
+    public static function checkParameter($parameter)
+    {
+    	if (isset($parameter['start']) && !ctype_digit($parameter['start'])) {
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception("start is not digit : ".$parameter['start']);
+    	}
     }
     
     /**
@@ -123,7 +139,7 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
         }
         
         if (self::$_parameter['Format'] === 'php') {
-        	//@todo return resultset implements Iterator
+            //@todo return resultset implements Iterator
             return unserialize($response->getBody());
         }
         

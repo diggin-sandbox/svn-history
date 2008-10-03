@@ -253,10 +253,7 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
      * Transform XML string to array
      *
      * @param  DOMDocument $response
-     * @param  string      $root     Name of root tag
-     * @param  string      $child    Name of children tags
-     * @param  string      $attKey   Attribute of child tag to be used as a key
-     * @param  string      $attValue Attribute of child tag to be used as a value
+     * @param  string      $maxWidth
      * @return array
      */
     protected static function _xmlResponseToPostArray(DOMDocument $response, $maxWidth = '500')
