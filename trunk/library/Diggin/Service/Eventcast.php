@@ -24,6 +24,10 @@ require_once 'Zend/Service/Abstract.php';
  */
 require_once 'Zend/Uri/Http.php';
 
+/**
+ * 
+ * @see http://clip.eventcast.jp/webservices/api.html
+ */
 class Diggin_Service_Eventcast extends Zend_Service_Abstract
 {
     const API_URL = 'http://clip.eventcast.jp/api/v1/Search?';
@@ -40,11 +44,11 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
      *
      * @var array
      */
-    protected static $_parameter = array('sort' => 'date',
-                                         'order' => 'asc',
-                                         'start' => 1,
-                                         'results' => 100,
-                                         'trim' => 0,
+    protected static $_parameter = array('Sort' => 'date',
+                                         'Order' => 'asc',
+                                         'Start' => 1,
+                                         'Results' => 100,
+                                         'Trim' => 0,
                                          'Format' => 'php');
     
     /**
@@ -54,7 +58,8 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
      */
     public static function setParameter(array $parameter)
     {
-        self::$_parameter = array_merge(self::$_parameter, $parameter);
+        self::$_parameter = array_merge(array_change_key_case(self::$_parameter, CASE_LOWER), 
+                                        array_change_key_case($parameter, CASE_LOWER));
     }
     
     /**
@@ -65,27 +70,47 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
      */
     public static function getParameter()
     {
+    	/**
+    	 * @see Zend_Date
+    	 */
+    	require_once 'Zend/Date.php';
+    	
+    	$date = new Zend_Date();
         if (!array_key_exists(strtolower('startdate'), self::$_parameter)) {
-            self::$_parameter['startdate'] = date('Y/m/d', time()+86400*0);
+        	self::$_parameter['StartDate'] = (string) $date->get('yyyy/MM/dd');
         }
         
         if (!array_key_exists(strtolower('enddate'), self::$_parameter)) {
-            self::$_parameter['enddate'] = date('Y/m/d', time()+86400*30);
+        	$date->addMonth(1);
+            self::$_parameter['EndDate'] = (string) $date->get('yyyy/MM/dd');
+        }
+        
+        $params = self::$_parameter;
+        self::$_parameter = array();
+
+        foreach ($params as $k => $v) {
+            if (strtolower($k) === 'startdate') {
+                self::$_parameter['StartDate'] = $v;
+            } else if (strtolower($k) === 'enddate') {
+                self::$_parameter['EndDate'] = $v;
+            } else {
+                self::$_parameter[ucfirst($k)] = $v;
+            }
         }
         
         return self::$_parameter;
     }
     
-    public static function makeRequest($parameter)
+    public static function request($parameter = array())
     {
-        self::setParameter($parameter);
+        if ($parameter) self::setParameter($parameter);
         
         self::$_client = self::getHttpClient();
         
         $uri = Zend_Uri_Http::factory(self::API_URL);
         $uri->setQuery(self::getParameter());
 
-        self::$_client->setUri($uri->getUri());
+        self::$_client->setUri($uri);
         
         $response = self::$_client->request(Zend_Http_Client::GET);
         
@@ -97,7 +122,12 @@ class Diggin_Service_Eventcast extends Zend_Service_Abstract
              throw new Diggin_Service_Exception("Http client reported an error: '{$response->getMessage()}'");
         }
         
-        return unserialize($response->getBody());
+        if (self::$_parameter['Format'] === 'php') {
+        	//@todo return resultset implements Iterator
+            return unserialize($response->getBody());
+        }
+        
+        return $response->getBody();
     }
     
 }
