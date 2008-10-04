@@ -1,4 +1,12 @@
 <?php
+//$rhacopath = '/media/disk-1/work/rhaco2/2_0';
+//set_include_path(get_include_path().PATH_SEPARATOR.$rhacopath);
+//require_once 'Rhaco.php';
+//Rhaco::import('network.Url');
+//var_dump(Url::parseAbsolute('http://yahoo.com/test/test.cgi?hoge=bar', '?param=foo'));
+//var_dump(Url::parseAbsolute('http://yahoo.com/test/', '../index.html'));
+//var_dump(get_include_path());exit;
+
 require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Uri/Http.php';
@@ -42,6 +50,8 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAbsoluteUrl()
     {
+    	
+    	
     	//if 
     	$this->assertEquals('http://yahoo.com/test/', 
                              $this->object->getAbsoluteUrl('http://yahoo.com/test/', 'http://www.rhaco.org/'));
