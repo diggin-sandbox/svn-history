@@ -23,10 +23,25 @@ class Diggin_Scraper_Process
     
     public $processes;
     
+    /**
+     * 
+     *
+     * @return UnTokenize process
+     */
     public function __toString()
     {
-        return '\''.$this->expression.'\' , '.
-               $this->name.' => '. $this->type. '"';
+    	if ($this->processes instanceof Diggin_Scraper_Process) {
+            return '\''.$this->expression.'\', '.
+               "'".$this->name.' => " (Diggin_Scraper_Process)"';
+    	}
+    	
+    	if ($this->filters !== false) {
+    		return '\''.$this->expression.'\', '.
+               "'".$this->name.' => ["'. $this->type. '", "'.$this->filters.'"]\'';
+    	}
+    	
+        return '\''.$this->expression.'\', '.
+               "'".$this->name.' => "'. $this->type. '"\'';
     }
     
     public function __construct($expression = null, $name = null, $arrayflag = false, $type = null, $filters = false)
