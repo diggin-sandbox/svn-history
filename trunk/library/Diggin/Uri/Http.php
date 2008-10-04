@@ -44,6 +44,11 @@ class Diggin_Uri_Http
                     HTTP_URL_JOIN_PATH | HTTP_URL_STRIP_QUERY | HTTP_URL_STRIP_FRAGMENT);
                 }
             }
+        /*
+        } else if(class_exists('Rhaco')) {
+        	Rhaco::import('network.Url');
+        	return Url::parseAbsolute($base_url, $url);
+        */
         //Net_URL2 ver 0.2.0
         } else {
             if (!class_exists('Net_URL2')) require_once 'Net/URL2.php';
