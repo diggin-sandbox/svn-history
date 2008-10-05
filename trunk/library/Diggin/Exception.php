@@ -14,5 +14,11 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * @category   Diggin
+ * @package    Diggin
+ * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Diggin_Exception extends Exception
 {}
