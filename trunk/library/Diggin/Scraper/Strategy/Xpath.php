@@ -87,7 +87,7 @@ class Diggin_Scraper_Strategy_Xpath extends Diggin_Scraper_Strategy_Abstract
         $results = (array) $values->xpath($process->expression);
         restore_error_handler();
 
-        if (count($results) === 0) {
+        if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             throw new Diggin_Scraper_Strategy_Exception("couldn't find By Xpath, Process : $process");            
         }
