@@ -30,6 +30,6 @@ include $releasepath.DIRECTORY_SEPARATOR.'Diggin/'.'makepackage_Diggin.php';
  * NOTES:
  * 
  * function, dircopy & get_dir_tree is copy from manual
- * http://jp2.php.net/manual/ja/function.pathinfo.php
+ * http://jp2.php.net/manual/ja/function.copy.php
  */
 //paste here!
