@@ -80,7 +80,21 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
      */
     public function getValue($values, $process)
     {
-        return $values;
+        if (strtoupper(($process->type)) === 'RAW') {
+            $strings = $values;
+        } elseif (strtoupper(($process->type)) === 'TEXT') {
+            $strings = array();
+            foreach (current($values) as $value) {
+                $value = strip_tags($value);
+                $value = str_replace(array(chr(10), chr(13)), '', $value);
+                array_push($strings, $value);
+            }
+        } else {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
+        }
+    	
+        return $strings;
     }
     
     /**
