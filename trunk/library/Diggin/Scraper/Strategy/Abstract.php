@@ -100,10 +100,8 @@ abstract class Diggin_Scraper_Strategy_Abstract
         
         $values = $this->getValue($values, $process);
         
-        if ($process->arrayflag === false && strtoupper($process->type) === 'RAW') {
+        if ($process->arrayflag === false) {
             $values = current($values);
-        } elseif ($process->arrayflag === false) {
-            $values = (string) current($values);
         }
         
         if ($process->filters) {
