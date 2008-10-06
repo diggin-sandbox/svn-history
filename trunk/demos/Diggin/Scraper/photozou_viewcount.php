@@ -2,10 +2,12 @@
 //photozouでviewが大きい順に表示
 require_once 'Diggin/Scraper.php';
 $url = 'http://photozou.jp/photo/list/144383/all';
+$url = 'http://photozou.jp/photo/search_result?whose=&copyright=&cc_license=&keyword=cosplay&is_video=';
 
 try {
 	 $thumbnail = new Diggin_Scraper_Process();
 	 $thumbnail->addProcess('p.photolist_title', 'title => TEXT')
+	           ->addProcess('a', 'link => @href')
 	           ->addProcess('span.photolist_view','view => TEXT');
 	 $scraper = new Diggin_Scraper();
 	 $scraper->process('//li[@class="thumbnail"]', array('thumbnail[]' => $thumbnail))
