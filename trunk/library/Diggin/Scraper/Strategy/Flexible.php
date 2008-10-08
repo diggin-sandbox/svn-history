@@ -126,14 +126,11 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      *  STEP3: replace chr(10)  Line feed & chr(13) Carriage return
      *  @see http://en.wikipedia.org/wiki/ASCII
      * 
-     * NOTES:
-     * if 'TEXT' with Adapter_Htmlscraping
+     * NOTES: 2008/10/09
+     * if 'TEXT0'(old) with Adapter_Htmlscraping
 	 * <tag>text1>text2</tag>
 	 * will return 
 	 * <tag>text1&gttext2</tag>
-	 * 
-	 * @todo if (adapter != Htmlscraping) /maybe not str_replace(&amp;)!
-	 *        but, if(adapter === Htmlscraping) //must replace(&amp;)!
      * 
      * @param Diggin_Scraper_Context
      * @param Diggin_Scraper_Process
@@ -146,27 +143,29 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $strings = $values;
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
+            foreach ($values as $value) {
+                $value = str_replace(array('&amp;lt;', '&amp;gt;', '&amp;quot', '&amp;'),
+                                     array('<',        '>',        '"',         '&'), 
+                                     strip_tags($value->asXML()));
+                $value = str_replace(array(chr(10), chr(13)), '', $value);
+                array_push($strings, $value);
+            }
+        } elseif (strtoupper(($process->type)) === 'TEXT0') {
+            $strings = array();
             foreach ($values as $value) { 
                 $value = strip_tags(str_replace('&amp;', '&', $value->asXML()));
                 $value = str_replace(array(chr(10), chr(13)), '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strtoupper(($process->type)) === 'TEST') {
+        } elseif (strtoupper(($process->type)) === 'DECODE') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace(array('&amp;gt;', '&amp;'), 
-                                                array('>', '&',), $value->asXML()));
+                $value = html_entity_decode(strip_tags($value->asXML()));
                 $value = str_replace(array(chr(10), chr(13)), '', $value);
                 array_push($strings, $value);
-            }
-//        } elseif (strtoupper(($process->type)) === 'DECODE') {
-//            $strings = array();
-//            foreach ($values as $value) {
-//                $value = html_entity_decode(strip_tags($value->asXML()));
-//                $value = str_replace(array(chr(10), chr(13)), '', $value);
-//                array_push($strings, $value);
-//            }        	
-        } elseif (strtoupper(($process->type)) === 'PLAIN') {
+            }        	
+        } elseif (strtoupper(($process->type)) === 'PLAIN' or
+                  strtoupper(($process->type)) === 'HTML') {
             $strings = array();
             foreach ($values as $value) {
                 array_push($strings, str_replace('&amp;', '&', $value->asXML()));
