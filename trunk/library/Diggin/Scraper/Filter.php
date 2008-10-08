@@ -53,15 +53,22 @@ class Diggin_Scraper_Filter
                     }
                 }
             } else {
-                require_once 'Diggin/Scraper/Autofilter.php';
                 $prefix = substr($filter, 0, 1);
-                $filter = substr($filter, 1);
+                
                 //have
-                if ($prefix === "*") {
-                   $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, true);
+                if ($prefix === '*') {
+                    require_once 'Diggin/Scraper/Autofilter.php';
+                    $filter = substr($filter, 1);
+                    $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, true);
                 //not have
-                } elseif($prefix === "!") {
-                   $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, false);
+                } elseif ($prefix === '!') {
+                	$filter = substr($filter, 1);
+                    $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, false);
+                } elseif ($prefix === '/' or $prefix === '#') {
+                	$filterds = new RegexIterator(new ArrayIterator($values), $filter);
+                } else {
+                	require_once 'Diggin/Scraper/Exception.php';
+                	throw new Diggin_Scraper_Exception("couldn't auto-filtering: prefix with $prefix : {$e->getMessage()}");
                 }
                 
                 foreach($filterds as $filterd) $return[] = $filterd;
