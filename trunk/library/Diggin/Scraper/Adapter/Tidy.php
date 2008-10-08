@@ -28,7 +28,7 @@ class Diggin_Scraper_Adapter_Tidy implements Diggin_Scraper_Adapter_Interface
      * Readdata as SimpleXml
      * 
      * @param Zend_Http_Response $response
-     * @retrun Object SimpleXMLElement
+     * @return SimpleXMLElement
      */
     public function readData($response)
     {

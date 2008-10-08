@@ -45,7 +45,7 @@ class Diggin_Scraper
     private static $_processes;
     
     /**
-     * strategy name to use for chaning strategy
+     * strategy name to use for changing strategy
      */
     private static $_strategyName;
     
@@ -55,7 +55,7 @@ class Diggin_Scraper
     private static $_adapter;
 
     /**
-     * startegy for scraping
+     * strategy for scraping
      */
     protected static $_strategy = null;
     
@@ -234,8 +234,25 @@ class Diggin_Scraper
 
     /**
      * setting process like DSL of Web::Scraper
+     * Sample&Demo is : demos/Diggin/Scraper/
      * 
      * @params mixed args1, args2, args3,,,
+     * $thisObejct->process('expresssion', 'key => val, filter, filter,', 'key => val)
+     * like
+     * $thisObejct->process('//div[@class="post-content"]/ul/li/a', 'title => TEXT')
+     * 
+     * expression : (depend on)Strategy
+     *  [Default] Css Or Xpath 
+     * key : results's key. 
+     *  $scraper->results['key'];
+     *  can access as this class's property (by __get method)
+     *  $scraper->key
+     * val : (depend on)Strategy
+     * filter :
+     *  filtering by 
+     *  user_func , Zend_Filter_*, Your_Filter_*(implements Zend_Filter_Interface)
+     * 
+     * @see Diggin_Scraper_Filter
      * @return Diggin_Scraper Provides a fluent interface
      */
     public function process($args)

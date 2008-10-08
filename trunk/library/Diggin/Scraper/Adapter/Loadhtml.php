@@ -26,8 +26,10 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
     );
     
     /**
+     * Casts a SimpleXMLElement
      * 
-     * @return 
+     * @param Zend_Htp_Response 
+     * @return SimpleXMLElement
      */
     public function readData($response)
     {
