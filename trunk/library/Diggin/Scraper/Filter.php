@@ -24,13 +24,7 @@ class Diggin_Scraper_Filter
      * @return unknown
      */
     public static function run($values, $filters, $filterParams = null)
-    {
-        $argValues = $values;
-        
-        if (!is_array($values)) {
-            $values = array($values);
-        }
-        
+    {        
         foreach ($filters as $filter) {
             
             $return = array();
@@ -75,11 +69,7 @@ class Diggin_Scraper_Filter
             
             $values = $return;
         }
-            
-        if (!is_array($argValues)) {
-            $return = (string) array_shift($return);
-        }
-        
+
         return $return;
     }
 }

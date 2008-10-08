@@ -100,13 +100,13 @@ abstract class Diggin_Scraper_Strategy_Abstract
         
         $values = $this->getValue($values, $process);
         
-        if ($process->arrayflag === false) {
-            $values = current($values);
-        }
-        
         if ($process->filters) {
             require_once 'Diggin/Scraper/Filter.php';
             $values = Diggin_Scraper_Filter::run($values, $process->filters);
+        }
+        
+        if ($process->arrayflag === false) {
+            $values = current($values);
         }
         
         return $values;
