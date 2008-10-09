@@ -136,8 +136,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      * NOTES: 2008/10/09
      * $xml = '<tag>text1>text2</tag>';
      * $s = new SimpleXMLElement($xml);
-	 * var_dump($s->asXML()); 
-	 * // '<tag>text1&gt;text2</tag>'
+     * var_dump($s->asXML()); 
+     * // '<tag>text1&gt;text2</tag>'
      * 
      * @param Diggin_Scraper_Context
      * @param Diggin_Scraper_Process
