@@ -148,12 +148,15 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         //type
         if (strtoupper(($process->type)) === 'RAW') {
             $strings = $values;
+        } elseif (strtoupper(($process->type)) === 'ASXML') {
+            $strings = array();
+            foreach ($values as $value) {
+                array_push($strings, $value->asXML());
+            }
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
-                                                array('>', '&'), 
-                                     $value->asXML()));
+                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
@@ -162,23 +165,31 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                   strtoupper(($process->type)) === 'DISP') {
             $strings = array();
             foreach ($values as $value) {
-            	$value = str_replace(array('&gt;', '&amp;'),
-                                     array('>', '&'), 
-                                     $value->asXML());
+                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
                 $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
             }        	
-        } elseif (strtoupper(($process->type)) === 'PLAIN' or
-                  strtoupper(($process->type)) === 'HTML') {
+        } elseif (strtoupper(($process->type)) === 'PLAIN') {
             $strings = array();
             foreach ($values as $value) {
-            	$value = str_replace(array('&gt;', '&amp;'),
+                $value = str_replace(array('&gt;', '&amp;'),
                                      array('>', '&'),
                                      $value->asXML());
                 $value = str_replace(array(chr(10), chr(13)),
                                      '', $value);
+                array_push($strings, $value);
+            }
+        } elseif (strtoupper(($process->type)) === 'HTML') {
+            $strings = array();
+            foreach ($values as $value) {
+                $value = str_replace(array('&gt;', '&amp;'),
+                                     array('>', '&'),
+                                     $value->asXML());
+                $value = str_replace(array(chr(10), chr(13)),
+                                     '', $value);
+                $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
                 array_push($strings, $value);
             }
         } elseif (strpos($process->type, '@') === 0) {
