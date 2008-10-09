@@ -156,7 +156,10 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
+                //$value = strip_tags(str_replace('&amp;','&', $value->asXML()));
+                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
+                                                array('>', '&'), 
+                                     $value->asXML()));
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
@@ -165,16 +168,20 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                   strtoupper(($process->type)) === 'DISP') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
+                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
+                                                array('>', '&'), 
+                                     $value->asXML()));
                 $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
-            }        	
+            }
         } elseif (strtoupper(($process->type)) === 'PLAIN') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
+                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
+                                                array('>', '&'), 
+                                     $value->asXML()));
                 $value = str_replace(array(chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
@@ -182,7 +189,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'HTML') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace('&amp;','&', $value->asXML()));
+                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
+                                                array('>', '&'), 
+                                     $value->asXML()));
                 $value = str_replace(array(chr(10), chr(13)),
                                      '', $value);
                 $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
@@ -192,13 +201,13 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $strings = array();
             require_once 'Diggin/Uri/Http.php';
             foreach ($values as $value) {
-            	$attribute = (string) $value[substr($process->type, 1)];
+                $attribute = (string) $value[substr($process->type, 1)];
                 if (($process->type == '@href' OR $process->type == '@src')) {
                     array_push($strings, Diggin_Uri_Http::getAbsoluteUrl($attribute, self::$_adapterconfig['url']));
                 } else {
                     array_push($strings, $attribute);
                 }
-            }            
+            }
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);

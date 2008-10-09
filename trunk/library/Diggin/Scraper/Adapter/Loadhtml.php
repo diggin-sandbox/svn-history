@@ -33,7 +33,9 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
      */
     public function readData($response)
     {
-        $dom = @DOMDocument::loadHTML($response->getBody());
+        
+        $responseBody = str_replace('&', '&amp;', $response->getBody());
+        $dom = @DOMDocument::loadHTML($responseBody);
         $simplexml = simplexml_import_dom($dom);
         
         // ここまででもいいのだけど。
