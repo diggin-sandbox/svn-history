@@ -118,19 +118,25 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     /**
      * Getting Value
      * 'RAW'----
-     *  just as SimpleXMlElement
+     *   just as SimpleXMlElement
      * 'TEXT' ----  
-     *  STEP1: SimpleXMlElement->asXML
-     *  STEP2: replace entity
-     *  @see http://www.rcdtokyo.com/etc/htmlscraping/ [実体参照について]
-     *  STEP3: replace chr(10)  Line feed & chr(13) Carriage return
+     *  step1: SimpleXMlElement->asXML
+     *  step2: replace escaped entity 
+     *  Htmlscaraping is "Replace every '&' with '&amp;'"
+     *  @see Diggin_Scraper_Adapter_Htmlscraping
+     *  @see http://www.rcdtokyo.com/etc/htmlscraping/#NOTE_ENTITY
+     *  step3: triming
+     *   chr(9)  Tab
+     *   chr(10) Line Feed (LF) 
+     *   chr(13) Carriage Return(CR)
+     *   
      *  @see http://en.wikipedia.org/wiki/ASCII
      * 
      * NOTES: 2008/10/09
-     * if 'TEXT0'(old) with Adapter_Htmlscraping
-	 * <tag>text1>text2</tag>
-	 * will return 
-	 * <tag>text1&gttext2</tag>
+     * $xml = '<tag>text1>text2</tag>';
+     * $s = new SimpleXMLElement($xml);
+	 * var_dump($s->asXML()); 
+	 * // '<tag>text1&gt;text2</tag>'
      * 
      * @param Diggin_Scraper_Context
      * @param Diggin_Scraper_Process
@@ -144,31 +150,35 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                $value = str_replace(array('&amp;lt;', '&amp;gt;', '&amp;quot', '&amp;'),
-                                     array('<',        '>',        '"',         '&'), 
-                                     strip_tags($value->asXML()));
-                $value = str_replace(array(chr(10), chr(13)), '', $value);
+                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
+                                                array('>', '&'), 
+                                     $value->asXML()));
+                $value = str_replace(array(chr(9), chr(10), chr(13)),
+                                     '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strtoupper(($process->type)) === 'TEXT0') {
-            $strings = array();
-            foreach ($values as $value) { 
-                $value = strip_tags(str_replace('&amp;', '&', $value->asXML()));
-                $value = str_replace(array(chr(10), chr(13)), '', $value);
-                array_push($strings, $value);
-            }
-        } elseif (strtoupper(($process->type)) === 'DECODE') {
+        } elseif (strtoupper(($process->type)) === 'DECODE' or 
+                  strtoupper(($process->type)) === 'DISP') {
             $strings = array();
             foreach ($values as $value) {
-                $value = html_entity_decode(strip_tags($value->asXML()));
-                $value = str_replace(array(chr(10), chr(13)), '', $value);
+            	$value = str_replace(array('&gt;', '&amp;'),
+                                     array('>', '&'), 
+                                     $value->asXML());
+                $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
+                $value = str_replace(array(chr(9), chr(10), chr(13)),
+                                     '', $value);
                 array_push($strings, $value);
             }        	
         } elseif (strtoupper(($process->type)) === 'PLAIN' or
                   strtoupper(($process->type)) === 'HTML') {
             $strings = array();
             foreach ($values as $value) {
-                array_push($strings, str_replace('&amp;', '&', $value->asXML()));
+            	$value = str_replace(array('&gt;', '&amp;'),
+                                     array('>', '&'),
+                                     $value->asXML());
+                $value = str_replace(array(chr(10), chr(13)),
+                                     '', $value);
+                array_push($strings, $value);
             }
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
