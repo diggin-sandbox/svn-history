@@ -68,7 +68,7 @@ class Diggin_Scraper_Filter
                 	$filterds = new RegexIterator(new ArrayIterator($values), $filter);
                 } else {
                 	require_once 'Diggin/Scraper/Exception.php';
-                	throw new Diggin_Scraper_Exception("couldn't auto-filtering: prefix with $prefix : {$e->getMessage()}");
+                	throw new Diggin_Scraper_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
                 }
                 
                 foreach($filterds as $filterd) $return[] = $filterd;
