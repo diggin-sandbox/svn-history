@@ -24,22 +24,23 @@ class Diggin_Scraper_Process
     public $processes;
     
     /**
-     * 
+     * toString
+     * UnTokenize process For using Exception errstr.
      *
-     * @return UnTokenize process
+     * @return string
      */
     public function __toString()
     {
-    	if ($this->processes instanceof Diggin_Scraper_Process) {
+        if ($this->processes instanceof Diggin_Scraper_Process) {
             return '\''.$this->expression.'\', '.
                "'".$this->name.' => " (Diggin_Scraper_Process)"';
-    	}
-    	
-    	if ($this->filters !== false) {
-    		return '\''.$this->expression.'\', '.
+        }
+        
+        if ($this->filters !== false) {
+        return '\''.$this->expression.'\', '.
                "'".$this->name.' => ["'. $this->type. '", "'.$this->filters.'"]\'';
-    	}
-    	
+        }
+        
         return '\''.$this->expression.'\', '.
                "'".$this->name.' => "'. $this->type. '"\'';
     }
