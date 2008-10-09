@@ -125,7 +125,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      *  Htmlscaraping is "Replace every '&' with '&amp;'"
      *  @see Diggin_Scraper_Adapter_Htmlscraping
      *  @see http://www.rcdtokyo.com/etc/htmlscraping/#NOTE_ENTITY
-     *  step3: triming
+     *  step3: strip_tags
+     *  step4: triming (without space)
      *   chr(9)  Tab
      *   chr(10) Line Feed (LF) 
      *   chr(13) Carriage Return(CR)
@@ -184,13 +185,13 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $strings = array();
             require_once 'Diggin/Uri/Http.php';
             foreach ($values as $value) {
+            	$attribute = (string) $value[substr($process->type, 1)];
                 if (($process->type == '@href' OR $process->type == '@src')) {
-                    array_push($strings, Diggin_Uri_Http::getAbsoluteUrl((string)$value[substr($process->type, 1)], self::$_adapterconfig['url']));
+                    array_push($strings, Diggin_Uri_Http::getAbsoluteUrl($attribute, self::$_adapterconfig['url']));
                 } else {
-                    array_push($strings, (string) $value[substr($process->type, 1)]);
+                    array_push($strings, $attribute);
                 }
-            }
-            
+            }            
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
