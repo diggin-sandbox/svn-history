@@ -59,7 +59,7 @@ class Diggin_Scraper_Process
         $this->filters = $filters;
     }
     
-    public function addProcess($args)
+    public function process($args)
     {
         $args = func_get_args();
         

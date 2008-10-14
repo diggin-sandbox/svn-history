@@ -4,12 +4,12 @@ require_once 'Zend/Loader.php';
 Zend_Loader::registerAutoload();
 
 $link = new Diggin_Scraper_Process();
-$link->addProcess('.', 'name => TEXT')
-     ->addProcess('.', 'uri => @href');
+$link->process('.', 'name => TEXT')
+     ->process('.', 'uri => @href');
 
 $genre = new Diggin_Scraper_Process();
-$genre->addProcess('//a[1]', array('top' => $link))
-      ->addProcess('//a[2]', array('style' => $link));
+$genre->process('//a[1]', array('top' => $link))
+      ->process('//a[2]', array('style' => $link));
 
      
 function star(SimpleXMLElement $s){
