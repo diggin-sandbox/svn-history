@@ -92,7 +92,9 @@ abstract class Diggin_Scraper_Strategy_Abstract
                 }
                 
                 if (($process->arrayflag === false) && $count === 0) {
-                    $returns = current($returns); break;
+                    if(is_array($returns)) {
+                        $returns = current($returns); break;
+                    } 
                 }
             }
             
