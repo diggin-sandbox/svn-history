@@ -82,6 +82,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         }
         
         if ($process->type instanceof Diggin_Scraper_Process) {
+            $returns = false;
             foreach ($values as $count => $val) {
                 foreach ($process->type->processes as $proc) {
                     //@todo 値がとれなかったとき、格納しないか空かどうかはconfigでやるべきかな
@@ -95,7 +96,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
                 }
             }
             
-           return $returns;
+            return $returns;
         }
         
         $values = $this->getValue($values, $process);
