@@ -298,7 +298,7 @@ class Diggin_Scraper
                     }
                 }
             } elseif (is_array($nametype)) {
-                if(!is_numeric(key($nametype))) {
+                if(!ctype_digit(key($nametype))) {
                     foreach ($nametype as $name => $nm) {
                         if ((substr($name, -2) == '[]')) {
                             $name = substr($name, 0, -2);

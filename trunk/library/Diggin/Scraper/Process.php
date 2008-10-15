@@ -98,7 +98,7 @@ class Diggin_Scraper_Process
                     }
                 }
             } elseif (is_array($nametype)) {
-                if(!is_numeric(key($nametype))) {
+                if(!ctype_digit(key($nametype))) {
                     if ((substr(key($nametype), -2) == '[]')) {
                         $name = substr(key($nametype), 0, -2);
                         $arrayflag = true;
