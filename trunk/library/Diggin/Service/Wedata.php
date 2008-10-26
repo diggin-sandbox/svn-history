@@ -29,7 +29,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     const PATH_GET_DATABASE  = '/databases/%s.json';
     const PATH_CREATE_DATABASE = '/databases';
     const PATH_UPDATE_DATABASE = '/databases/%s';
-    const PATH_DELETE_DATABSE = '/databases/%s';
+    const PATH_DELETE_DATABASE = '/databases/%s';
     
     //item
     const PATH_GET_ITEMS = '/databases/%s/items.json';//dbname
@@ -272,7 +272,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
-        $path = sprintf(self::PATH_DELETE_DATABSE, rawurlencode(self::$_params['database']['name']));
+        $path = sprintf(self::PATH_DELETE_DATABASE, rawurlencode(self::$_params['database']['name']));
         $return = self::makeRequest($path, Zend_Http_Client::DELETE, $params);
         
         return $return;
