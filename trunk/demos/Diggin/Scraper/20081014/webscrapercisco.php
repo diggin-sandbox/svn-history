@@ -11,23 +11,40 @@ $genre = new Diggin_Scraper_Process();
 $genre->process('//a[1]', array('top' => $link))
       ->process('//a[2]', array('style' => $link));
 
-     
+$track = new Diggin_Scraper_Process();
+$track->process('.', 'title => RAW, stringline')
+      ->process('a', 'uri => @href');
+
+//$track = new Diggin_Scraper_Process();
+//$track->process('.', 'title[] => TEXT');
+      
 function star(SimpleXMLElement $s){
     return (string) $s;
 }
-      
-      
-$item = new Diggin_Scraper();
-$item->process('td.de_title', 'title  => TEXT')
-     ->process('td.de_artist', 'artist => TEXT')
-     ->process('td.nm_jacket>img', 'image => @src')
-     ->process('td.de_price', 'price => DECODE')
-     ->process('td.de_label>a', array('label' => $link))
-     ->process('td.de_genre', array('genre' => $genre))
-     ->process('p.de_star', 'star => RAW, star')
-     ->scrape('http://www.cisco-records.co.jp/html/item/003/100/item355640.html');
+
+function stringline($string){
+    return trim((string) $string);
+}
+
+$scraper = new Diggin_Scraper();
+$scraper->process('td.de_title', 'title  => TEXT')
+    ->process('td.de_artist', 'artist => TEXT')
+    ->process('td.nm_jacket>img', 'image => @src')
+    ->process('td.de_price', 'price => DECODE')
+    ->process('td.de_label>a', array('label' => $link))
+    ->process('td.de_genre', array('genre' => $genre))
+    ->process('p.de_star', 'star => RAW, star')
+    ->process('td[headers="de_format"]',  'format  => TEXT')
+    ->process('td[headers="de_release"]', 'release => TEXT')
+    ->process('td[headers="de_country"]', 'country => TEXT')
+    ->process('td[headers="de_sheet"]',   'sheet   => TEXT')
+    ->process('td[headers="de_arrival"]', 'arrival => TEXT')
+    ->process('td[headers="de_nomber"]',  'number  => TEXT')
+    ->process('//ul[@id="de_sound"]//li', array('tracks[]' => $track))
+    ->scrape('http://www.cisco-records.co.jp/html/item/003/100/item355640.html');
      
-print_r($item);
+print_r($scraper->results);
+
 
 /**
 Diggin_Scraper Object
