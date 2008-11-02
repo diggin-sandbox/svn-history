@@ -98,7 +98,7 @@ class Diggin_Debug
         $label = ($config['label']===null) ? '' : rtrim($config['label']) . ' ';
 
         // var_dump the variable into a buffer and keep the output
-        ob_start();        
+        ob_start();
         var_dump($var);
         $output = ob_get_clean();
         if (self::getOs() === 'WINNT') {

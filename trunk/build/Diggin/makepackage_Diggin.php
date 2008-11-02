@@ -49,6 +49,7 @@ $packagexml->addExtensionDep('required', 'ctype');
 $packagexml->addPackageDepWithUri('required',
                                   'Diggin_Scraper_Adapter_Htmlscraping',
                                   'http://diggin.musicrider.com/Diggin_Scraper_Adapter_Htmlscraping');
+$packagexml->addPackageDepWithChannel('required', 'Net_Url2-0.2.0','pear.php.net');
 $packagexml->addMaintainer('lead', 'sasezaki', 'Mika Sasezaki', 'sasezaki at gmail.com');
 $packagexml->setLicense('New BSD license', 'http://framework.zend.com/license/new-bsd');
 $packagexml->addGlobalReplacement('package-info', '@PEAR-VER@', 'version');

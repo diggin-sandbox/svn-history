@@ -2,7 +2,7 @@
  
 //@see http://0-oo.net/sbox/php-tool-box/html-sql-all-php-functions
 
-//ini_set("memory_limit","100000000");
+ini_set("memory_limit","50000000");
 require_once 'Diggin/Scraper.php';
 
 function replace($val) {

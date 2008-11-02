@@ -156,7 +156,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                //$value = strip_tags(str_replace('&amp;','&', $value->asXML()));
                 $value = strip_tags(str_replace(array('&gt;', '&amp;'),
                                                 array('>', '&'), 
                                      $value->asXML()));
