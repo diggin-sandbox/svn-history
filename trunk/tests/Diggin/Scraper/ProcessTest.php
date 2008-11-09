@@ -40,16 +40,16 @@ class Diggin_Scraper_ProcessTest extends PHPUnit_Framework_TestCase
      * @todo Implement test__toString().
      */
     public function test__toString() {
-    	
-    	$this->object->expression = $exp = '//expression';
-    	$this->object->name = $key ='key[]';
-    	$this->object->type = $val = 'val';
-    	$this->object->filters = $filter = 'filter';
-    	
-    	$process = <<<PROCESS
+        
+        $this->object->expression = $exp = '//expression';
+        $this->object->name = $key ='key[]';
+        $this->object->type = $val = 'val';
+        $this->object->filters = $filter = 'filter';
+        
+        $process = <<<PROCESS
 '$exp', '$key => ["$val", "$filter"]'
 PROCESS;
-    	
+        
         $this->assertEquals($process, (string) $this->object);
     }
 
