@@ -101,7 +101,7 @@ class Diggin_Debug
         ob_start();
         var_dump($var);
         $output = ob_get_clean();
-        if (self::getOs() === 'WINNT') {
+        if (isset($config['toEncoding']) and isset($config['fromEncoding'])) {
             $output = mb_convert_encoding($output, $config['toEncoding'], $config['fromEncoding']);
         }
         $output= substr($output, $config['start'], $config['length']);
