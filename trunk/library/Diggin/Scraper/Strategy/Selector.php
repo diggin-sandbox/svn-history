@@ -15,7 +15,7 @@
  */
 
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
-require_once dirname(__FILE__).'/Selector/sfDomCssSelector.class.php';
+require_once 'symfony/util/sfDomCssSelector.class.php';
 class Diggin_Scraper_Strategy_Selector extends Diggin_Scraper_Strategy_Abstract 
 {    
     protected static $_adapter = null;
