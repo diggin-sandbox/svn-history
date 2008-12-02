@@ -13,7 +13,7 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-require_once 'rhaco/Rhaco.php';
+//require_once 'rhaco/Rhaco.php';
 Rhaco::import("tag.model.SimpleTag");
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 

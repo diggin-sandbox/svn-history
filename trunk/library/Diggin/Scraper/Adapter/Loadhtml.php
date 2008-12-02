@@ -60,6 +60,13 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
         return $simplexml;
     }
     
+    /**
+     * Set configuration parameters for this
+     *
+     * @param array $config
+     * @return Diggin_Scraper_Adapter_Loadhtml
+     * @throws Diggin_Scraper_Adapter_Exception
+     */
     public function setConfig($config = array())
     {
         if (! is_array($config))
