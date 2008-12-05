@@ -156,9 +156,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
-                                                array('>', '&'), 
-                                     $value->asXML()));
+                $value = strip_tags(
+                        htmlspecialchars_decode($value->asXML(),
+                        ENT_NOQUOTES));
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
@@ -167,9 +167,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                   strtoupper(($process->type)) === 'DISP') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
-                                                array('>', '&'), 
-                                     $value->asXML()));
+                $value = strip_tags(
+                        htmlspecialchars_decode($value->asXML(),
+                        ENT_NOQUOTES));
                 $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
                 $value = str_replace(array(chr(9), chr(10), chr(13)),
                                      '', $value);
@@ -178,9 +178,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'PLAIN') {
             $strings = array();
             foreach ($values as $value) {
-                $value = str_replace(array('&gt;', '&amp;'),
-                                                array('>', '&'), 
-                                     $value->asXML());
+                $value = htmlspecialchars_decode($value->asXML(),
+                            ENT_NOQUOTES);
                 $value = str_replace(array(chr(10), chr(13)),
                                      '', $value);
                 array_push($strings, $value);
@@ -188,9 +187,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strtoupper(($process->type)) === 'HTML') {
             $strings = array();
             foreach ($values as $value) {
-                $value = strip_tags(str_replace(array('&gt;', '&amp;'),
-                                                array('>', '&'), 
-                                     $value->asXML()));
+                $value = strip_tags(
+                        htmlspecialchars_decode($value->asXML(),
+                        ENT_NOQUOTES));
                 $value = str_replace(array(chr(10), chr(13)),
                                      '', $value);
                 $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
