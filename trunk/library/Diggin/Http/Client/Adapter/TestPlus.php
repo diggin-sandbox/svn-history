@@ -336,4 +336,15 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
 
       $this->_testResponseBody[1] = $addResponseBody;
     }
+    
+    /**
+     * Getting Zend_Http_Client
+     *
+     * @param string $url
+     * @return Zend_Http_Client
+     */
+    public function getAsClient($url = 'http://example.net'){
+        require_once 'Zend/Http/Client.php';
+        return new Zend_Http_Client($url, array('adapter' => $this));
+    }
 }
