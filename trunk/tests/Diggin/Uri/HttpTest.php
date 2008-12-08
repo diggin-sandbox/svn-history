@@ -1,12 +1,4 @@
 <?php
-//$rhacopath = '/media/disk-1/work/rhaco2/2_0';
-//set_include_path(get_include_path().PATH_SEPARATOR.$rhacopath);
-//require_once 'Rhaco.php';
-//Rhaco::import('network.Url');
-//var_dump(Url::parseAbsolute('http://yahoo.com/test/test.cgi?hoge=bar', '?param=foo'));
-//var_dump(Url::parseAbsolute('http://yahoo.com/test/', '../index.html'));
-//var_dump(get_include_path());exit;
-
 require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Uri/Http.php';
@@ -82,10 +74,12 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
         //                     $this->object->getAbsoluteUrl('../index.html', 'c:/www.rhaco.org/doc/ja/'));
         $this->assertEquals('http://www.rhaco.org/index.html', 
                              $this->object->getAbsoluteUrl('/index.html', 'http://www.rhaco.org/doc/ja'));
+        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
+                             $this->object->getAbsoluteUrl('index.html', 'http://www.rhaco.org/doc/ja/action.html'));
                              
-		//@see http://d.hatena.ne.jp/kitamomonga/20080410/ruby_mechanize_percent_url_bug
-        $this->assertEquals('http://test.org/doc/ja/index.cgi?param=hoge', 
-                             $this->object->getAbsoluteUrl('?param=hoge', 'http://test.org/doc/ja/index.cgi?test=bar'));
+        //@see http://d.hatena.ne.jp/kitamomonga/20080410/ruby_mechanize_percent_url_bug
+        $this->assertEquals('http://www.rhaco.org/doc/ja/sample.cgi?param=test', 
+                             $this->object->getAbsoluteUrl('?param=test', 'http://www.rhaco.org/doc/ja/sample.cgi?query=key'));
         $this->assertEquals('http://test.org/index.php?param=hoge', 
                              $this->object->getAbsoluteUrl('?param=hoge', 'http://test.org/index.php'));		
         //if space,
