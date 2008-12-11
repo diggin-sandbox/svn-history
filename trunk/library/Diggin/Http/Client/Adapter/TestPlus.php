@@ -109,7 +109,7 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
            "Accept-ranges: bytes"   . "\r\n" .
            "Content-length: 1000"   . "\r\n" .
            "Connection: close"      . "\r\n" .
-           "Content-type: text/xml";
+           "Content-type: text/html; charset=utf-8;";
            
         }
         
