@@ -1,10 +1,9 @@
 <?php
-//@see http://d.hatena.ne.jp/kane46taka/20081002/1222949472
 require_once 'Diggin/Scraper.php';
 
 $section = new Diggin_Scraper_Process();
-$section->addProcess('h3.title', 'title => TEXT')
-        ->addProcess('h3.title a', 'link => @href');
+$section->process('h3.title', 'title => TEXT')
+        ->process('h3.title a', 'link => @href');
 
 $scraper = new Diggin_Scraper();
 $scraper->process('div.section', array('section[]' => $section))
