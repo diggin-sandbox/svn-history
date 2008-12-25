@@ -23,6 +23,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
 {
     protected $_config = array(
         'xml_manifesto' => false,
+        'auto_encoding' => true
     );
     
     /**
@@ -33,8 +34,14 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
      */
     public function readData($response)
     {
-        
-        $responseBody = str_replace('&', '&amp;', $response->getBody());
+        if ($this->_config['auto_encoding']) {
+            require_once 'Diggin/Http/Response/Encoding.php';
+            $responseBody = Diggin_Http_Response_Encoding::encodeResponseObject($response);
+        } else {
+            $responseBody = $response->getBody();
+        }
+
+        $responseBody = str_replace('&', '&amp;', $responseBody);
         $dom = @DOMDocument::loadHTML($responseBody);
         $simplexml = simplexml_import_dom($dom);
         
