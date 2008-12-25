@@ -7,10 +7,10 @@ $url = 'http://www.fujitv.co.jp/meza/uranai/';
 
 try {
     $ranking = new Diggin_Scraper_Process();
-    $ranking->addProcess('.', 'rank => [@background, "Digits"]')
-            ->addProcess('img', 'star => @alt', 'image => @src')
-            ->addProcess('td.text', 'text => TEXT')
-            ->addProcess('.//td[contains(@class, "lucky") and (not(contains(@valign, "bottom")))]', 'lucky => TEXT');
+    $ranking->process('.', 'rank => [@background, "Digits"]')
+            ->process('img', 'star => @alt', 'image => @src')
+            ->process('td.text', 'text => TEXT')
+            ->process('.//td[contains(@class, "lucky") and (not(contains(@valign, "bottom")))]', 'lucky => TEXT');
 
     $scraper = new Diggin_Scraper();
     $scraper->process('//td[@class="day" and @height < 100]', 'date => "TEXT"')

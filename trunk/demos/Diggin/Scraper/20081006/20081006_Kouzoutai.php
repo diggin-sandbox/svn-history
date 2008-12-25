@@ -43,6 +43,7 @@ $items = new Diggin_Scraper_Process();
 $items->process("a", "title => 'TEXT'", "link => '@href'");
 
 $scraper->process("ul.news>li", array('result[]' => $items))
+//->process("//a", array('result[]' => $items))
         ->scrape("http://localhost/~tobe/news_sample.html");
 var_dump($scraper->results);
 
