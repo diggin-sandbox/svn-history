@@ -11,32 +11,6 @@ $scraper->process('div.section', array('section[]' => $section))
         
 print_r($scraper->results);
 
-/*****
-Web_Scraper.php's result
-
-array(8) {
-  [0]=>
-  array(2) {
-    ["text"]=>
-    string(27) "主に金沢関係の人へ"
-    ["attributes"]=>
-    array(1) {
-      ["href"]=>
-      string(29) "/amachang/20081006/1223277205"
-    }
-  }
-  [1]=>
-  array(2) {
-    ["text"]=>
-    string(75) "テンプレートのメンバ関数がインスタンス化される箇所"
-    ["attributes"]=>
-    array(1) {
-      ["href"]=>
-      string(29) "/amachang/20081005/1223225282"
-    }
-  }
- */
-
 /**
 Diggin Scraper's result
 Array
