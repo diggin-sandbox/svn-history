@@ -59,10 +59,12 @@ abstract class Diggin_Scraper_Strategy_Abstract
      * get values (Recursive)
      *
      * @param mixed $context 
-     * 			[first:Diggin_Scraper_Context
-     * 			 second:array]
+     *          [first:Diggin_Scraper_Context
+     *           second:array]
      * @param Diggin_Scraper_Process $process
      * @return mixed $values
+     * @throws Diggin_Scraper_Strategy_Exception
+     * @throws Diggin_Scraper_Filter_Exception
      */
     public function getValues($context, $process)
     {
