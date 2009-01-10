@@ -18,7 +18,8 @@ array('filelistgenerator' => 'file',
       'baseinstalldir' => 'Diggin',
       'ignore' => array('makepackage_Diggin.php',
                         'makepackage_Diggin_Scraper_Adapter_Htmlscraping.php', 
-                        'Htmlscraping.php', 
+                        'Htmlscraping.php',
+                        'Encoding.php',
                         '.svn'),
       'simpleoutput' => true,
       'changelogoldtonew' => true,
@@ -40,16 +41,17 @@ $packagexml->setSummary('Simplicity PHP Library');
 $packagexml->setDescription('Simplicity PHP Library');
 $packagexml->setNotes($notes);
 $packagexml->setPhpDep('5.2.0');
-$packagexml->setPearinstallerDep('1.4.0a12');
+$packagexml->setPearinstallerDep('1.4.3');
 $packagexml->addExtensionDep('required', 'simplexml');
 $packagexml->addExtensionDep('required', 'pcre');
 $packagexml->addExtensionDep('required', 'mbstring');
 $packagexml->addExtensionDep('required', 'ctype');
-//$packagexml->addExtensionDep('required', 'curl');
-$packagexml->addPackageDepWithUri('required',
-                                  'Diggin_Scraper_Adapter_Htmlscraping',
-                                  'http://diggin.musicrider.com/Diggin_Scraper_Adapter_Htmlscraping');
-$packagexml->addPackageDepWithChannel('required', 'Net_Url2-0.2.0','pear.php.net');
+$packagexml->addPackageDepWithChannel('required', 'Diggin_Scraper_Adapter_Htmlscraping', 'openpear.org');
+//$packagexml->addPackageDepWithUri('required',
+//                                  'Diggin_Scraper_Adapter_Htmlscraping',
+//                                  'http://diggin.musicrider.com/Diggin_Scraper_Adapter_Htmlscraping');
+$packagexml->addPackageDepWithChannel('optional', 'Net_CDDB', 'pear.php.net');
+$packagexml->addPackageDepWithChannel('optional', 'Net_URL2','pear.php.net', '0.2.0');
 $packagexml->addMaintainer('lead', 'sasezaki', 'Mika Sasezaki', 'sasezaki at gmail.com');
 $packagexml->setLicense('New BSD license', 'http://framework.zend.com/license/new-bsd');
 $packagexml->addGlobalReplacement('package-info', '@PEAR-VER@', 'version');
