@@ -58,18 +58,18 @@ class Diggin_Scraper_Filter
                 
                 //have
                 if ($prefix === '*') {
-                    require_once 'Diggin/Scraper/Autofilter.php';
+                    require_once 'Diggin/Scraper/Filter/Iterator.php';
                     $filter = substr($filter, 1);
-                    $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, true);
+                    $filterds = new Diggin_Scraper_Filter_Iterator(new ArrayIterator($values), $filter, true);
                 //not have
                 } elseif ($prefix === '!') {
-                	$filter = substr($filter, 1);
-                    $filterds = new Diggin_Scraper_Autofilter(new ArrayIterator($values), $filter, false);
+                    $filter = substr($filter, 1);
+                    $filterds = new Diggin_Scraper_Filter_Iterator(new ArrayIterator($values), $filter, false);
                 } elseif ($prefix === '/' or $prefix === '#') {
-                	$filterds = new RegexIterator(new ArrayIterator($values), $filter);
+                    $filterds = new RegexIterator(new ArrayIterator($values), $filter);
                 } else {
-                	require_once 'Diggin/Scraper/Filter/Exception.php';
-                	throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
+                    require_once 'Diggin/Scraper/Filter/Exception.php';
+                    throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
                 }
                 
                 foreach($filterds as $filterd) $return[] = $filterd;
