@@ -14,7 +14,13 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * @see Diggin_Scraper_Strategy_Abstract
+ */
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
+/**
+ * @see Zend_Dom_Query_Css2Xpath
+ */
 require_once 'Zend/Dom/Query/Css2Xpath.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
@@ -139,9 +145,10 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      * var_dump($s->asXML()); 
      * // '<tag>text1&gt;text2</tag>'
      * 
-     * @param Diggin_Scraper_Context
+     * @param array
      * @param Diggin_Scraper_Process
      * @return mixed
+     * @throws Diggin_Scraper_Strategy_Exception
      */
     public function getValue($values, $process)
     {
