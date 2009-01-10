@@ -321,7 +321,7 @@ class Diggin_Scraper
      * scraping
      * 
      * @param (string | Zend_Http_Response) $resource
-     * 		setting URL or Zend_Http_Response
+     *      setting URL or Zend_Http_Response
      * @param string (if $resource is not URL, please set URL for recognize)
      * @return array $this->results Scraping data.
      */

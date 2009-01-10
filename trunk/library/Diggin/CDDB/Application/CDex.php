@@ -196,7 +196,7 @@ class Diggin_CDDB_Application_CDex
      */
     public function getRewriteStr(SplFileInfo $file, $rewrite_points, $disc)
     {
-    	$fileArray = file($file);
+        $fileArray = file($file);
     
         //extract rewritepart string
         $rewriteStr = implode('', array_slice($fileArray, $rewrite_points['start'] +1 , $rewrite_points['end']));
