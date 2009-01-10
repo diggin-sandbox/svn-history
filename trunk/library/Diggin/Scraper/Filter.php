@@ -16,15 +16,16 @@
 class Diggin_Scraper_Filter
 {  
     /**
-     * run filter
+     * Run filter
      *
      * @param array $values
      * @param array |  $filters
-     * @param unknown_type $filterParams
-     * @return unknown
+     * @param array $filterParams
+     * @return array
+     * @throws Diggin_Scraper_Filter_Exception
      */
     public static function run($values, $filters, $filterParams = null)
-    {        
+    {
         foreach ($filters as $filter) {
             
             $return = array();
@@ -44,8 +45,8 @@ class Diggin_Scraper_Filter
                     try {
                         Zend_Loader::loadClass($filter);
                     } catch (Zend_Exception $e) {
-                        require_once 'Diggin/Scraper/Exception.php';
-                        throw new Diggin_Scraper_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+                        require_once 'Diggin/Scraper/Filter/Exception.php';
+                        throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
                     }
                     $filter = new $filter();
                     foreach ($values as $value) {
@@ -67,8 +68,8 @@ class Diggin_Scraper_Filter
                 } elseif ($prefix === '/' or $prefix === '#') {
                 	$filterds = new RegexIterator(new ArrayIterator($values), $filter);
                 } else {
-                	require_once 'Diggin/Scraper/Exception.php';
-                	throw new Diggin_Scraper_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
+                	require_once 'Diggin/Scraper/Filter/Exception.php';
+                	throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
                 }
                 
                 foreach($filterds as $filterd) $return[] = $filterd;
