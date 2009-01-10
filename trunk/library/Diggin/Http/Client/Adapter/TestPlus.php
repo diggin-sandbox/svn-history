@@ -89,10 +89,10 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
      * @param string responseBody (optional)
      * @param string responseHeader (optional)
      */
-    public function __construct($resposeBody = null, $responseHeader = null)
+    public function __construct($responseBody = null, $responseHeader = null)
     {
-        if (is_null($resposeBody)) {
-            $resposeBody = '<html lang="ja">'.PHP_EOL.
+        if (is_null($responseBody)) {
+            $responseBody = '<html lang="ja">'.PHP_EOL.
                            '<head>'.PHP_EOL.
                            '<body>'.PHP_EOL.
                            'this is testplus<br />'.PHP_EOL.
@@ -113,7 +113,7 @@ class Diggin_Http_Client_Adapter_TestPlus implements Zend_Http_Client_Adapter_In
            
         }
         
-        $this->setResponse($responseHeader."\r\n\r\n".$resposeBody);
+        $this->setResponse($responseHeader."\r\n\r\n".$responseBody);
     }
 
     /**
