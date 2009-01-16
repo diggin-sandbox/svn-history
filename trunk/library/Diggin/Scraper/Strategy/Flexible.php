@@ -75,9 +75,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      * @param string $process
      * @return array $results
      */
-    public function scrape($respose, $process)
+    public function scrape($response, $process)
     {
-        $simplexml = $this->getAdapter()->readData($respose);
+        $simplexml = $this->getAdapter()->readData($response);
         
         return self::extract($simplexml, $process);
     }
@@ -205,6 +205,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
             require_once 'Diggin/Uri/Http.php';
+            //base tag
+            //$values[0]->xpath('//head'); 
             foreach ($values as $value) {
                 $attribute = (string) $value[substr($process->type, 1)];
                 if (($process->type == '@href' OR $process->type == '@src')) {

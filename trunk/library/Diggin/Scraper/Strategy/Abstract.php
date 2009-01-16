@@ -16,7 +16,18 @@
 
 abstract class Diggin_Scraper_Strategy_Abstract
 {
+    /**
+     * 
+     *
+     * @var Zend_Http_Response
+     */
     private static $_response;
+    
+    /**
+     * Response Adapter
+     *
+     * @var Diggin_Scraper_Adapter_Interface
+     */
     protected static $_adapter;
     
     protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
