@@ -46,6 +46,14 @@ class Diggin_Scraper_Adapter_Tidy implements Diggin_Scraper_Adapter_Interface
         return $tidy->value;
     }
     
+    /**
+     * Set Tidy config
+     * 
+     * @see function.tidy-get-config.html
+     * 
+     * @param array $config
+     * @return Diggin_Scraper_Adapter_Tidy
+     */
     public function setConfig($config = array())
     {
         if (! is_array($config))
