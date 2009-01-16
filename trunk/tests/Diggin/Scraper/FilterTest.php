@@ -8,6 +8,7 @@ function digginScraperFilterTestFunc($var) {
     return $var.'after';
 }
 require_once 'Zend/Filter/Interface.php';
+require_once 'Zend/Loader.php';
 
 class Gethna_Filter_Byte implements Zend_Filter_Interface {
     function filter($var) {
@@ -101,5 +102,40 @@ FUNC
        $this->assertEquals(array('xab', 'yab', 'zab'), $filtered);
 
    }
+   
+    public function testException() {
+        //xdebug_disable();
+        
+        require_once 'Zend/Exception.php';
+        $sonzaishinaiClassmei = "sonzaishinaiClassmeisonzaishinaiClassmei";
+        $this->setExpectedException('Diggin_Scraper_Filter_Exception');
+        @$this->object->run(array('val'), array($sonzaishinaiClassmei));
+        
+//        throw new
+        //$this->throwException(new Zend_Exception());
+        //@Zend_Loader::loadClass("Zend_Filter_$sonzaishinaiClassmei");
+//        $sonzaishinaiClassmei = "sonzaishinaiClassmeisonzaishinaiClassmei";
+//        try {
+//            $this->setExpectedException('Exception');
+//            @Zend_Loader::loadClass("Zend_Filter_$sonzaishinaiClassmei");
+//            
+//            //上のクラスが存在したらテストできない。
+//            //$this->fail("arienai $sonzaishinaiClassmei");
+//            //throw new RuntimeException('arienai');
+//        } catch (Zend_Exception $e) {
+//            try {
+//                
+//                @$this->object->run(array('val'), array($sonzaishinaiClassmei));
+//            } catch (Exception $e) {
+//            
+//                $this->assertTrue($e instanceof Diggin_Scraper_Filter_Exception);
+//                //var_dump($e->getMessage());
+//                //die($e->getLine());
+////                return;
+//            }
+//            
+//            //$this->fail($e->getMessage());
+//        }
+    }
 }
 ?>
