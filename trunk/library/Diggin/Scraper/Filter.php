@@ -37,8 +37,13 @@ class Diggin_Scraper_Filter
                     }
                 } elseif (!strstr($filter, '_')) {
                     require_once 'Zend/Filter.php';
-                    foreach ($values as $value) {
-                        $return[] = Zend_Filter::get($value, $filter);
+                    try {
+                        foreach ($values as $value) {
+                            $return[] = Zend_Filter::get($value, $filter);
+                        }
+                    } catch (Zend_Exception $e) {
+                        require_once 'Diggin/Scraper/Filter/Exception.php';
+                        throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
                     }
                 } else {
                     require_once 'Zend/Loader.php';
