@@ -194,11 +194,11 @@ class Diggin_Scraper
     /**
      * construct
      *
-     * @param string $url
+     *
      */
-    public function __construct($url = null)
+    public function __construct()
     {
-        $this->_url = $url;
+        //$this->_url = $url;
     }
 
     /**
