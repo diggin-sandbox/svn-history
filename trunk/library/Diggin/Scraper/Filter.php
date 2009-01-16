@@ -30,7 +30,7 @@ class Diggin_Scraper_Filter
             
             $return = array();
 
-            if (preg_match('/^[0-9a-zA-Z]/', $filter)) {
+            if (preg_match('/^[0-9a-zA-Z\0]/', $filter)) {
                 if (function_exists($filter)) {
                     foreach ($values as $value) {
                         $return[] = call_user_func($filter, $value);
@@ -69,7 +69,7 @@ class Diggin_Scraper_Filter
                     $filterds = new RegexIterator(new ArrayIterator($values), $filter);
                 } else {
                     require_once 'Diggin/Scraper/Filter/Exception.php';
-                    throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix' : {$e->getMessage()}");
+                    throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix'");
                 }
                 
                 foreach($filterds as $filterd) $return[] = $filterd;
