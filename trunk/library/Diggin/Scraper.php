@@ -129,7 +129,7 @@ class Diggin_Scraper
     }
 
     /**
-     * changing Startegy
+     * changing Strartegy
      * 
      * @param string $strategyName
      * @param Diggin_Scraper_Adapter_Interface $adapter
