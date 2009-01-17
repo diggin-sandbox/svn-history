@@ -12,6 +12,7 @@
  * @package    Diggin_Scraper
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @version  $Id$
  */
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract 
@@ -59,10 +60,9 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
     {
         $adapterBody = $this->getAdapter()->readData($respose);
 
-        $cleanString = self::cleanString($adapterBody);
-        
-        return self::extract($cleanString, $process);
+        return self::extract(self::cleanString($adapterBody), $process);
     }
+    
     
     public function extract($cleanString, $process)
     {
@@ -74,7 +74,7 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
     /**
      * get value with DSL
      * 
-     * @param Diggin_Scraper_Context
+     * @param array
      * @param Diggin_Scraper_Process
      * @return array
      */
@@ -93,15 +93,15 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
         }
-    	
+
         return $strings;
     }
     
     /**
-     * オライリーのスパイダリング本から
+     * Body Cleaner for easy dealing with regex
      * 
      * @param string
-     * @results string
+     * @return string
      */
     private static function cleanString($resposeBody)
     {
