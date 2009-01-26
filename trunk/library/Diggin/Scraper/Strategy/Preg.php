@@ -14,7 +14,12 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  * @version  $Id$
  */
+
+/**
+ * @see Diggin_Scraper_Strategy_Abstract
+ */
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
+
 class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract 
 {    
     protected static $_adapter = null;
