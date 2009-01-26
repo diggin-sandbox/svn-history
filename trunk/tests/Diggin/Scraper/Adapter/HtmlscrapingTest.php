@@ -68,54 +68,7 @@ class Diggin_Scraper_Adapter_HtmlscrapingTest extends PHPUnit_Framework_TestCase
           'This test has not been implemented yet.'
         );
     }
-
-    public function testGetXmlObjectWithHeadTag()
-    {
-        $responseHeader =            "HTTP/1.1 200 OK"        ."\r\n".
-           "Connection: close"      . "\r\n" .
-           "Content-type: text/html; charset=utf-8;";
-        $responseBody = '<html lang="ja">'.PHP_EOL.
-                           '<head>'.PHP_EOL.
-                           '</head>'.
-                           '<body>'.PHP_EOL.
-                           '<a href="test/test.html">testlink</a><br />'.PHP_EOL.
-                           '</body>'.PHP_EOL.
-                           '</html>';
-        $responseBodyWithHeadTag1 = '<html lang="ja">'.PHP_EOL.
-                           '<head>'.PHP_EOL.
-                           '<base href="http://www.example.net/">'.
-                           '<base href="http://example.net/">'.
-                           '<base href="file://var/www/">'.
-                           '</head>'.
-                           '<body>'.PHP_EOL.
-                           '<a href="test/test.html">testlink</a><br /><br />'.PHP_EOL.
-                           '</body>'.PHP_EOL.
-                           '</html>';
-        //localhost とか127.0.0.1はgetAbsolutUrlの問題なので置き換えはしない。
-//        $responseBodyWithHeadTag1 = '<html lang="ja">'.PHP_EOL.
-//                           '<head>'.PHP_EOL.
-//                           '<base href="http://localhost:8080/">'.
-//                           '</head>'.
-//                           '<body>'.PHP_EOL.
-//                           '<a href="test/test.html">testlink</a><br /><br />'.PHP_EOL.
-//                           '</body>'.PHP_EOL.
-//                           '</html>';
-        $response_str = "$responseHeader\r\n\r\n$responseBody";
-        $response_strWithHeadTag1 = "$responseHeader\r\n\r\n$responseBodyWithHeadTag1";
-        
-        $responseBody = Zend_Http_Response::fromString($response_str);
-        $responseWithHeadTag1 = Zend_Http_Response::fromString($response_strWithHeadTag1);
-        
-        $this->object->setConfig(array('url' => 'http://musicrider.com/'));
-        
-        //var_dump($this->object->getXmlObject($response)->asXML());
-        //var_dump($this->object->getXmlObject($responseWithHeadTag1));
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-    
+ 
     /**
      * decpricate method
      * 
