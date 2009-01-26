@@ -38,7 +38,7 @@ class Diggin_Scraper_FindHelper_HeadBase
     public function headBase(SimpleXMLElement $simplexml)
     {
         if ($bases = $simplexml->xpath('//base[@href]')) {
-            krsort($bases);
+            rsort($bases);
             require_once 'Zend/Uri/Http.php';
             foreach ($bases as $base) {
                 try {
