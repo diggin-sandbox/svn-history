@@ -82,24 +82,31 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         return self::extract($simplexml, $process);
     }
     
+    /**
+     * 
+     *
+     * @param SimpleXMLElement $values
+     * @param Diggin_Scraper_Process $process
+     * @return array
+     * @throws Diggin_Scraper_Strategy_Exception
+     */
     public function extract($values, $process)
     {
-        //↓このハンドリングはxpathの記述自体が間違ってたとき（いらないかな？）
-        //set_error_handler(
-        //    create_function('$errno, $errstr',
-        //    'if($errno) require_once "Diggin/Scraper/Strategy/Exception.php"; 
-        //       throw new Diggin_Scraper_Strategy_Exception($errstr, $errno);'
-        //    )
-        //);
-
         $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->expression));
-        //restore_error_handler();
 
+        
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             
             $process->expression = self::_xpathOrCss2Xpath($process->expression);
             throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
+        }
+        
+        if (substr($process->type, 0, 1) === '@') {
+            if ($results[0][substr($process->type, 1)] === null) {
+                require_once 'Diggin/Scraper/Strategy/Exception.php';
+                throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Attribute, Process : $process");
+            }
         }
         
         return $results;
@@ -127,7 +134,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      *   just as SimpleXMlElement
      * 'TEXT' ----  
      *  step1: SimpleXMlElement->asXML
-     *  step2: replace escaped entity 
+     *  step2: convert special html entitiy
      *  Htmlscaraping is "Replace every '&' with '&amp;'"
      *  @see Diggin_Scraper_Adapter_Htmlscraping
      *  @see http://www.rcdtokyo.com/etc/htmlscraping/#NOTE_ENTITY
@@ -138,12 +145,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      *   chr(13) Carriage Return(CR)
      *   
      *  @see http://en.wikipedia.org/wiki/ASCII
-     * 
-     * NOTES: 2008/10/09
-     * $xml = '<tag>text1>text2</tag>';
-     * $s = new SimpleXMLElement($xml);
-     * var_dump($s->asXML()); 
-     * // '<tag>text1&gt;text2</tag>'
      * 
      * @param array
      * @param Diggin_Scraper_Process
@@ -202,18 +203,26 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                 $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strpos($process->type, '@') === 0) {
+        } elseif ((strpos($process->type, '@') === 0) and 
+                  ($process->type == '@href' OR $process->type == '@src')) {
             $strings = array();
             require_once 'Diggin/Uri/Http.php';
-            //base tag
-            //$values[0]->xpath('//head'); 
+            require_once 'Diggin/Scraper/FindHelper/HeadBase.php';
+            
+            $headBase = new Diggin_Scraper_FindHelper_HeadBase();
+            $base = $headBase->headBase(current($values));
+            if ($base === false) {
+                $base = self::$_adapterconfig['url'];
+            }
             foreach ($values as $value) {
                 $attribute = (string) $value[substr($process->type, 1)];
-                if (($process->type == '@href' OR $process->type == '@src')) {
-                    array_push($strings, Diggin_Uri_Http::getAbsoluteUrl($attribute, self::$_adapterconfig['url']));
-                } else {
-                    array_push($strings, $attribute);
-                }
+                array_push($strings, Diggin_Uri_Http::getAbsoluteUrl($attribute, $base));
+            }
+        } elseif (strpos($process->type, '@') === 0) {
+            $strings = array();
+            foreach ($values as $value) {
+                $attribute = (string) $value[substr($process->type, 1)];
+                array_push($strings, $attribute);
             }
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
