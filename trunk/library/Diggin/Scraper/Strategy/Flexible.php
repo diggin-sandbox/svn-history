@@ -101,14 +101,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $process->expression = self::_xpathOrCss2Xpath($process->expression);
             throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
         }
-        
-        if (substr($process->type, 0, 1) === '@') {
-            if ($results[0][substr($process->type, 1)] === null) {
-                require_once 'Diggin/Scraper/Strategy/Exception.php';
-                throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Attribute, Process : $process");
-            }
-        }
-        
+
         return $results;
     }
 
@@ -214,15 +207,18 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             if ($base === false) {
                 $base = self::$_adapterconfig['url'];
             }
-            foreach ($values as $value) {
-                $attribute = (string) $value[substr($process->type, 1)];
-                array_push($strings, Diggin_Uri_Http::getAbsoluteUrl($attribute, $base));
+            foreach ($values as $k => $value) {
+                $attribute = $value[substr($process->type, 1)];
+                if ($attribute === null) continue;
+                $strings[$k] = Diggin_Uri_Http::getAbsoluteUrl((string)$attribute, $base);
             }
         } elseif (strpos($process->type, '@') === 0) {
             $strings = array();
-            foreach ($values as $value) {
+            foreach ($values as $k => $value) {
+                $attribute = $value[substr($process->type, 1)];
+                if ($attribute === null) continue;
                 $attribute = (string) $value[substr($process->type, 1)];
-                array_push($strings, $attribute);
+                $strings[$k] = (string)$attribute;
             }
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
