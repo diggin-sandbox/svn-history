@@ -115,6 +115,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         }
         
         $values = $this->getValue($values, $process);
+        if ($values === array()) return false;
         
         if ($process->filters) {
             require_once 'Diggin/Scraper/Filter.php';
