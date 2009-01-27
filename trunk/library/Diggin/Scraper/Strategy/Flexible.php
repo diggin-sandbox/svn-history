@@ -217,7 +217,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             foreach ($values as $k => $value) {
                 $attribute = $value[substr($process->type, 1)];
                 if ($attribute === null) continue;
-                $attribute = (string) $value[substr($process->type, 1)];
                 $strings[$k] = (string)$attribute;
             }
         } else {
