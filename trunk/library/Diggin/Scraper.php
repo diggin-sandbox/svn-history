@@ -17,20 +17,21 @@
 /**
  * @see Diggin_Scraper_Process
  */  
-require_once 'Diggin/Scraper/Process.php';
+require_once 'Diggin/Scraper/Process/Aggregate.php';
+
 /**
  * @see Diggin_Scraper_Context
  */
 require_once 'Diggin/Scraper/Context.php';
 
-class Diggin_Scraper
+class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 {
     /**
      * scraping results
      * 
      * @var array 
      */
-    public $results;
+    private $_results;
     
     /**
      * target url of scraping
@@ -38,26 +39,21 @@ class Diggin_Scraper
      * @var string 
      */
     protected $_url;
-
-    /**
-     * Stores the prosess
-     */
-    private static $_processes;
     
     /**
      * strategy name to use for changing strategy
      */
-    private static $_strategyName;
+    private $_strategyName;
     
     /**
      * adapter for response
      */
-    private static $_adapter;
+    private $_adapter;
 
     /**
      * strategy for scraping
      */
-    protected static $_strategy = null;
+    protected $_strategy = null;
     
     /**
      * Getting the URL for scraping
@@ -94,7 +90,7 @@ class Diggin_Scraper
      */
     public function __get($var)
     {
-        return $this->results[$var];
+        return $this->_results[$var];
     }
 
     /**
@@ -137,8 +133,8 @@ class Diggin_Scraper
      */
     public function changeStrategy($strategyName, $adapter = null)
     {
-        self::$_strategyName = $strategyName;
-        self::$_adapter = $adapter;
+        $this->_strategyName = $strategyName;
+        $this->_adapter = $adapter;
 
         return $this;
     }
@@ -166,7 +162,7 @@ class Diggin_Scraper
         if($adapter) $strategy->setAdapter($adapter);
         if(method_exists($strategy, 'setAdapterConfig')) $strategy->setAdapterConfig(array('url' => $this->_url));
 
-        self::$_strategy = $strategy;
+        $this->_strategy = $strategy;
     }
 
     /**
@@ -177,7 +173,7 @@ class Diggin_Scraper
      */
     public function getStrategy($response)
     {
-        if (!self::$_strategy instanceof Diggin_Scraper_Strategy_Abstract) {
+        if (!$this->_strategy instanceof Diggin_Scraper_Strategy_Abstract) {
             /**
              * @see Diggin_Scraper_Strategy_Abstract
              */
@@ -185,20 +181,10 @@ class Diggin_Scraper
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
             $strategy->setAdapterConfig(array('url' => $this->_url));
             
-            self::$_strategy = $strategy;
+            $this->_strategy = $strategy;
         }
         
-        return self::$_strategy;
-    }
-
-    /**
-     * construct
-     *
-     *
-     */
-    public function __construct()
-    {
-        //$this->_url = $url;
+        return $this->_strategy;
     }
 
     /**
@@ -233,91 +219,6 @@ class Diggin_Scraper
     }
 
     /**
-     * setting process like DSL of Web::Scraper
-     * Sample&Demo is : demos/Diggin/Scraper/
-     * 
-     * @params mixed args1, args2, args3,,,
-     * $thisObejct->process('expresssion', 'key => val, filter, filter,', 'key => val)
-     * like
-     * $thisObejct->process('//div[@class="post-content"]/ul/li/a', 'title => TEXT')
-     * 
-     * expression : (depend on)Strategy
-     *  [Default] Css Or Xpath 
-     * key : results's key. 
-     *  $scraper->results['key'];
-     *  can access as this class's property (by __get method)
-     *  $scraper->key
-     * val : (depend on)Strategy
-     * filter :
-     *  filtering by 
-     *  user_func , Zend_Filter_*, Your_Filter_*(implements Zend_Filter_Interface)
-     * 
-     * @see Diggin_Scraper_Filter
-     * @return Diggin_Scraper Provides a fluent interface
-     */
-    public function process($args)
-    {
-        $args = func_get_args();
-        
-        if (count($args) === 1) {
-            require_once 'Diggin/Json.php';
-            foreach ($args as $arg) {
-                self::$_processes[] = Diggin_Json::decode($arg, Diggin_Json::TYPE_SCRAPEROBJECT);
-            }
-            return $this;
-        }
-        
-        $expression = array_shift($args);
-        $namestypes = $args;
-        foreach ($namestypes as $nametype) {
-            if (is_string($nametype)) {
-                if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
-                if (!isset($types)) $name = $nametype;
-                if ((substr(trim($name), -2) == '[]')) {
-                    $name = substr(trim($name), 0, -2);
-                    $arrayflag = true;
-                } else {
-                    $arrayflag = false;
-                }  
-                if (!isset($types)) {
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
-                } else {
-                    $types = trim($types, " '\"");
-                    if (strpos($types, ',') !== false) $types = explode(',', $types);
-                    
-                    if (count($types) === 1) {
-                        self::$_processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag, $types);
-                    } else {
-                        foreach ($types as $count => $type) {
-                            if ($count !== 0) $filters[] = trim($type, " []'\"");
-                        }
-                        self::$_processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag,
-                                                   trim($types[0], " []'\""), $filters);
-                    }
-                }
-            } elseif (is_array($nametype)) {
-                if(!ctype_digit(key($nametype))) {
-                    foreach ($nametype as $name => $nm) {
-                        if ((substr($name, -2) == '[]')) {
-                            $name = substr($name, 0, -2);
-                            $arrayflag = true;
-                        } else {
-                            $arrayflag = false;
-                        }
-                        self::$_processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, $nm);
-                    }
-                } else {
-                    self::$_processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
-                }
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * scraping
      * 
      * @param (string | Zend_Http_Response) $resource
@@ -335,30 +236,21 @@ class Diggin_Scraper
             $this->setUrl($baseUrl);
         }
         
-        if (!is_null(self::$_strategyName)) {
-            $this->_callStrategy($resource, self::$_strategyName, self::$_adapter);
+        if (!is_null($this->_strategyName)) {
+            $this->_callStrategy($resource, $this->_strategyName, $this->_adapter);
         }
 
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
-        foreach (self::$_processes as $process) {
-            $values = self::$_strategy->getValues($context, $process);
-
-            $this->results[$process->name] = $values;
+        foreach ($this as $process) {
+            $values = $this->_strategy->getValues($context, $process);
+            $this->_results[$process->getName()] = $values;
         }
 
-        return $this->results;
+        return $this->_results;
     }
-
-    /**
-     * Class destructor.
-     *
-     * @return null
-     */
-    public function __destruct()
+    
+    public function getResults()
     {
-        self::$_processes = null;
-        self::$_strategy = null;
-        self::$_strategyName = null;
-        self::$_adapter = null;
+        return $this->_results; 
     }
 }

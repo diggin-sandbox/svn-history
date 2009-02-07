@@ -23,6 +23,16 @@ require_once 'Diggin/Scraper/Strategy/Abstract.php';
  */
 require_once 'Zend/Dom/Query/Css2Xpath.php';
 
+/**
+ * @see Diggin_Uri_Http
+ */
+require_once 'Diggin/Uri/Http.php';
+
+/**
+ * @see Diggin_Scraper_Helper_HeadBase
+ */
+require_once 'Diggin/Scraper/FindHelper/HeadBase.php';
+
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
 {
     protected static $_adapter = null;
@@ -92,14 +102,14 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      */
     public function extract($values, $process)
     {
-        $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->expression));
+        $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->getExpression()));
 
         
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             
-            $process->expression = self::_xpathOrCss2Xpath($process->expression);
-            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process : $process");
+            //$process->getExpression() = self::_xpathOrCss2Xpath($process->getExpression());
+            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process :".$process->getExpression());
         }
 
         return $results;
@@ -147,14 +157,14 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     public function getValue($values, $process)
     {
         //type
-        if (strtoupper(($process->type)) === 'RAW') {
+        if (strtoupper(($process->getType())) === 'RAW') {
             $strings = $values;
-        } elseif (strtoupper(($process->type)) === 'ASXML') {
+        } elseif (strtoupper(($process->getType())) === 'ASXML') {
             $strings = array();
             foreach ($values as $value) {
                 array_push($strings, $value->asXML());
             }
-        } elseif (strtoupper(($process->type)) === 'TEXT') {
+        } elseif (strtoupper(($process->getType())) === 'TEXT') {
             $strings = array();
             foreach ($values as $value) {
                 $value = strip_tags(
@@ -164,8 +174,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                                      '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strtoupper(($process->type)) === 'DECODE' or 
-                  strtoupper(($process->type)) === 'DISP') {
+        } elseif (strtoupper(($process->getType())) === 'DECODE' or 
+                  strtoupper(($process->getType())) === 'DISP') {
             $strings = array();
             foreach ($values as $value) {
                 $value = strip_tags(
@@ -176,7 +186,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                                      '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strtoupper(($process->type)) === 'PLAIN') {
+        } elseif (strtoupper(($process->getType())) === 'PLAIN') {
             $strings = array();
             foreach ($values as $value) {
                 $value = htmlspecialchars_decode($value->asXML(),
@@ -185,7 +195,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                                      '', $value);
                 array_push($strings, $value);
             }
-        } elseif (strtoupper(($process->type)) === 'HTML') {
+        } elseif (strtoupper(($process->getType())) === 'HTML') {
             $strings = array();
             foreach ($values as $value) {
                 $value = strip_tags(
@@ -196,11 +206,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                 $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
                 array_push($strings, $value);
             }
-        } elseif ((strpos($process->type, '@') === 0) and 
-                  ($process->type == '@href' OR $process->type == '@src')) {
+        } elseif ((strpos($process->getType(), '@') === 0) and 
+                  ($process->getType() == '@href' OR $process->getType() == '@src')) {
             $strings = array();
-            require_once 'Diggin/Uri/Http.php';
-            require_once 'Diggin/Scraper/FindHelper/HeadBase.php';
             
             $headBase = new Diggin_Scraper_FindHelper_HeadBase();
             $base = $headBase->headBase(current($values));
@@ -208,20 +216,20 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                 $base = self::$_adapterconfig['url'];
             }
             foreach ($values as $k => $value) {
-                $attribute = $value[substr($process->type, 1)];
+                $attribute = $value[substr($process->getType(), 1)];
                 if ($attribute === null) continue;
                 $strings[$k] = Diggin_Uri_Http::getAbsoluteUrl((string)$attribute, $base);
             }
-        } elseif (strpos($process->type, '@') === 0) {
+        } elseif (strpos($process->getType(), '@') === 0) {
             $strings = array();
             foreach ($values as $k => $value) {
-                $attribute = $value[substr($process->type, 1)];
+                $attribute = $value[substr($process->getType(), 1)];
                 if ($attribute === null) continue;
                 $strings[$k] = (string)$attribute;
             }
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
+            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->getType());
         }
         
         return $strings;

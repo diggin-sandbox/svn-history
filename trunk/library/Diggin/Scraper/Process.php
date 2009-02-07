@@ -1,118 +1,151 @@
 <?php
 /**
  * Diggin - Simplicity PHP Library
- * 
+ *
  * LICENSE
  *
  * This source file is subject to the new BSD license.
  * It is also available through the world-wide-web at this URL:
  * http://framework.zend.com/license/new-bsd
- * 
+ *
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Diggin_Scraper_Process
 {
-    public $expression;
-    public $name;
-    public $arrayflag;
-    public $type;
-    public $filters;
-    
-    public $processes;
-    
-    /**
-     * toString
-     * UnTokenize process For using Exception errstr.
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        if ($this->processes instanceof Diggin_Scraper_Process) {
-            return '\''.$this->expression.'\', '.
-               "'".$this->name.' => " (Diggin_Scraper_Process)"';
-        }
-        
-        if ($this->filters !== false) {
-        return '\''.$this->expression.'\', '.
-               "'".$this->name.' => ["'. $this->type. '", "'.$this->filters.'"]\'';
-        }
-        
-        return '\''.$this->expression.'\', '.
-               "'".$this->name.' => "'. $this->type. '"\'';
-    }
-    
-    public function __construct($expression = null, $name = null, $arrayflag = false, $type = null, $filters = false)
-    {
-        if (strtolower(($name)) === 'results') {
-            require_once 'Diggin/Scraper/Exception.php';
-            throw new Diggin_Scraper_Exception('key "results" is not allowed');
-        }
-        
-        $this->expression = $expression;
-        $this->name = $name;
-        $this->arrayflag = $arrayflag;
-        $this->type = $type;
-        $this->filters = $filters;
-    }
-    
-    public function process($args)
-    {
-        $args = func_get_args();
-        
-        if(count($args) === 1) {
-            $this->processes = $args;
-        }
-        $expression = array_shift($args);
-        $namestypes = $args;
+   private $_expression;
+   private $_name;
+   private $_arrayFlag;
+   private $_type;
+   private $_filters;
 
-        foreach ($namestypes as $nametype) {
-            if(is_string($nametype)) {
-                //$types = null;
-                if (strpos($nametype, '=>') !== false) list($name, $types) = explode('=>', $nametype);
-                if (!isset($types)) $name = $nametype;
-                if ((substr(trim($name), -2) == '[]')) {
-                    $name = substr(trim($name), 0, -2);
-                    $arrayflag = true;
-                } else {
-                    $arrayflag = false;
-                }
-                if (!isset($types)) {
-                    $this->processes[] = new Diggin_Scraper_Process($expression, trim($nametype), $arrayflag);
-                } else {
-                    $types = trim($types, " '\"");
-                    if (strpos($types, ',') !== false) $types = explode(',', $types);
-                    if (count($types) === 1) {
-                        $this->processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag, $types);
-                    } else {
-                        foreach ($types as $count => $type) {
-                            if ($count !== 0) $filters[] = trim($type, " []'\"");
-                        }
-                        $this->processes[] = 
-                        new Diggin_Scraper_Process($expression, trim($name), $arrayflag,
-                                                   trim($types[0], " []'\""), $filters);
-                    }
-                }
-            } elseif (is_array($nametype)) {
-                if(!ctype_digit(key($nametype))) {
-                    if ((substr(key($nametype), -2) == '[]')) {
-                        $name = substr(key($nametype), 0, -2);
-                        $arrayflag = true;
-                    } else {
-                        $name = key($nametype);
-                        $arrayflag = false;
-                    }
-                    $this->processes[] = new Diggin_Scraper_Process($expression, $name, $arrayflag, array_shift($nametype));
-                } else {
-                    $this->processes[] = new Diggin_Scraper_Process($expression, $nametype[0], $nametype[1], $nametype[2], $nametype[3]);
-                }
-            }
-        }
-        
-        return $this;
-    }
+   /**
+    * toString
+    * UnTokenize process For using Exception errstr.
+    *
+    * @return string
+    */
+//   public function __toString()
+//   {
+//       if (isset($this->getProcesses())) {
+//           $ret = "";
+//           foreach ($this->getProcesses as $process) {
+//               $ret .= $process->__toString($process);
+//           }
+//
+//           return '\''.$this->getExpression().'\', '.
+//              "'".$this->getName().' => " '.$ret.'"';
+//       }
+//
+//       if ($this->getFilters() !== false) {
+//       return '\''.$this->getExpression().'\', '.
+//              "'".$this->getName().' => ["'. $this->getType(). '",
+//"'.$this->getFilters().'"]\'';
+//       }
+//
+//       return '\''.$this->getExpression().'\', '.
+//              "'".$this->getName().' => "'. $this->getType(). '"\'';
+//   }
+
+   /**
+    * get expression
+    *
+    * @return string
+    */
+   public function getExpression()
+   {
+       return $this->_expression;
+   }
+
+   /**
+    * set expression
+    *
+    * @param string
+    */
+   public function setExpression($expression)
+   {
+       $this->_expression = $expression;
+   }
+
+   /**
+    * get Name(Key)
+    *
+    * @return string
+    */
+   public function getName()
+   {
+       return $this->_name;
+   }
+
+   /**
+    * set name
+    *
+    * @param string
+    */
+   public function setName($name)
+   {
+       $this->_name = $name;
+   }
+
+   /**
+    * get arrayFlag
+    *
+    * @return boolean
+    */
+   public function getArrayFlag()
+   {
+       return $this->_arrayFlag;
+   }
+
+   /**
+    * set arrayFlag
+    *
+    * @param boolean
+    */
+   public function setArrayFlag($arrayFlag)
+   {
+       $this->_arrayFlag = $arrayFlag;
+   }
+
+   /**
+    * get type(of value)
+    *
+    * @return string
+    */
+   public function getType()
+   {
+       return $this->_type;
+   }
+
+   /**
+    * set type
+    *
+    * @param string
+    */
+   public function setType($type)
+   {
+       $this->_type = $type;
+   }
+
+   /**
+    * get filters
+    *
+    * @return mixed
+    */
+   public function getFilters()
+   {
+       return $this->_filters;
+   }
+
+   /**
+    * set filters
+    *
+    * @param mixed
+    */
+   public function setFilters($filters)
+   {
+       $this->_filters = $filters;
+   }
 }

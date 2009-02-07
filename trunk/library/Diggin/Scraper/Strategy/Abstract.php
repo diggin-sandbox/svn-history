@@ -79,11 +79,9 @@ abstract class Diggin_Scraper_Strategy_Abstract
      */
     public function getValues($context, $process)
     {
-        if (!isset($process->type)) {
-            return $context->scrape($process);
-        }
-        
+ 
         if ($context instanceof Diggin_Scraper_Context) {
+ 
             $values = $context->scrape($process);
         } else {
             try {
@@ -93,39 +91,47 @@ abstract class Diggin_Scraper_Strategy_Abstract
                 return false;
             }
         }
-        
-        if ($process->type instanceof Diggin_Scraper_Process) {
+ 
+       if ($process->getType() instanceof Diggin_Scraper_Process_Aggregate) {
             $returns = false;
             foreach ($values as $count => $val) {
-                foreach ($process->type->processes as $proc) {
-                    //@todo 値がとれなかったとき、格納しないか空かどうかはconfigでやるべきかな
+ 
+                //if ($process->getType()->getStrategyName()) {
+                    //var_dump(class_implements($process->getType()->getStrategyName()));
+                    //echo $process->getType()->;
+                //}
+ 
+                foreach ($process->getType() as $proc) {
+                    //@todo 値がとれなかったとき、格納しないかnullかどうかはconfigでやるべきかな
                     if (false !== $getval = $this->getValues($val, $proc)) {
-                        $returns[$count][$proc->name] = $getval;
+                        $returns[$count][trim($proc->getName())] = $getval;
                     }
                 }
-                
-                if (($process->arrayflag === false) && $count === 0) {
+ 
+                if (($process->getArrayFlag() === false) && $count === 0) {
                     if(is_array($returns)) {
                         $returns = current($returns); break;
-                    } 
+                    }
                 }
             }
-            
+ 
             return $returns;
         }
-        
+ 
         $values = $this->getValue($values, $process);
+ 
         if ($values === array()) return false;
-        
-        if ($process->filters) {
+ 
+        if ($process->getFilters()) {
             require_once 'Diggin/Scraper/Filter.php';
-            $values = Diggin_Scraper_Filter::run($values, $process->filters);
+            $values = Diggin_Scraper_Filter::run($values, $process->getFilters());
         }
-        
-        if ($process->arrayflag === false) {
+ 
+ 
+        if ($process->getArrayFlag() === false) {
             $values = current($values);
         }
-        
+ 
         return $values;
     }
 }
