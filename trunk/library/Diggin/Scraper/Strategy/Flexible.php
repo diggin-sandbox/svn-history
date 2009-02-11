@@ -31,7 +31,7 @@ require_once 'Diggin/Uri/Http.php';
 /**
  * @see Diggin_Scraper_Helper_HeadBase
  */
-require_once 'Diggin/Scraper/FindHelper/HeadBase.php';
+require_once 'Diggin/Scraper/FindHelper/HeadBaseHref.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
 {
@@ -210,8 +210,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                   ($process->getType() == '@href' OR $process->getType() == '@src')) {
             $strings = array();
             
-            $headBase = new Diggin_Scraper_FindHelper_HeadBase();
-            $base = $headBase->headBase(current($values));
+            $headBase = new Diggin_Scraper_FindHelper_HeadBaseHref();
+            $base = $headBase->headBaseHref(current($values));
             if ($base === false) {
                 $base = self::$_adapterconfig['url'];
             }

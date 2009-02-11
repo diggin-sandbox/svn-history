@@ -82,7 +82,7 @@ require_once 'Diggin/Scraper.php';
 $scraper = new Diggin_Scraper();
 $scraper->setHttpClient($test);
 
-$items = new Diggin_Scraper_Process();
+$items = new Diggin_Scraper();
 $items->process("a", "title => 'TEXT'", "link => '@href'");
 
 $scraper->process("ul.news>li", array('result[]' => $items))

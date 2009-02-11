@@ -85,7 +85,13 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
         //if space,
         $this->assertEquals('http://www.rhaco.org/doc/ja/'.rawurlencode('test space.html'),
                              $this->object->getAbsoluteUrl('test space.html', 'http://www.rhaco.org/doc/ja/'));
+
+        ////htmlspecialcharsの場合もある
+        //@see http://nkst.jp/vote2/novel.php?auther=20080001&page=2
+        //<center><a href="/vote2/novel.php?auther=20080001&amp;page=2" accesskey="#" title="next">[次ﾍﾟｰｼﾞ(#)]</a><br></center>
+        //<a href="/vote2/novel.php?auther=20080001&amp;page=429" accesskey="" title="last">[最後へ]</a><br>
         
+
     }
 }
 ?>

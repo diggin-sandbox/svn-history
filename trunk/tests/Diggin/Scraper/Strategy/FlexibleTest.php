@@ -110,21 +110,28 @@ BODY;
     public function testGetValue() {
         $simplxml = simplexml_load_string('<html><body><a href="index.html" class="sample">test</a></body></html>');
 //        var_dump($simplxml->xpath('//a'));
-        $process01 = new Diggin_Scraper_Process('//a', 'attr', true, '@href');
+        $process01 = new Diggin_Scraper_Process();
+        $process01->setExpression('//a');
+        $process01->setName('attr');
+        $process01->setArrayFlag(true);
+        $process01->setType('@href');
         //require_once 'Diggin/Uri/Http.php';var_dump(Diggin_Uri_Http::getAbsoluteUrl('index.html', 'http://test.org/'));
-        $ret = $this->object->getValue((array)$simplxml->xpath($process01->expression), $process01);
+        $ret = $this->object->getValue((array)$simplxml->xpath($process01->getExpression()), $process01);
         $this->assertEquals("http://base.example.net/test/index.html", $ret[0]);
         
-        $process02 = new Diggin_Scraper_Process('//a', 'attr', true, '@class');
-        
-        $ret = $this->object->getValue((array)$simplxml->xpath($process02->expression), $process02);
+        $process02 = new Diggin_Scraper_Process();
+        $process02->setExpression('//a');
+        $process02->setName('attr');
+        $process02->setArrayFlag(true);
+        $process02->setType('@class');
+        $ret = $this->object->getValue((array)$simplxml->xpath($process02->getExpression()), $process02);
         $this->assertEquals("sample",$ret[0]);
         
         
         //base 
         $simplxml = simplexml_load_string('<html><head><base href="http://base.org/test/" /></head><body><a href="/index.html" class="sample">test</a></body></html>');
-        $process03 = new Diggin_Scraper_Process('//a', 'attr', true, '@href');
-        $ret = $this->object->getValue((array)$simplxml->xpath($process01->expression), $process01);
+        
+        $ret = $this->object->getValue((array)$simplxml->xpath($process01->getExpression()), $process01);
         $this->assertEquals("http://base.org/index.html", $ret[0]);
         
         $this->markTestIncomplete(
