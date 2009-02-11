@@ -50,18 +50,17 @@ abstract class Diggin_Scraper_Strategy_Abstract
         }
     }
     
-    public function scrapedData($process)
-    {   
-        return $this->scrape($this->getResponse(), $process);
+    public function readResource()
+    {
+        return $this->getAdapter()->readData($this->getResponse());
     }
+
    
     public function getResponse()
     {
         return self::$_response;
     }
 
-    protected abstract function scrape($response, $process);
-    
     protected abstract function getValue($values, $process);
     
     protected abstract function extract($values, $process);
@@ -81,8 +80,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
     {
  
         if ($context instanceof Diggin_Scraper_Context) {
- 
-            $values = $context->scrape($process);
+            $values = $this->extract($context->read(), $process);
         } else {
             try {
                 $values = $this->extract($context, $process);

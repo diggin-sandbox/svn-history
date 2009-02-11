@@ -78,22 +78,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         return self::$_adapter;
     }
 
-    /**
-     * scraping with Xpath
-     * 
-     * @param Zend_Http_Response $respose
-     * @param string $process
-     * @return array $results
-     */
-    public function scrape($response, $process)
-    {
-        $simplexml = $this->getAdapter()->readData($response);
-        
-        return self::extract($simplexml, $process);
-    }
     
     /**
-     * 
+     * Extarcting values according process
      *
      * @param SimpleXMLElement $values
      * @param Diggin_Scraper_Process $process
@@ -115,7 +102,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         return $results;
     }
 
-    protected static function _xpathOrCss2Xpath($exp){
+    protected static function _xpathOrCss2Xpath($exp)
+    {
         if (preg_match('!^(?:/|id\()!', $exp)) {
             return '.'.$exp;
         } else {

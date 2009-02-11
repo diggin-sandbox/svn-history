@@ -27,8 +27,8 @@ class Diggin_Scraper_Context
         $this->_strategy = $strategy;
     }
 
-    public function scrape($process)
+    public function read()
     {
-        return $this->_strategy->scrapedData($process);
+        return $this->_strategy->readResource();
     }
 }
