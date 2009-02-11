@@ -15,7 +15,7 @@
  */
 
 /**
- * @see Diggin_Scraper_Process
+ * @see Diggin_Scraper_Process_Aggregate
  */  
 require_once 'Diggin/Scraper/Process/Aggregate.php';
 
@@ -24,6 +24,11 @@ require_once 'Diggin/Scraper/Process/Aggregate.php';
  */
 require_once 'Diggin/Scraper/Context.php';
 
+/**
+ * @category  Diggin
+ * @package   Diggin_Scraper
+ * @license   New BSD License
+ */ 
 class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 {
     /**
@@ -159,8 +164,10 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         $strategy = new $strategyName($response);
-        if($adapter) $strategy->setAdapter($adapter);
-        if(method_exists($strategy, 'setAdapterConfig')) $strategy->setAdapterConfig(array('url' => $this->_url));
+        if ($adapter) $strategy->setAdapter($adapter);
+        if (method_exists($strategy, 'setAdapterConfig')) {
+            $strategy->setAdapterConfig(array('url' => $this->_url));
+        }
 
         $this->_strategy = $strategy;
     }
@@ -200,12 +207,12 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         
         if ($url) {
             $this->setUrl($url);
-        } 
-        if ($this->_url) {
-            $client->setUri($this->_getUrl());
+            $client->setUri($url);
+        } else {
+            $this->setUrl($client->getUri());
         }
-        
-        $response = $client->request('GET');
+
+        $response = $client->request();
 
         if (!$response->isSuccessful()) {
              /**
