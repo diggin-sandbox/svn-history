@@ -59,23 +59,23 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
     public function process($args)
     {
 
-        $namestypes = func_get_args();
+        $args = func_get_args();
 
-        if (count($namestypes) === 1) {
+        if (count($args) === 1) {
             if ($args instanceof Diggin_Scraper_Process) {
-                $this->_processes[] = $namestypes;
+                $this->_processes[] = $args;
                 return $this;
             }
             require_once 'Diggin/Json.php';
-            foreach ($namestypes as $arg) {
+            foreach ($args as $arg) {
                 $this->_processes[] = Diggin_Json::decode($arg, Diggin_Json::TYPE_SCRAPEROBJECT);
             }
             return $this;
         }
 
-        $expression = array_shift($namestypes);
+        $expression = array_shift($args);
  
-        foreach ($namestypes as $nametype) {
+        foreach ($args as $nametype) {
             if(is_string($nametype)) {
                 if (strpos($nametype, '=>') !== false) {
                     list($name, $types) = explode('=>', $nametype);
