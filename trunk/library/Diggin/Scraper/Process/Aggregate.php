@@ -25,12 +25,12 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
     private $_processes = array();
 
     public function getProcesses() {
-    	return $this->_processes;
+        return $this->_processes;
     }
     
     public function getIterator() 
     {
-    return new ArrayIterator($this->_processes);
+        return new ArrayIterator($this->_processes);
     }
     
     /**
@@ -56,58 +56,62 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
      * @see Diggin_Scraper_Filter
      * @return Diggin_Scraper_Process_Aggregate Provides a fluent interface
      */
-	public function process($args)
+    public function process($args)
     {
- 
+
         $namestypes = func_get_args();
- 
-        if(count($namestypes) === 1) {
-            $this->_processes = $namestypes;
+
+        if (count($namestypes) === 1) {
+            if ($args instanceof Diggin_Scraper_Process) {
+                $this->_processes[] = $namestypes;
+                return $this;
+            }
+            require_once 'Diggin/Json.php';
+            foreach ($namestypes as $arg) {
+                $this->_processes[] = Diggin_Json::decode($arg, Diggin_Json::TYPE_SCRAPEROBJECT);
+            }
+            return $this;
         }
- 
+
         $expression = array_shift($namestypes);
  
         foreach ($namestypes as $nametype) {
- 
- 
             if(is_string($nametype)) {
- 
- 
                 if (strpos($nametype, '=>') !== false) {
                     list($name, $types) = explode('=>', $nametype);
                 } else {
                     throw new Exception();
                 }
- 
+
                 if ((substr(trim($name), -2) == '[]')) {
                     $name = substr(trim($name), 0, -2);
                     $arrayflag = true;
                 } else {
                     $arrayflag = false;
                 }
- 
+
                 $types = trim($types, " '\"");
- 
+
                 //types to array
                 if (strpos($types, ',') !== false) $types = explode(',', $types);
- 
+
                 //filter exists?
                 if (count($types) === 1) {
                     //none filter
- 
+
                     $process = new Diggin_Scraper_Process;
                     $process->setExpression($expression);
                     $process->setName(trim($name));
                     $process->setArrayflag($arrayflag);
                     $process->setType($types);
                     $process->setFilters(false);
- 
+
                 } else {
                     //filters
                     foreach ($types as $count => $type) {
                         if ($count !== 0) $filters[] = trim($type, " []'\"");
                     }
- 
+
                     $process = new Diggin_Scraper_Process;
                     $process->setExpression($expression);
                     $process->setName(trim($name));
@@ -115,12 +119,11 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
                     $process->setType(trim($types[0], " []'\""));
                     $process->setFilters($filters);
                 }
- 
+
                 $this->_processes[] = $process;
-            //
             } elseif (is_array($nametype)) {
                 if(!is_int(key($nametype))) {
- 
+
                     foreach ($nametype as $name => $nm) {
                         if ((substr($name, -2) == '[]')) {
                             $name = substr($name, 0, -2);
@@ -134,7 +137,7 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
                         $process->setArrayFlag($arrayflag);
                         $process->setType($nm);
                         $process->setFilters(false);
- 
+
                         $this->_processes[] = $process;
                     }
                 } else {
@@ -148,7 +151,7 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
                 }
             }
         }
- 
+
         return $this;
     }
 }
