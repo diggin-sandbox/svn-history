@@ -37,7 +37,18 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
     
     protected $_adapter = null;
+    protected $_baseUrl = null;
+    
+    public function setBaseUrl($url)
+    {
+        $this->_baseUrl = $url;
+    }
 
+    public function getBaseUrl()
+    {
+        return $this->_baseUrl;
+    }
+    
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
         if (!($adapter instanceof Diggin_Scraper_Adapter_SimplexmlInterface)) {
@@ -184,7 +195,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $headBase = new Diggin_Scraper_FindHelper_HeadBaseHref();
             $base = $headBase->headBaseHref(current($values));
             if ($base === false) {
-                $base = $this->getAdapter()->getConfig("url");
+                $base = $this->getBaseUrl();
             }
             foreach ($values as $k => $value) {
                 $attribute = $value[substr($process->getType(), 1)];

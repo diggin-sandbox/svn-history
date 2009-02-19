@@ -167,9 +167,12 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         $strategy = new $strategyName($response);
+        if (method_exists($strategy, 'setBaseUrl')) {
+            $strategy->setBaseUrl($this->_getUrl());
+        }
         if ($adapter) $strategy->setAdapter($adapter);
         if (method_exists($strategy->getAdapter(), 'setConfig')) {
-            $strategy->getAdapter()->setConfig(array('url' => $this->_url));
+            $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl()));
         }
 
         $this->_strategy = $strategy;
@@ -189,6 +192,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
              */
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
+            $strategy->setBaseUrl($this->_getUrl());
             $strategy->getAdapter()->setConfig(array('url' => $this->_url));
             
             $this->_strategy = $strategy;

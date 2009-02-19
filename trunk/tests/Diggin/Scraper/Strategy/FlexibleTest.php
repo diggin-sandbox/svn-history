@@ -31,7 +31,8 @@ class Diggin_Scraper_Strategy_FlexibleTest extends PHPUnit_Framework_TestCase
 BODY;
         $response = Zend_Http_Response::fromstring("$responseHeader200\r\n\r\n$responseBody");
         $this->object = new Diggin_Scraper_Strategy_Flexible($response);
-        $this->object->setAdapterConfig(array('url' => 'http://base.example.net/test/'));
+        $this->object->setBaseUrl('http://base.example.net/test/');
+        $this->object->getAdapter()->setConfig(array('url' => 'http://base.example.net/test/'));
     }
 
     /**
@@ -116,6 +117,7 @@ BODY;
         $process01->setArrayFlag(true);
         $process01->setType('@href');
         //require_once 'Diggin/Uri/Http.php';var_dump(Diggin_Uri_Http::getAbsoluteUrl('index.html', 'http://test.org/'));
+        
         $ret = $this->object->getValue((array)$simplxml->xpath($process01->getExpression()), $process01);
         $this->assertEquals("http://base.example.net/test/index.html", $ret[0]);
         
