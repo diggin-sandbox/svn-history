@@ -17,7 +17,7 @@
 abstract class Diggin_Scraper_Strategy_Abstract
 {
     /**
-     * 
+     * response
      *
      * @var Zend_Http_Response
      */
@@ -28,7 +28,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
      *
      * @var Diggin_Scraper_Adapter_Interface
      */
-    protected static $_adapter;
+    protected $_adapter;
     
     protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
     
@@ -43,10 +43,10 @@ abstract class Diggin_Scraper_Strategy_Abstract
     public function __construct($response, $adapter = null)
     {
         self::$_response = $response;
-        if(is_null($adapter)) {
-            self::$_adapter = $this->getAdapter();
+        if (is_null($adapter)) {
+            $this->_adapter = $this->getAdapter();
         } else {
-            self::$_adapter = $adapter;
+            $this->_adapter = $adapter;
         }
     }
     

@@ -48,12 +48,12 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     /**
      * strategy name to use for changing strategy
      */
-    private $_strategyName;
+    private static $_strategyName;
     
     /**
      * adapter for response
      */
-    private $_adapter;
+    private static $_adapter;
 
     /**
      * strategy for scraping
@@ -136,12 +136,15 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      * @param Diggin_Scraper_Adapter_Interface $adapter
      * @return Diggin_Scraper Provides a fluent interface
      */
-    public function changeStrategy($strategyName, $adapter = null)
+    public static function changeStrategy($strategyName, $adapter = null)
     {
-        $this->_strategyName = $strategyName;
-        $this->_adapter = $adapter;
-
-        return $this;
+        if ($strategyName === false) {
+            self::$_strategyName = null;
+            self::$_adapter = null;
+        } else {
+            self::$_strategyName = $strategyName;
+            self::$_adapter = $adapter;
+        }
     }
 
     /**
@@ -165,8 +168,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 
         $strategy = new $strategyName($response);
         if ($adapter) $strategy->setAdapter($adapter);
-        if (method_exists($strategy, 'setAdapterConfig')) {
-            $strategy->setAdapterConfig(array('url' => $this->_url));
+        if (method_exists($strategy->getAdapter(), 'setConfig')) {
+            $strategy->getAdapter()->setConfig(array('url' => $this->_url));
         }
 
         $this->_strategy = $strategy;
@@ -186,14 +189,14 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
              */
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
-            $strategy->setAdapterConfig(array('url' => $this->_url));
+            $strategy->getAdapter()->setConfig(array('url' => $this->_url));
             
             $this->_strategy = $strategy;
         }
         
         return $this->_strategy;
     }
-
+    
     /**
      * making request
      * 
@@ -242,9 +245,9 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         if (isset($baseUrl)) {
             $this->setUrl($baseUrl);
         }
-        
-        if (!is_null($this->_strategyName)) {
-            $this->_callStrategy($resource, $this->_strategyName, $this->_adapter);
+
+        if (!is_null(self::$_strategyName)) {
+            $this->_callStrategy($resource, self::$_strategyName, self::$_adapter);
         }
 
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));

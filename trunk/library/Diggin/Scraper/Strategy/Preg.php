@@ -22,56 +22,31 @@ require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
 class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract 
 {    
-    protected static $_adapter = null;
+    protected $_adapter = null;
 
-    public function __destruct()
-    {
-       self::$_adapter = null;
-       parent::$_adapter = null;
-    }
-    
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
-        self::$_adapter = $adapter;
+        $this->_adapter = $adapter;
     }
 
     public function getAdapter()
     {
-        if(isset(self::$_adapter)){
-            return self::$_adapter;
-        }
-        
-        //コンストラクタで設定されてた時用
-        if (parent::$_adapter instanceof Diggin_Scraper_Adapter_Interface) {
-            return parent::$_adapter;
-        } else {
+        if (!isset($this->_adapter)) {
             /**
              * @see Diggin_Scraper_Adapter
              */
             require_once 'Diggin/Scraper/Adapter/Normal.php';
-            self::$_adapter = new Diggin_Scraper_Adapter_Normal();
+            $this->_adapter = new Diggin_Scraper_Adapter_Normal();
         }
 
-        return self::$_adapter;
+        return $this->_adapter;
     }
 
-    /**
-     * 
-     * @param string $respose
-     * @param string $process
-     * @return array
-     */
-    public function scrape($respose, $process)
-    {
-        $adapterBody = $this->getAdapter()->readData($respose);
-
-        return self::extract(self::cleanString($adapterBody), $process);
-    }
     
     
     public function extract($cleanString, $process)
     {
-        preg_match_all($process->expression, $cleanString , $results);
+        preg_match_all($process->getExpression(), $cleanString , $results);
         
         return $results;
     }
@@ -85,9 +60,9 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
      */
     public function getValue($values, $process)
     {
-        if (strtoupper(($process->type)) === 'RAW') {
+        if (strtoupper(($process->getType())) === 'RAW') {
             $strings = $values;
-        } elseif (strtoupper(($process->type)) === 'TEXT') {
+        } elseif (strtoupper(($process->getType())) === 'TEXT') {
             $strings = array();
             foreach (current($values) as $value) {
                 $value = strip_tags($value);
@@ -96,7 +71,7 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
             }
         } else {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->type);
+            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->getType());
         }
 
         return $strings;

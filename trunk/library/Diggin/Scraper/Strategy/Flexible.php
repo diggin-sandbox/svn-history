@@ -35,47 +35,26 @@ require_once 'Diggin/Scraper/FindHelper/HeadBaseHref.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
 {
-    protected static $_adapter = null;
-    protected static $_adapterconfig = null;
-
-    public function __destruct()
-    {
-       self::$_adapter = null;
-       self::$_adapterconfig = null;
-       parent::$_adapter = null;
-    }
     
+    protected $_adapter = null;
+
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
-        self::$_adapter = $adapter;
+        $this->_adapter = $adapter;
     }
 
-    public function setAdapterConfig($config)
-    {
-        self::$_adapterconfig = $config;
-    }
-    
+
     public function getAdapter()
     {
-        if (isset(self::$_adapter)) {
-            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
-            return self::$_adapter;
-        }
-        
-        //コンストラクタで設定されてた時用
-        if (parent::$_adapter instanceof Diggin_Scraper_Adapter_Interface) {
-            if (self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
-            return parent::$_adapter;
-        } else { 
+        if (!isset($this->_adapter)) {
             /**
-             * @see Diggin_Scraper_Adapter
+             * @see Diggin_Scraper_Adapter_Htmlscraping
              */
             require_once 'Diggin/Scraper/Adapter/Htmlscraping.php';
-            self::$_adapter = new Diggin_Scraper_Adapter_Htmlscraping();
-            if(self::$_adapterconfig) self::$_adapter->setConfig(self::$_adapterconfig);
+            $this->_adapter = new Diggin_Scraper_Adapter_Htmlscraping();
         }
 
-        return self::$_adapter;
+        return $this->_adapter;
     }
 
     
@@ -91,7 +70,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     {
         $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->getExpression()));
 
-        
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             
@@ -144,7 +122,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      */
     public function getValue($values, $process)
     {
-        //type
         if (strtoupper(($process->getType())) === 'RAW') {
             $strings = $values;
         } elseif (strtoupper(($process->getType())) === 'ASXML') {
@@ -201,7 +178,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $headBase = new Diggin_Scraper_FindHelper_HeadBaseHref();
             $base = $headBase->headBaseHref(current($values));
             if ($base === false) {
-                $base = self::$_adapterconfig['url'];
+                $base = $this->getAdapter()->getConfig("url");
             }
             foreach ($values as $k => $value) {
                 $attribute = $value[substr($process->getType(), 1)];
