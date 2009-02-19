@@ -41,11 +41,10 @@ require_once 'Diggin/Scraper.php';
 $scraper = new Diggin_Scraper();
 $scraper->setHttpClient($test);
 
-$items = new Diggin_Scraper_Process();
+$items = new Diggin_Scraper();
 $items->process("a", "title => 'TEXT'", "link => '@href'");
-//$items->process(".", "title => 'RAW'");
 
 $scraper->changeStrategy('Diggin_Scraper_Strategy_Flexible', new Diggin_Scraper_Adapter_Loadhtml());
 $scraper->process("ul.news>li", array('result[]' => $items))
         ->scrape("http://localhost/~tobe/news_sample.html");
-var_dump($scraper->results);
+var_dump($scraper->getResults());

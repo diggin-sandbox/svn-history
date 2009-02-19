@@ -1,5 +1,5 @@
 <?php
- 
+
 //@see http://0-oo.net/sbox/php-tool-box/html-sql-all-php-functions
 
 ini_set("memory_limit","50000000");
@@ -10,7 +10,7 @@ function replace($val) {
 }
 
 $scraper = new Diggin_Scraper();
-$scraper->process('//div[@id="index.functions"]//a', 'funcs[] => "TEXT", /^(?!.*(::|->)).*$/, replace')
+$scraper->process('//dd[@class="indexentry"]//a', 'funcs[] => "TEXT", /^(?!.*(::|->)).*$/, replace')
         ->scrape('http://jp2.php.net/manual/ja/indexes.php');
         
 print_r($scraper->funcs);
