@@ -14,8 +14,10 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 require_once 'Diggin/Scraper/Adapter/Interface.php';
+require_once 'Diggin/Scraper/Adapter/StringInterface.php';
 
-class Diggin_Scraper_Adapter_Normal implements Diggin_Scraper_Adapter_Interface
+class Diggin_Scraper_Adapter_Normal
+    implements Diggin_Scraper_Adapter_Interface, Diggin_Scraper_Adapter_StringInterface
 {
     protected $_config = array();
     

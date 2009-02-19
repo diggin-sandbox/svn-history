@@ -18,10 +18,15 @@
  * @see Diggin_Scraper_Adapter_Interface
  */
 require_once 'Diggin/Scraper/Adapter/Interface.php';
+/**
+ * @see Diggin_Scraper_Adapter_SimplexmlInterface
+ */
+require_once 'Diggin/Scraper/Adapter/SimplexmlInterface.php';
 
-class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interface
+class Diggin_Scraper_Adapter_Loadhtml 
+    implements Diggin_Scraper_Adapter_Interface, Diggin_Scraper_Adapter_SimplexmlInterface
 {
-    protected $_config = array(
+    protected $config = array(
         'xml_manifesto' => false,
         'auto_encoding' => true
     );
@@ -34,7 +39,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
      */
     public function readData($response)
     {
-        if ($this->_config['auto_encoding']) {
+        if ($this->config['auto_encoding']) {
             require_once 'Diggin/Http/Response/Encoding.php';
             $responseBody = Diggin_Http_Response_Encoding::encodeResponseObject($response);
         } else {
@@ -47,7 +52,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
         
         // ここまででもいいのだけど。
         // XML宣言が付いていないので付与する。
-        if ($this->_config["xml_manifesto"] === true) {
+        if ($this->config["xml_manifesto"] === true) {
             $str = $simplexml->asXML();
             {
                 // XML宣言付与
@@ -80,7 +85,7 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
             throw new Diggin_Scraper_Adapter_Exception('Expected array parameter, given ' . gettype($config));
 
         foreach ($config as $k => $v)
-            $this->_config[strtolower($k)] = $v;
+            $this->config[strtolower($k)] = $v;
 
         return $this;
     }
@@ -105,6 +110,11 @@ class Diggin_Scraper_Adapter_Loadhtml implements Diggin_Scraper_Adapter_Interfac
         return mb_decode_numericentity($excluded_hex,
                                        array(0x0, 0x10000, 0, 0xfffff),
                                        "UTF-8");
+    }
+    
+    public function getConfig($key)
+    {
+        return $this->config[strtolower($key)];
     }
 }
 

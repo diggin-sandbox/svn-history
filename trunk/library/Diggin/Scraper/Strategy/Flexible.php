@@ -40,6 +40,13 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
+        if (!($adapter instanceof Diggin_Scraper_Adapter_SimplexmlInterface)) {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            $msg = 'Adapter is not implements ';
+            $msg .= 'Diggin_Scraper_Adapter_SimplexmlInterface';
+            throw new Diggin_Scraper_Strategy_Exception($msg);
+        }
+
         $this->_adapter = $adapter;
     }
 
@@ -72,7 +79,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            
             //$process->getExpression() = self::_xpathOrCss2Xpath($process->getExpression());
             throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process :".$process->getExpression());
         }

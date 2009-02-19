@@ -26,6 +26,13 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
 
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
+        if (!($adapter instanceof Diggin_Scraper_Adapter_StringInterface)) {
+            require_once 'Diggin/Scraper/Strategy/Exception.php';
+            $msg = 'Adapter is not implements ';
+            $msg .= 'Diggin_Scraper_Adapter_StringInterface';
+            throw new Diggin_Scraper_Strategy_Exception($msg);
+        }
+
         $this->_adapter = $adapter;
     }
 
@@ -42,12 +49,14 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
         return $this->_adapter;
     }
 
-    
-    
-    public function extract($cleanString, $process)
+    public function extract($string, $process)
     {
-        preg_match_all($process->getExpression(), $cleanString , $results);
-        
+        if (is_array($string)) {
+            $string = array_shift($string);
+            preg_match_all($process->getExpression(), self::cleanString($string) , $results);
+        } else {
+            preg_match_all($process->getExpression(), self::cleanString($string) , $results);
+        }
         return $results;
     }
 
