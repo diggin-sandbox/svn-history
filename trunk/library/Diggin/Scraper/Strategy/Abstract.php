@@ -40,14 +40,9 @@ abstract class Diggin_Scraper_Strategy_Abstract
      * @param Zend_Http_Response
      * @param Diggin_Scraper_Adapter_Interface
      */
-    public function __construct($response, $adapter = null)
+    public function __construct($response)
     {
         self::$_response = $response;
-        if (is_null($adapter)) {
-            $this->_adapter = $this->getAdapter();
-        } else {
-            $this->_adapter = $adapter;
-        }
     }
     
     public function readResource()
