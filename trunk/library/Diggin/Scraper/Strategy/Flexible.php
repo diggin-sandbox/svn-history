@@ -35,8 +35,6 @@ require_once 'Diggin/Scraper/FindHelper/HeadBaseHref.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
 {
-    
-    protected $_adapter = null;
     protected $_baseUrl = null;
     
     public function setBaseUrl($url)

@@ -21,8 +21,7 @@
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
 class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract 
-{    
-    protected $_adapter = null;
+{
 
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
