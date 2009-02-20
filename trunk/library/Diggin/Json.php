@@ -19,11 +19,12 @@
  */
 require_once 'Zend/Json.php';
 
+require_once 'Diggin/Scraper/Process/Aggregate.php';
 class Diggin_Json 
 {
     const TYPE_ARRAY = 1;
     const TYPE_SCRAPEROBJECT = 2;
-    const TYPE_WEBSCRAPERIDE = 3;
+    const TYPE_WEBSCRAPEJS = 3;
 
     /**
      * decode 
@@ -34,14 +35,15 @@ class Diggin_Json
      * @return mixed $decodes
      */
     public static function decode($encodedValue, 
-                                  $objectDecodeType = Diggin_Json::TYPE_ARRAY, 
-                                  $encodeType = Diggin_Json::TYPE_WEBSCRAPERIDE)
+                                  $objectDecodeType = self::TYPE_ARRAY, 
+                                  $encodeType = self::TYPE_WEBSCRAPEJS)
     {        
         $decodes = Zend_Json::decode(self::reEncode($encodedValue, $encodeType));
-        if ($objectDecodeType === Diggin_Json::TYPE_SCRAPEROBJECT) {
+        
+        if ($objectDecodeType === self::TYPE_SCRAPEROBJECT) {
             foreach ($decodes as $keys => $decode) {
-                if(is_array(current($decode))) {
-                    $scraper = new Diggin_Scraper_Process();
+                if(is_array($decode)) {
+                    $scraper = new Diggin_Scraper_Process_Aggregate();
                     foreach (current($decode) as $key => $val) {
                         foreach ($val as $k => $v) {
                             if ((substr($k, -2) == '[]')) {
@@ -51,7 +53,15 @@ class Diggin_Json
                                 $arrayflag = false;
                             }
                             
-                            $scraper->processes[] = new Diggin_Scraper_Process($key, $k, $arrayflag, $v);
+                            $process =new Diggin_Scraper_Process();
+                            $process->setExpression($key);
+                            $process->setName($k);
+                            $process->setArrayFlag($arrayflag);
+                            $process->setType($v);
+                            $process->setFilters(false);
+                            $scraper->process($process);
+                            
+                            
                         }
                     }
                     
@@ -62,14 +72,18 @@ class Diggin_Json
                         $name = trim(key($decode));
                         $arrayflag = false;
                     }
-                    
-                $processes = new Diggin_Scraper_Process($keys, $name, $arrayflag, $scraper);
+                    $p = new Diggin_Scraper_Process();
+                    $p->setExpression($keys);
+                    $p->setName($name);
+                    $p->setArrayFlag($arrayflag);
+                    $p->setType($scraper);
+                    $p->setFilters(false);
                 }
             }
             
-            return $processes;
+            return $p;
         }
-        
+
         return $decodes;
     }
 
@@ -80,7 +94,7 @@ class Diggin_Json
      * @param int $encodeType
      * @return string $json
      */
-    public static function reEncode($valueToEncode, $encodedType = Diggin_Json::TYPE_WEBSCRAPERIDE)
+    public static function reEncode($valueToEncode, $encodedType = self::TYPE_WEBSCRAPEJS)
     {
         $json = str_replace(array(chr(10), chr(13)), '', $valueToEncode);
         $json = str_replace('  ', '', $json);

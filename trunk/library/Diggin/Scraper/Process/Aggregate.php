@@ -60,9 +60,8 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
     {
 
         $args = func_get_args();
-
         if (count($args) === 1) {
-            if ($args instanceof Diggin_Scraper_Process) {
+            if ($args[0] instanceof Diggin_Scraper_Process) {
                 $this->_processes[] = $args;
                 return $this;
             }
