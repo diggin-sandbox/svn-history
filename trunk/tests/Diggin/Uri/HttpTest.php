@@ -93,5 +93,17 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
         
 
     }
+    
+    public function testGetAbsoluteUrl2()
+    {
+        
+        $this->object->setBaseUrl('http://test.org/index.php');
+        //if 
+        $this->assertEquals('http://test.org/index.php?param=hoge', 
+                             $this->object->getAbsoluteUrl2('?param=hoge'));
+        
+                             
+                             
+    }
 }
 ?>

@@ -15,137 +15,141 @@
  */
 class Diggin_Scraper_Process
 {
-   private $_expression;
-   private $_name;
-   private $_arrayFlag;
-   private $_type;
-   private $_filters;
+    private $_expression;
+    private $_name;
+    private $_arrayFlag;
+    private $_type;
+    private $_filters;
 
-   /**
-    * toString
-    * UnTokenize process For using Exception errstr.
-    *
-    * @return string
-    */
-//   public function __toString()
-//   {
-//       if (isset($this->getProcesses())) {
-//           $ret = "";
-//           foreach ($this->getProcesses as $process) {
-//               $ret .= $process->__toString($process);
-//           }
-//
-//           return '\''.$this->getExpression().'\', '.
-//              "'".$this->getName().' => " '.$ret.'"';
-//       }
-//
-//       if ($this->getFilters() !== false) {
-//       return '\''.$this->getExpression().'\', '.
-//              "'".$this->getName().' => ["'. $this->getType(). '",
-//"'.$this->getFilters().'"]\'';
-//       }
-//
-//       return '\''.$this->getExpression().'\', '.
-//              "'".$this->getName().' => "'. $this->getType(). '"\'';
-//   }
+    /**
+     * toString
+     * UnTokenize process For using Exception errstr.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        if ($this->getType() instanceof Diggin_Scraper_Process_Aggregate) {
+            $ret = "";
+            foreach ($this->getType()->getProcesses() as $process) {
+                $ret .= $process->__toString($process);
+            }
 
-   /**
-    * get expression
-    *
-    * @return string
-    */
-   public function getExpression()
-   {
-       return $this->_expression;
+            return '\''.$this->getExpression().'\', '.
+               "'".$this->getName().' => " '.$ret.'"';
+        }
+
+        if ($this->getFilters() !== false) {
+            if (count($this->getFilters()) !== 1) {
+               $filters= implode(', ', $this->getFilters());
+            } else {
+               $filters = current($this->getFilters());
+        }
+        return '\''.$this->getExpression().'\', '.
+              "'".$this->getName().' => ["'. $this->getType(). '", "'.$filters.'"]\'';
+        }
+
+        return '\''.$this->getExpression().'\', '.
+              "'".$this->getName().' => "'. $this->getType(). '"\'';
    }
 
-   /**
-    * set expression
-    *
-    * @param string
-    */
-   public function setExpression($expression)
-   {
-       $this->_expression = $expression;
-   }
+    /**
+     * get expression
+     *
+     * @return string
+     */
+    public function getExpression()
+    {
+        return $this->_expression;
+    }
 
-   /**
-    * get Name(Key)
-    *
-    * @return string
-    */
-   public function getName()
-   {
-       return $this->_name;
-   }
+    /**
+     * set expression
+     *
+     * @param string
+     */
+    public function setExpression($expression)
+    {
+        $this->_expression = $expression;
+    }
 
-   /**
-    * set name
-    *
-    * @param string
-    */
-   public function setName($name)
-   {
-       $this->_name = $name;
-   }
+    /**
+     * get Name(Key)
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
 
-   /**
-    * get arrayFlag
-    *
-    * @return boolean
-    */
-   public function getArrayFlag()
-   {
-       return $this->_arrayFlag;
-   }
+    /**
+     * set name
+     *
+     * @param string
+     */
+    public function setName($name)
+    {
+        $this->_name = $name;
+    }
 
-   /**
-    * set arrayFlag
-    *
-    * @param boolean
-    */
-   public function setArrayFlag($arrayFlag)
-   {
-       $this->_arrayFlag = $arrayFlag;
-   }
+    /**
+     * get arrayFlag
+     *
+     * @return boolean
+     */
+    public function getArrayFlag()
+    {
+        return $this->_arrayFlag;
+    }
 
-   /**
-    * get type(of value)
-    *
-    * @return string
-    */
-   public function getType()
-   {
-       return $this->_type;
-   }
+    /**
+     * set arrayFlag
+     *
+     * @param boolean
+     */
+    public function setArrayFlag($arrayFlag)
+    {
+        $this->_arrayFlag = $arrayFlag;
+    }
 
-   /**
-    * set type
-    *
-    * @param string
-    */
-   public function setType($type)
-   {
-       $this->_type = $type;
-   }
+    /**
+     * get type(of value)
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->_type;
+    }
 
-   /**
-    * get filters
-    *
-    * @return mixed
-    */
-   public function getFilters()
-   {
-       return $this->_filters;
-   }
+    /**
+     * set type
+     *
+     * @param string
+     */
+    public function setType($type)
+    {
+        $this->_type = $type;
+    }
 
-   /**
-    * set filters
-    *
-    * @param mixed
-    */
-   public function setFilters($filters)
-   {
-       $this->_filters = $filters;
-   }
+    /**
+     * get filters
+     *
+     * @return mixed
+     */
+    public function getFilters()
+    {
+        return $this->_filters;
+    }
+
+    /**
+     * set filters
+     *
+     * @param mixed
+     */
+    public function setFilters($filters)
+    {
+        $this->_filters = $filters;
+    }
 }

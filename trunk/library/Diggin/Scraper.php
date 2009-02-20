@@ -134,7 +134,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      * 
      * @param string $strategyName
      * @param Diggin_Scraper_Adapter_Interface $adapter
-     * @return Diggin_Scraper Provides a fluent interface
      */
     public static function changeStrategy($strategyName, $adapter = null)
     {
@@ -239,6 +238,9 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      *      setting URL or Zend_Http_Response
      * @param string (if $resource is not URL, please set URL for recognize)
      * @return array $this->results Scraping data.
+     * @throws Diggin_Scraper_Exception
+     *          Diggin_Scraper_Strategy_Exception
+     *          Diggin_Scraper_Adapter_Exception
      */
     public function scrape($resource = null, $baseUrl = null)
     {        

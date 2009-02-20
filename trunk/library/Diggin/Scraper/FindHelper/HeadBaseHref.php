@@ -39,10 +39,10 @@ class Diggin_Scraper_FindHelper_HeadBaseHref
     {
         if ($bases = $simplexml->xpath('//base[@href]')) {
             rsort($bases);
-            require_once 'Zend/Uri/Http.php';
+            require_once 'Zend/Uri.php';
             foreach ($bases as $base) {
                 try {
-                    $uri = Zend_Uri_Http::fromString((string) $base[@href]);
+                    $uri = Zend_Uri::factory((string) $base[@href]);
                     
                     return $uri;
                 } catch (Zend_Uri_Exception $e) {

@@ -28,7 +28,7 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
     {
         if (!($adapter instanceof Diggin_Scraper_Adapter_StringInterface)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            $msg = 'Adapter is not implements ';
+            $msg = get_class($adapter).'Adapter is not implements ';
             $msg .= 'Diggin_Scraper_Adapter_StringInterface';
             throw new Diggin_Scraper_Strategy_Exception($msg);
         }

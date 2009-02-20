@@ -41,17 +41,22 @@ class Diggin_Scraper_ProcessTest extends PHPUnit_Framework_TestCase
      */
     public function test__toString() {
         
-//        $this->object->expression = $exp = '//expression';
-//        $this->object->name = $key ='key[]';
-//        $this->object->type = $val = 'val';
-//        $this->object->filters = $filter = 'filter';
-//        
-//        $process = <<<PROCESS
-//'$exp', '$key => ["$val", "$filter"]'
-//PROCESS;
-//        
-//        $this->assertEquals($process, (string) $this->object);
+        $this->object->setExpression($exp = '//expression');
+        $this->object->setName($key ='key[]');
+        $this->object->setType($val = 'val');
+        $this->object->setFilters($filter = array('filter'));
         
+  //      $filter = implode(', ', $filter);
+        $process = "'$exp', "."'$key => [\"$val\", \"$filter[0]\"]'";
+
+        
+        $this->assertEquals($process, (string) $this->object);
+        
+        $this->object->setFilters($filter = array('filter', 'filter2'));
+        
+        $process = "'$exp', "."'$key => [\"$val\", \"$filter[0], $filter[1]\"]'";
+        
+        $this->assertEquals($process, (string) $this->object);
                 $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
