@@ -15,16 +15,11 @@
  */
 
 /**
- * @see Diggin_Scraper_Adapter_Interface
+ * @see Diggin_Scraper_Adapter_SimplexmlAbstract
  */
-require_once 'Diggin/Scraper/Adapter/Interface.php';
-/**
- * @see Diggin_Scraper_Adapter_SimplexmlInterface
- */
-require_once 'Diggin/Scraper/Adapter/SimplexmlInterface.php';
+require_once 'Diggin/Scraper/Adapter/SimplexmlAbstract.php';
 
-class Diggin_Scraper_Adapter_Loadhtml 
-    implements Diggin_Scraper_Adapter_Interface, Diggin_Scraper_Adapter_SimplexmlInterface
+class Diggin_Scraper_Adapter_Loadhtml extends Diggin_Scraper_Adapter_SimplexmlAbstract
 {
     protected $config = array(
         'xml_manifesto' => false,
@@ -37,7 +32,7 @@ class Diggin_Scraper_Adapter_Loadhtml
      * @param Zend_Htp_Response 
      * @return SimpleXMLElement
      */
-    public function readData($response)
+    public function getSimplexml($response)
     {
         if ($this->config['auto_encoding']) {
             require_once 'Diggin/Http/Response/Encoding.php';

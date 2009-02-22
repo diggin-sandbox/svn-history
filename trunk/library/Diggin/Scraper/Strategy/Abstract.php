@@ -45,12 +45,17 @@ abstract class Diggin_Scraper_Strategy_Abstract
         self::$_response = $response;
     }
     
+    /**
+     * Read resource from adapter'read
+     * 
+     * @return mixed
+     */
     public function readResource()
     {
         return $this->getAdapter()->readData($this->getResponse());
     }
 
-   
+    
     public function getResponse()
     {
         return self::$_response;

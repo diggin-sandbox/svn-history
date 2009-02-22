@@ -14,7 +14,7 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 //require_once 'rhaco/Rhaco.php';
-Rhaco::import("tag.model.SimpleTag");
+//Rhaco::import("tag.model.SimpleTag");
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
 class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
@@ -24,8 +24,8 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
     {
         if (!($adapter instanceof Diggin_Scraper_Adapter_StringInterface)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            $msg = get_class($adapter).'Adapter is not implements ';
-            $msg .= 'Diggin_Scraper_Adapter_StringInterface';
+            $msg = get_class($adapter).'Adapter is not extends ';
+            $msg .= 'Diggin_Scraper_Adapter_StringAbstract';
             throw new Diggin_Scraper_Strategy_Exception($msg);
         }
 

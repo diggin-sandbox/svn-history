@@ -36,7 +36,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      * 
      * @var array 
      */
-    private $_results;
+    protected $_results;
     
     /**
      * target url of scraping

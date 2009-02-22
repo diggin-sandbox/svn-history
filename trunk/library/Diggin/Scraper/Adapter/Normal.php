@@ -13,11 +13,9 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-require_once 'Diggin/Scraper/Adapter/Interface.php';
-require_once 'Diggin/Scraper/Adapter/StringInterface.php';
+require_once 'Diggin/Scraper/Adapter/StringAbstract.php';
 
-class Diggin_Scraper_Adapter_Normal
-    implements Diggin_Scraper_Adapter_Interface, Diggin_Scraper_Adapter_StringInterface
+class Diggin_Scraper_Adapter_Normal extends Diggin_Scraper_Adapter_StringAbstract
 {
     protected $_config = array();
     
@@ -26,9 +24,9 @@ class Diggin_Scraper_Adapter_Normal
      * (not rawBody and not html converting)
      * 
      * @param string $response
-     * @retrun Object Raw
+     * @return string
      */
-    public function readData($response)
+    public function getString($response)
     {   
         return $response->getBody();
     }

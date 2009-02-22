@@ -33,7 +33,7 @@ require_once 'Diggin/Uri/Http.php';
  */
 require_once 'Diggin/Scraper/FindHelper/HeadBaseHref.php';
 
-class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract 
+class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
     protected $_baseUrl = null;
     
@@ -49,10 +49,10 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
-        if (!($adapter instanceof Diggin_Scraper_Adapter_SimplexmlInterface)) {
+        if (!($adapter instanceof Diggin_Scraper_Adapter_SimplexmlAbstract)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            $msg = get_class($adapter).' is not implements ';
-            $msg .= 'Diggin_Scraper_Adapter_SimplexmlInterface';
+            $msg = get_class($adapter).' is not extedns ';
+            $msg .= 'Diggin_Scraper_Adapter_SimplexmlAbstract';
             throw new Diggin_Scraper_Strategy_Exception($msg);
         }
 
