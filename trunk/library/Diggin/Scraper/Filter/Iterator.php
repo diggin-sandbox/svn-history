@@ -14,10 +14,29 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
+/**
+ * Auto-filtering values
+ * 
+ * @category   Diggin
+ * @package    Diggin_Scraper
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 class Diggin_Scraper_Filter_Iterator extends FilterIterator
 {
-    public static $filter;
-    public static $prefixFlag;
+    /**
+     * Filter
+     * 
+     * @var mixed
+     */
+    protected $filter;
+    
+    /**
+     * prefix flag
+     * 
+     * @var string
+     */
+    protected $prefixFlag;
 
     /**
      * @param Iterator $iterator
@@ -27,8 +46,8 @@ class Diggin_Scraper_Filter_Iterator extends FilterIterator
     public function __construct(Iterator $iterator, $filter, $prefixFlag)
     {
         parent::__construct($iterator);
-        self::$filter = $filter;
-        self::$prefixFlag = $prefixFlag;
+        $this->filter = $filter;
+        $this->prefixFlag = $prefixFlag;
     }
 
     /**
@@ -40,14 +59,14 @@ class Diggin_Scraper_Filter_Iterator extends FilterIterator
     {
         $value = $this->current();
         
-        if (function_exists(self::$filter)) {
-            $filterValue = call_user_func(self::$filter, $value);
-        } else if (!strstr(self::$filter, '_')) {
+        if (function_exists($this->filter)) {
+            $filterValue = call_user_func($this->filter, $value);
+        } else if (!strstr($this->filter, '_')) {
             require_once 'Zend/Filter.php';
-            $filterValue = Zend_Filter::get($value, self::$filter);
+            $filterValue = Zend_Filter::get($value, $this->filter);
         } else {
             require_once 'Zend/Loader.php';
-            $filter = self::$filter;
+            $filter = $this->filter;
             try {
                 Zend_Loader::loadClass($filter);
             } catch (Zend_Exception $e) {
@@ -58,7 +77,7 @@ class Diggin_Scraper_Filter_Iterator extends FilterIterator
             $filterValue = $filter->filter($value);
         }
 
-        if (self::$prefixFlag === true) {
+        if ($this->prefixFlag === true) {
             if ($filterValue != $value) {
                 return false;
             } else {

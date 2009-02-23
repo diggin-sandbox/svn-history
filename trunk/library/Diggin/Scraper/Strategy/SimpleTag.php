@@ -22,7 +22,7 @@ class Diggin_Scraper_Strategy_SimpleTag extends Diggin_Scraper_Strategy_Abstract
 
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
-        if (!($adapter instanceof Diggin_Scraper_Adapter_StringInterface)) {
+        if (!($adapter instanceof Diggin_Scraper_Adapter_StringAbstract)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             $msg = get_class($adapter).'Adapter is not extends ';
             $msg .= 'Diggin_Scraper_Adapter_StringAbstract';

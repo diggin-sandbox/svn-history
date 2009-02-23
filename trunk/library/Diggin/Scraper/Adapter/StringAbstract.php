@@ -1,5 +1,20 @@
 <?php
 /**
+ * Diggin - Simplicity PHP Library
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * 
+ * @category   Diggin
+ * @package    Diggin_Scraper
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
+
+/**
  * @see Diggin_Scraper_Adapter_Interface
  */
 require_once 'Diggin/Scraper/Adapter/Interface.php';
@@ -12,9 +27,10 @@ abstract class Diggin_Scraper_Adapter_StringAbstract implements Diggin_Scraper_A
     /**
      * Reading Response as SimpleXmlElement
      * 
+     * @param object $response
      * @return SimplXmlElement
      */
-    public function readData($response)
+    final public function readData($response)
     {
         $string = $this->getString($response);
         if (!is_string($string)) {
