@@ -4,7 +4,7 @@
  * 
  * Zend Framework : 
  * @copyright  Copyright (c) 2005-2008 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
 /** 
@@ -14,12 +14,12 @@
  *
  * This source file is subject to the new BSD license.
  * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
+ * http://diggin.musicrider.com/LICENSE
  * 
  * @category   Diggin
  * @package    Diggin_Debug
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
 class Diggin_Debug

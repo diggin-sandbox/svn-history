@@ -5,13 +5,13 @@
  * LICENSE
  *
  * This source file is subject to the new BSD license.
- * http://framework.zend.com/license/new-bsd
+ * http://diggin.musicrider.com/LICENSE
  * 
  * @category   Diggin
  * @package    Diggin_CDDB
  * @subpackage Application_CDex
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 /**
  * @see Diggin_CDDB_Disc_Encoder
