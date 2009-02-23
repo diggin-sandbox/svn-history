@@ -20,6 +20,11 @@
  */
 require_once 'Zend/Service/Abstract.php';
 require_once 'Diggin/Service/Exception.php';
+
+/**
+ * 
+ * 
+ */
 class Diggin_Service_Wedata extends Zend_Service_Abstract
 {
     const API_URL = 'http://wedata.net';
@@ -44,12 +49,11 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      * @var Zend_Http_Client
      */
     protected static $_client;
-    
-    protected static $_itemId;
-    
+
     protected static $_params;
+
     protected static $_decodetype;
-    
+
     /**
      * Constructs a new Wedata Web Service Client
      *
@@ -144,16 +148,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     {
         self::$_params['database']['name'] = $databaseName;
     }
-    
-    /**
-     * adding parameter
-     * 
-     * @param string $itemId
-     */
-    public static function setItemId($itemId)
-    {
-        self::$_itemId = $itemId;
-    }
+
     
     /**
      * Handles all requests to a web service
@@ -302,13 +297,12 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      * @param string $page
      * @return array Decording Result
      */
-    public static function getItem($itemId = null, $page = null)
+    public static function getItem($itemId, $page = null)
     {
         //@todo if int set as itemid or string searching itemid by name
         //is_integer($item);
         //is_string($item) ;
         
-        if ($itemId) self::setItemId($itemId);
         if ($page) self::setParam('page', $page);
         
         if (isset(self::$_params['page'])) {
@@ -317,7 +311,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
             $params = null;
         }
 
-        $path = sprintf(self::PATH_GET_ITEM, self::$_itemId);
+        $path = sprintf(self::PATH_GET_ITEM, $itemId);
         $responseBody = self::makeRequest($path, Zend_Http_Client::GET, $params);
         
         return self::_decode($responseBody);
@@ -334,24 +328,22 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         return $return;
     }
     
-    public static function updateItem($itemId = null, array $params = null)
+    public static function updateItem($itemId, array $params = null)
     {
-        if ($itemId) self::setItemId($itemId);
         if ($params) self::setParams($params);
         
         if (!isset(self::$_params['api_key'])) {
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
-        $path = sprintf(self::PATH_UPDATE_ITEM, self::$_itemId);
+        $path = sprintf(self::PATH_UPDATE_ITEM, $itemId);
         $return = self::makeRequest($path, Zend_Http_Client::PUT, self::$_params);
         
         return $return;
     }
     
-    public static function deleteItem($itemId = null, $apiKey = null)
+    public static function deleteItem($itemId, $apiKey = null)
     {
-        if ($itemId) self::setItemId($itemId);
         if ($apiKey) self::setApikey($apiKey);
         
         if (isset(self::$_params['api_key'])) {
@@ -360,7 +352,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
-        $path = sprintf(self::PATH_DELETE_ITEM, self::$_itemId);
+        $path = sprintf(self::PATH_DELETE_ITEM, $itemId);
         $return = self::makeRequest($path, Zend_Http_Client::DELETE, $params);
         
         return $return;
