@@ -10,14 +10,14 @@
  * 
  * @category   Diggin
  * @package    Diggin_Felica
- * @subpackage Sfcpeep
+ * @subpackage Adapter_Sfcpeep
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-require_once 'Diggin/Felica/Exception.php';
+require_once 'Diggin/Felica/Adapter/Exception.php';
 
-class Diggin_Felica_Sfcpeep
+class Diggin_Felica_Adapter_Sfcpeep
 {
     public $felicaIdm;//Felica製造番号
     public $sfcpeepArray; //配列格納後のsfcpeepデータ    
@@ -101,7 +101,7 @@ class Diggin_Felica_Sfcpeep
         if(!isset($this->felicaIdm)){
             $output = self::execSfcpeep('i');
             if (!self::isSuccess()) {
-                throw new Diggin_Felica_Exception ("Can not Read Felica") ;
+                throw new Diggin_Felica_Adapter_Exception ("Can not Read Felica") ;
             }
             $this->felicaIdm = substr(array_shift($output), 4);
         }
@@ -121,12 +121,12 @@ class Diggin_Felica_Sfcpeep
         } else {
             self::getFelicaIdm();
             if(!self::isSuccess()){
-                throw new Diggin_Felica_Exception(
+                throw new Diggin_Felica_Adapter_Exception(
                 "Can not get Felica Data ".array_shift($this->_output));
             }
             $this->_sfcpeepExecData = self::execSfcpeep();
             if(!self::isSuccess()){
-                throw new Diggin_Felica_Exception(
+                throw new Diggin_Felica_Adapter_Exception(
                 "Can not get Felica Data ".array_shift($this->_output));
             }
             

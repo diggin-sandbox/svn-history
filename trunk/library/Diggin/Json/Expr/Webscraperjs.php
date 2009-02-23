@@ -20,11 +20,11 @@
 require_once 'Zend/Json.php';
 
 require_once 'Diggin/Scraper/Process/Aggregate.php';
-class Diggin_Json 
+class Diggin_Json_Expr_Webscraperjs
 {
     const TYPE_ARRAY = 1;
     const TYPE_SCRAPEROBJECT = 2;
-    const TYPE_WEBSCRAPEJS = 3;
+    const TYPE_WEBSCRAPERJS = 3;
 
     /**
      * decode 
@@ -36,7 +36,7 @@ class Diggin_Json
      */
     public static function decode($encodedValue, 
                                   $objectDecodeType = self::TYPE_ARRAY, 
-                                  $encodeType = self::TYPE_WEBSCRAPEJS)
+                                  $encodeType = self::TYPE_WEBSCRAPERJS)
     {        
         $decodes = Zend_Json::decode(self::reEncode($encodedValue, $encodeType));
         
@@ -94,7 +94,7 @@ class Diggin_Json
      * @param int $encodeType
      * @return string $json
      */
-    public static function reEncode($valueToEncode, $encodedType = self::TYPE_WEBSCRAPEJS)
+    public static function reEncode($valueToEncode, $encodedType = self::TYPE_WEBSCRAPERJS)
     {
         $json = str_replace(array(chr(10), chr(13)), '', $valueToEncode);
         $json = str_replace('  ', '', $json);
