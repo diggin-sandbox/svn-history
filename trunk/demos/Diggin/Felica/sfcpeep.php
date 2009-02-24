@@ -6,13 +6,13 @@
  * 
  */
 
-require_once 'Diggin/Felica/Sfcpeep.php';
+require_once 'Diggin/Felica/Adapter/Sfcpeep.php';
 //sfcpeep.exeへの実行パスを指定してください。
 $sfcpeepPath = 'D:\zip\SFCPeep21\SFCPeep.exe';
 
 //
 
-$sfc = new Diggin_Felica_Sfcpeep('SJIS');
+$sfc = new Diggin_Felica_Adapter_Sfcpeep('SJIS');
 $sfc->setSfcpeepPath($sfcpeepPath);
 
 print_r($sfc->getFelicaIdm());

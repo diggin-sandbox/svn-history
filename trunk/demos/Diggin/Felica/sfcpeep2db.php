@@ -10,13 +10,13 @@ $parameters = array(
 $sfcpeepPath = 'D:\SFCPeep21\SFCPeep.exe';
 
 //////////////////////////////////////////
-require_once 'Diggin/Felica/Sfcpeep.php';
+require_once 'Diggin/Felica/Adapter/Sfcpeep.php';
 require_once 'Zend/Db/Adapter/Mysqli.php';
 require_once 'Zend/Db/Table/Abstract.php';
 require_once 'Zend/Debug.php';
 
 
-$sfc = new Diggin_Felica_Sfcpeep();
+$sfc = new Diggin_Felica_Adapter_Sfcpeep();
 $sfc->setSfcpeepPath($sfcpeepPath);
 $sfc->getSfcPeep();
 
