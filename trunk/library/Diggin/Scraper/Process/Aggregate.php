@@ -60,15 +60,9 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
     {
 
         $args = func_get_args();
-        if (count($args) === 1) {
-            if ($args[0] instanceof Diggin_Scraper_Process) {
-                $this->_processes[] = $args;
-                return $this;
-            }
-            require_once 'Diggin/Json.php';
-            foreach ($args as $arg) {
-                $this->_processes[] = Diggin_Json::decode($arg, Diggin_Json::TYPE_SCRAPEROBJECT);
-            }
+        
+        if ($args[0] instanceof Diggin_Scraper_Process) {
+            $this->_processes[] = $args[0];
             return $this;
         }
 
