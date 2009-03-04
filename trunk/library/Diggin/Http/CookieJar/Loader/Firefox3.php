@@ -30,9 +30,9 @@ class Diggin_Http_CookieJar_Loader_Firefox3
      *
      * @param string $path
      * @param string | Zend_Uri_Http | boolean $ref_uri
-     * 		  (falseの場合は全件fetch)
+     *       (falseの場合は全件fetch)
      * @param string $use_topppp_domain //@todo
-     * @return Zend_Http_CookieJar
+     * @return mixed Zend_Http_CookieJar | false
      * @throws Diggin_Http_CookieJar_Loader_Exception
      */
     public static function load($path, $ref_uri = true, $use_topppp_domain = false)
@@ -50,7 +50,7 @@ class Diggin_Http_CookieJar_Loader_Firefox3
         
         if ($ref_uri === true) {
             require_once 'Diggin/Http/CookieJar/Loader/Exception.php';
-            throw new Diggin_Http_CookieJar_Loader_Exception('url..');
+            throw new Diggin_Http_CookieJar_Loader_Exception('$ref_uri is not set');
         }
                 
         if ($ref_uri instanceof Zend_Uri_Http) {
@@ -79,8 +79,7 @@ class Diggin_Http_CookieJar_Loader_Firefox3
         }
 
         if (count($fetch) === 0) {
-            require_once 'Diggin/Http/CookieJar/Loader/Exception.php';
-            throw new Diggin_Http_CookieJar_Loader_Exception('cookie not found from moz_cookies : '.$select);
+            return false;
         }
         
         require_once 'Zend/Http/CookieJar.php';
