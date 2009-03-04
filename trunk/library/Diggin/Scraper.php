@@ -13,14 +13,10 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-/**
- * @see Diggin_Scraper_Process_Aggregate
- */  
+/** Diggin_Scraper_Process_Aggregate */
 require_once 'Diggin/Scraper/Process/Aggregate.php';
 
-/**
- * @see Diggin_Scraper_Context
- */
+/** Diggin_Scraper_Context */
 require_once 'Diggin/Scraper/Context.php';
 
 /**
@@ -178,7 +174,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     }
 
     /**
-     * Returning this scraper's strategy
+     * Return this scraper's strategy
      * 
      * @param Zend_Http_Response $response
      * @return Diggin_Scraper_Strategy
@@ -265,6 +261,11 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         return $this->_results;
     }
     
+    /**
+     * Get scraping results
+     * 
+     * @return mixed
+     */
     public function getResults()
     {
         return $this->_results; 
