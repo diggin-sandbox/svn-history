@@ -31,7 +31,7 @@ require_once 'Diggin/Uri/Http.php';
 /**
  * @see Diggin_Scraper_Helper_HeadBase
  */
-require_once 'Diggin/Scraper/FindHelper/HeadBaseHref.php';
+require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
@@ -132,7 +132,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      * 
      * @param array
      * @param Diggin_Scraper_Process
-     * @return mixed
+     * @return array
      * @throws Diggin_Scraper_Strategy_Exception
      */
     public function getValue($values, $process)
@@ -190,8 +190,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
                   ($process->getType() == '@href' OR $process->getType() == '@src')) {
             $strings = array();
             
-            $headBase = new Diggin_Scraper_FindHelper_HeadBaseHref();
-            $base = $headBase->headBaseHref(current($values));
+            $headBase = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref(current($values));
+            $base = $headBase->direct();
             if ($base === false) {
                 $base = $this->getBaseUrl();
             }

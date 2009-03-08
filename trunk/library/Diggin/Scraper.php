@@ -270,4 +270,19 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     {
         return $this->_results; 
     }
+
+    public function getHelper($name)
+    {
+        //$this->_strategy::EXTRACT_TYPE;
+        require_once 'Diggin/Scraper/Helper/Simplexml/'.ucfirst($name).'.php';
+
+        $class = "Diggin_Scraper_Helper_Simplexml_".ucfirst($name);
+
+        return new $class($this->_strategy->readResource());
+    }
+
+    public function __call($method, $args)
+    {
+        return $this->getHelper($method)->direct($args);
+    }
 }
