@@ -97,7 +97,7 @@ class Diggin_Scraper_Adapter_HtmlscrapingTest extends PHPUnit_Framework_TestCase
         
         $this->object->setConfig(array('url' => 'http://test.org/'));
         
-        $this->assertEquals($this->object->getXmlObject($this->response),
+        $this->assertEquals($this->object->getSimplexml($this->response),
                             $this->object->readData($this->response));
     }
 
