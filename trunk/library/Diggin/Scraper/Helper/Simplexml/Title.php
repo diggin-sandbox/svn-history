@@ -6,7 +6,7 @@ class Diggin_Scraper_Helper_Simplexml_Title extends Diggin_Scraper_Helper_Abstra
     public function direct()
     {
         if ($titles = $this->resource->xpath('//title')) {
-            return (string) current($titles);
+            return (string) reset($titles);
         }
 
         return false;
