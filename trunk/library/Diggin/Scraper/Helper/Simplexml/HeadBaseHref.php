@@ -10,7 +10,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @subpackage FindHelper
+ * @subpackage Helper
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
@@ -35,7 +35,6 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helpe
      * スキーマがよろしくない場合は、その前のものを考慮
      * httpスキーマではない場合は無視される。
      *
-     * @param SimpleXMLElement $simplexml
      * @return mixed
      */
     public function direct()
