@@ -235,8 +235,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     protected function getResponse($resource)
     {
         //psuedo reponse
-        if (is_array($resource)) {
-            $resource['body'] = (isset($resource['body'])) ? $resource['body']: $resource['0'];
+        if (is_array($resource) and !isset($resource['body'])) {
+            $resource['body'] = $resource['0'];
             if (!array_key_exists('header', $resource)) {
                 $resource['header'] = "HTTP/1.1 200 OK\r\nContent-type: text/html";
             }
@@ -275,7 +275,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         if (!is_null(self::$_strategyName)) {
             $this->_callStrategy($resource, self::$_strategyName, self::$_adapter);
         }
-
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach ($this as $process) {
             $values = $this->_strategy->getValues($context, $process);
