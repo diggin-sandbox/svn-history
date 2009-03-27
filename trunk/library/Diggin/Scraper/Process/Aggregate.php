@@ -73,7 +73,7 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
                 if (strpos($nametype, '=>') !== false) {
                     list($name, $types) = explode('=>', $nametype);
                 } else {
-                    throw new Exception();
+                    throw new Diggin_Scraper_Process_Exception("invalid argument. none with \'->\'");
                 }
 
                 if ((substr(trim($name), -2) == '[]')) {
