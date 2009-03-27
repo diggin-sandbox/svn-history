@@ -228,10 +228,36 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     }
 
     /**
+     * incubator
+     * 
+     * @param mixed
+     */
+    protected function getResponse($resource)
+    {
+        //psuedo reponse
+        if (is_array($resource)) {
+            $resource['body'] = (isset($resource['body'])) ? $resource['body']: $resource['0'];
+            if (!array_key_exists('header', $resource)) {
+                $resource['header'] = "HTTP/1.1 200 OK\r\nContent-type: text/html";
+            }
+            $responseStr = $resource['header']."\r\n\r\n".$resource['body'];
+            require_once 'Zend/Http/Response.php';
+            $resource = Zend_Http_Response::fromString($responseStr);
+        }
+        
+        // if set uri
+        if (!$resource instanceof Zend_Http_Response) {
+            $resource = $this->_makeRequest($resource);
+        }
+        
+        return $resource;
+    }
+    
+    /**
      * scraping
      * 
-     * @param (string | Zend_Http_Response) $resource
-     *      setting URL or Zend_Http_Response
+     * @param (string | Zend_Http_Response | array) $resource
+     *      setting URL, Zend_Http_Response, array($html)
      * @param string (if $resource is not URL, please set URL for recognize)
      * @return array $this->results Scraping data.
      * @throws Diggin_Scraper_Exception
@@ -239,10 +265,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      *          Diggin_Scraper_Adapter_Exception
      */
     public function scrape($resource = null, $baseUrl = null)
-    {        
-        if (!$resource instanceof Zend_Http_Response) {
-            $resource = $this->_makeRequest($resource);
-        }
+    {
+        $resource = $this->getResponse($resource);
         
         if (isset($baseUrl)) {
             $this->setUrl($baseUrl);
@@ -271,6 +295,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         return $this->_results; 
     }
 
+    //incubator 
     public function getHelper($name)
     {
         //$this->_strategy::EXTRACT_TYPE;
