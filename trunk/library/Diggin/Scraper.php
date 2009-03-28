@@ -307,6 +307,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 
     public function __call($method, $args)
     {
-        return $this->getHelper($method)->direct($args);
+        return $this->getHelper($method)->setPreAmpFilter(true)->direct($args);
     }
 }

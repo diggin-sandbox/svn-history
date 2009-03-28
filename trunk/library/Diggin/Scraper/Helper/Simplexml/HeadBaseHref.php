@@ -23,10 +23,8 @@
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
-
-require_once 'Diggin/Scraper/Helper/Abstract.php';
-
-class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helper_Abstract
+require_once 'Diggin/Scraper/Helper/Simplexml/Base.php';
+class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helper_Simplexml_Base
 {
     /**
      * Search Base Href
@@ -44,7 +42,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helpe
             require_once 'Zend/Uri.php';
             foreach ($bases as $base) {
                 try {
-                    $uri = Zend_Uri::factory((string) $base[@href]);
+                    $uri = Zend_Uri::factory((string)$base[@href]);
                     
                     return $uri;
                 } catch (Zend_Uri_Exception $e) {
