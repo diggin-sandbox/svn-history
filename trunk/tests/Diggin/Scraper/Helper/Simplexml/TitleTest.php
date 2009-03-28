@@ -14,7 +14,8 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
      * @access protected
      */
     protected $object;
-
+    protected $responseBody;
+    
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -24,16 +25,30 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
     protected function setUp()
     {
         
-        $responseBodyWithHeadTag1 = '<html lang="ja">'.PHP_EOL.
+        $this->responseBody = $responseBody = '<html lang="ja">'.PHP_EOL.
                            '<head>'.PHP_EOL.
-                           "<title>first</title>".
-                           '<title>second</title>'.
+                           "<title>
+                           
+                            <b>f&lt;i>rs&amp;t</b>
+                           
+                           
+                           
+                           </title>".
+                           '<title>
+                           
+                           second   </title>'.
                            '</head>'.
                            '<body>'.PHP_EOL.
                            '<a href="test/test.html">testlink</a><br /><br />'.PHP_EOL.
                            '</body>'.PHP_EOL.
                            '</html>';
-        $simplexml = simplexml_load_string($responseBodyWithHeadTag1);
+        //$simplexml = simplexml_load_string($responseBodyWithHeadTag1);
+        
+        //@todo
+//        $simplexml = Diggin_Scrpaer_Adapter_Htmlscraping($responseBodyWithHeadTag1);
+        $responseBody = str_replace('&', '&amp;', $responseBody);
+        $simplexml = simplexml_load_string($responseBody);
+        //print_r($simplexml->asXML());
         $this->object = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
     }
 
@@ -46,15 +61,20 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
     protected function tearDown()
     {
     }
+    
 
     /**
      * @todo Implement testDirect().
      */
     public function testDirect() {
-        $expect = 'first';
+        $expect = '<b>f<i>rs&t</b>';
+        
+//        $s = new Diggin_Scraper();
+//        $scrap = $s->process('//title', 'title => DISP')
+//          ->scrape(array($this->responseBody));
+//        print_r($scrap);
 
-        $this->assertEquals($expect,
-                            $this->object->direct());
+        $this->assertEquals($expect,$this->object->direct());
  
         $this->markTestIncomplete(
           'This test has not been implemented yet.'

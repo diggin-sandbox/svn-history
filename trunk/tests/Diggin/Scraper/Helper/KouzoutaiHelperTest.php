@@ -65,14 +65,15 @@ $adapter->setResponse(
     $html);
 $test = new Zend_Http_Client($url = 'http://www.yahoo.jp', array('adapter' => $adapter));
 
-
-require_once 'Diggin/Scraper.php';
-$scraper = new Diggin_Scraper();
-$scraper->setHttpClient($test);
-
-$items = new Diggin_Scraper();
-$scraper->scrape("http://localhost/~tobe/news_sample.html");
-$this->assertEquals($expectTitle, $scraper->title());
+	
+	require_once 'Diggin/Scraper.php';
+	$scraper = new Diggin_Scraper();
+	$scraper->setHttpClient($test);
+	
+	$items = new Diggin_Scraper();
+	$scraper->scrape("http://localhost/~tobe/news_sample.html");
+	$this->assertEquals($expectTitle, $scraper->title());
+	$this->assertEquals(false, $scraper->headBaseHref());
 
 
     }
