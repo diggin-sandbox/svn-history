@@ -44,7 +44,7 @@ if ($console->basic) {
 
 if ($console->referer) {
     $referer = (string)$console->referer;
-    $client->setHeader("Referer: $referer");
+    $client->setHeaders("Referer: $referer");
 }
 
 if ($console->cookieJar) {
