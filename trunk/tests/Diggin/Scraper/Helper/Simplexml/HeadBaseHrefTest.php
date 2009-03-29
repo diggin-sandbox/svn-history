@@ -27,7 +27,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHrefTest extends PHPUnit_Framework
     	$expect = 'http://www2.example.net/terumi/';
             $responseBodyWithHeadTag1 = '<html lang="ja">'.PHP_EOL.
                            '<head>'.PHP_EOL.
-                           '<base href="http://www.example.net/" />'.
+                           //'<base href="http://www.example.net/test.cgi?k=v&t=s" />'.
                            "<base href=\"$expect\" />".
                            '<base href="file://var/www/" />'.
                            '</head>'.
@@ -80,6 +80,55 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHrefTest extends PHPUnit_Framework
         $this->assertEquals(false,
                             $object->direct());
                             
+                            
+        ///////////////////////////////////////////////
+        
+        //str_replace('&',してない場合は実態参照が変換される
+        $expect = 'http://www.example.net/test.cgi?k=v&t=a';
+        
+        /////////////////////////
+        $responseBody = <<<HTML
+<html>
+    <head>
+    <title>TERUMI&amp;の部屋</title>
+    <base href="http://www.example.net/test.cgi?k=v&amp;t=a" />
+    </head>
+<body>
+神戸では紫芋チップスが流行っています。
+</body>
+</html>
+HTML;
+        //
+//        $responseBody= str_replace('&', '&amp;', $responseBody);
+        $simplexml = simplexml_load_string($responseBody);
+        $object = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
+//        $object->setPreAmpFilter(true);
+        $t= $object->direct();
+//        var_export((string)$t);
+        $this->assertEquals($expect, (string)$t);
+        
+        //ブラウザ上でのexpect値
+$expect = "TERUMI&の部屋";
+        
+        $simplexml = simplexml_load_string($responseBody);
+//        print_r($simplexml);
+        $object2 = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
+        
+//        print_r($simplexml->asXML());
+        
+        $this->assertEquals($expect, (string)$object2->direct());
+
+//        $s = new Diggin_Scraper();
+//        $scrap = $s->process('//base[@href]', 'title => RAW')
+//          ->scrape(array($responseBody));
+//        print_r($scrap);
+        
+        
+        
+        
+        
+        
+        
                             
         $expect = 'http://www2.example.net/terumi/';
         

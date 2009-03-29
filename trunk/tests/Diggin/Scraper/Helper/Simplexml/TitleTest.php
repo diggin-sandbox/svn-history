@@ -14,7 +14,9 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
      * @access protected
      */
     protected $object;
+    protected $object1;
     protected $responseBody;
+    protected $responseBody1;
     
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -46,10 +48,15 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
         
         //@todo
 //        $simplexml = Diggin_Scrpaer_Adapter_Htmlscraping($responseBodyWithHeadTag1);
-        $responseBody = str_replace('&', '&amp;', $responseBody);
+        
+        $responseBody2 = str_replace('&', '&amp;', $responseBody);
+         $simplexml = simplexml_load_string($responseBody2);
+         $this->object = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
+        $this->object->setPreAmpFilter(true);
+        
         $simplexml = simplexml_load_string($responseBody);
-        //print_r($simplexml->asXML());
-        $this->object = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
+         $this->object1 = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
+        
     }
 
     /**
@@ -76,6 +83,8 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
 
         $this->assertEquals($expect,$this->object->direct());
  
+        $this->assertEquals($expect,$this->object1->direct());
+        
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );

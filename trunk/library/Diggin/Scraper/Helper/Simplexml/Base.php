@@ -31,7 +31,6 @@ abstract class Diggin_Scraper_Helper_Simplexml_Base extends Diggin_Scraper_Helpe
     
     protected function asString($sxml)
     {
-
         if ($this->preAmpFilter === true) {
             if (!is_array($sxml)) {
                 return htmlspecialchars_decode($sxml->asXML(),
@@ -46,14 +45,14 @@ abstract class Diggin_Scraper_Helper_Simplexml_Base extends Diggin_Scraper_Helpe
             }
         } else {
             if (!is_array($sxml)) {
-                return $sxml->asXML();
-            } else {
-                $ret = array();
-                foreach ($sxml as $s) {
-                    $ret[] = $s->asXML();
+                if (count($sxml) === 0 and key($sxml) === 0) {
+                    return (string)$sxml;
+                } else {
+                    return $sxml->asXML();
                 }
-                
-                return $ret;
+            } else {
+                //not implement
+                throw new InvalidArgumentException();
             }
         }
     }
