@@ -30,16 +30,21 @@ class Diggin_Scraper_Filter
             
             $return = array();
 
-            if (preg_match('/^[0-9a-zA-Z\0]/', $filter)) {
+
+            if ($filter instanceof Zend_Filter_Interface) {
+                foreach ($values as $k => $value) {
+                    $return[$k] = $filter->filter($value);
+                }
+            } else if (preg_match('/^[0-9a-zA-Z\0]/', $filter)) {
                 if (function_exists($filter)) {
-                    foreach ($values as $value) {
-                        $return[] = call_user_func($filter, $value);
+                    foreach ($values as $k => $value) {
+                        $return[$k] = call_user_func($filter, $value);
                     }
                 } elseif (!strstr($filter, '_')) {
                     require_once 'Zend/Filter.php';
                     try {
-                        foreach ($values as $value) {
-                            $return[] = Zend_Filter::get($value, $filter);
+                        foreach ($values as $k => $value) {
+                            $return[$k] = Zend_Filter::get($value, $filter);
                         }
                     } catch (Zend_Exception $e) {
                         require_once 'Diggin/Scraper/Filter/Exception.php';
@@ -54,8 +59,8 @@ class Diggin_Scraper_Filter
                         throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
                     }
                     $filter = new $filter();
-                    foreach ($values as $value) {
-                        $return[] = $filter->filter($value);
+                    foreach ($values as $k => $value) {
+                        $return[$k] = $filter->filter($value);
                     }
                 }
             } else {
@@ -77,7 +82,7 @@ class Diggin_Scraper_Filter
                     throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix'");
                 }
                 
-                foreach($filterds as $filterd) $return[] = $filterd;
+                foreach($filterds as $k => $filterd) $return[$k] = $filterd;
             }
             
             $values = $return;

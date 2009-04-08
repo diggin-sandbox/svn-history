@@ -67,6 +67,16 @@ FUNC
    }
 
    function testRun() {
+
+       require_once 'Zend/Filter/PregReplace.php';
+       $filter = new Zend_Filter_PregReplace('/[0-9]/', 'a');
+
+       // instanceof Zend_Fileter_Interface
+       $this->assertEquals(
+            array('xa', 'ay'),
+       $this->object->run(array('x1', '2y'), array($filter))
+       );
+
        //user_func 
        $this->assertEquals(
            array('xafter', 'yafter'),
