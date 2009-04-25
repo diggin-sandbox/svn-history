@@ -57,19 +57,7 @@ class Diggin_Scraper_ProcessTest extends PHPUnit_Framework_TestCase
         $process = "'$exp', "."'$key => [\"$val\", \"$filter[0], $filter[1]\"]'";
         
         $this->assertEquals($process, (string) $this->object);
-                $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
 
-    /**
-     * @todo Implement testAddProcess().
-     */
-    public function testAddProcess() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
     }
 }
 ?>
