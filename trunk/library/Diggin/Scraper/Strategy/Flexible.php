@@ -88,8 +88,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            //$process->getExpression() = self::_xpathOrCss2Xpath($process->getExpression());
-            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process :".$process->getExpression());
+            $exp = self::_xpathOrCss2Xpath($process->getExpression());
+            throw new Diggin_Scraper_Strategy_Exception("Couldn't find By Xpath, Process :".$exp);
         }
 
         return $results;
@@ -97,15 +97,13 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
     protected static function _xpathOrCss2Xpath($exp)
     {
-        if (preg_match('!^(?:/|id\()!', $exp)) {
+        if (preg_match('#^(?:\.*$|id\(|\./)#', $exp)) {
+            return $exp;
+        } else if (preg_match('!^/!', $exp)) {
             return '.'.$exp;
         } else {
-            if ($exp === '.') {
-                return $exp;
-            } else if (ctype_alnum($exp)) {
+            if (ctype_alnum($exp)) {
                 return ".//$exp";
-            } else if (0 === strncasecmp('./', $exp, 2)) {
-                return $exp;
             } else {
                 return '.'.preg_replace('#//+#', '//', str_replace(chr(32), '', Zend_Dom_Query_Css2Xpath::transform($exp)));
             }
