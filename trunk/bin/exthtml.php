@@ -192,7 +192,7 @@ function getCacheCore($cache_dir, $frontendOptions= null)
 
 function requestWithCache($client, $cache, $url)
 {
-    $key = str_replace(array('%', '.'), array('__PER__', '__DOT__'), rawurlencode($url));
+    $key = str_replace(array('%', '.', '-'), array('__PER__', '__DOT__', '__HYP__'), rawurlencode($url));
 
     if (!$httpResponseString = $cache->load($key)) {
  

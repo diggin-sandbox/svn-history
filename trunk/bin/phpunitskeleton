@@ -1,6 +1,8 @@
-#! /usr/bin/php -d safe_mode=Off
+#! /usr/bin/php
 <?php
-$librarypath = '~/workspace/trunk/library';
+$librarypath = '/home/kazusuke/dev/workspace/trunk/library';
+
+if(realpath($librarypath) === false) throw new Exception('invalid path');
 
 require_once 'Zend/Console/Getopt.php';
 $getopt = new Zend_Console_Getopt(array('class|c=s' => 'class name'));
@@ -21,6 +23,19 @@ $destDir = dirname(preg_replace('/library/', 'tests', $classPath));
 
 $newfileName = substr(strrchr($class, '_'), 1).'Test.php';
 
+$newfilePath = $destDir.DIRECTORY_SEPARATOR.$newfileName;
+
+// 
+if(is_file($newfilePath)) {
+    if(!unlink($skeletonPath)) {
+        echo "";
+        throw new RuntimeException("skelton : $skeletonPath is couldn't delete");
+    } else {
+        echo $skeletonPath, 'is now delete!';
+    }
+
+    throw new RuntimeException("$newfilePath is now exist"); 
+}
 if(!$boolean = rename($skeletonPath,
                       $destDir.DIRECTORY_SEPARATOR.$newfileName)) {
                       throw new Exception('rename sippai!');
