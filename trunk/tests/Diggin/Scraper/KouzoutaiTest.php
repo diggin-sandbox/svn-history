@@ -55,7 +55,7 @@ class Diggin_Scraper_KouzoutaiTest extends PHPUnit_Framework_TestCase
     <a href="http://sports.livedoor.com/article/vender-15.html">C・ロナウドが休日返上宣言！</a>
   </li>
   <li>
-    <a href="http://sportsnavi.yahoo.co.jp/soccer/italia.html">イタリア代表のドナドーニ監督「アイルランドを甘く見てはいない」</a>
+    <a href="/soccer/italia.cgi?k=v&key=var&amp;">イタリア代表のドナドーニ監督「アイルランドを甘く見てはいない」</a>
   </li>
   <li>
     <a>バルセロナが前回王者セビージャを下す＝スペイン国王杯</a>
@@ -88,9 +88,7 @@ $items->process("a", "title => 'TEXT'", "link => '@href'");
 $scraper->process("ul.news>li", array('result[]' => $items))
         //->process("//a", "attr[] => @src")
         ->scrape("http://localhost/~tobe/news_sample.html");
-//var_dump($scraper->results);
-
-
+//        print_R($scraper->getResults());
     }
 }
 ?>

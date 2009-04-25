@@ -51,28 +51,37 @@ class Diggin_Scraper_ResourceHandleTest extends PHPUnit_Framework_TestCase
 <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
 <title>$expected</title>
 <body>
-<ul class="news">
-  <li>
-    <a href="http://sports.livedoor.com/article/vender-15.html">C・ロナウドが休日返上宣言！</a>
-  </li>
-  <li>
-    <a href="http://sportsnavi.yahoo.co.jp/soccer/italia.html">イタリア代表のドナドーニ監督「アイルランドを甘く見てはいない」</a>
-  </li>
-  <li>
-    <a>バルセロナが前回王者セビージャを下す＝スペイン国王杯</a>
-  </li>
-  <li>
-    <a href="http://sportsnavi.yahoo.co.jp/soccer/index.html">ユベントス奮闘、５&#8722;３でエンポリを下す＝イタリア杯</a>
-  </li>
-</ul>
+bb
 </body>
 </html>
 HTML;
 
-        $this->object->process('//title', 'key => TEXT');
+        $this->object->process('//title', 'keyww => TEXT');
         $this->object->scrape(array($html));
         
-        $this->assertEquals($expected, $this->object->key);
+        $this->assertEquals($expected, $this->object->keyww);
+        
+        
+        
+        
+        
+        
+        $expected2 = 'title';
+        $html = <<<HTML
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>$expected2</title>
+<body>
+aa
+</body>
+</html>
+HTML;
+        $this->object = new Diggin_Scraper;
+        $this->object->process('//title', 'key => TEXT');
+        $this->object->scrape(array($html));
+        $this->assertEquals($expected2, $this->object->key);
     }
 }
 ?>
