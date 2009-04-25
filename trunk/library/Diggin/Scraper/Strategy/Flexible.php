@@ -51,7 +51,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     {
         if (!($adapter instanceof Diggin_Scraper_Adapter_SimplexmlAbstract)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
-            $msg = get_class($adapter).' is not extedns ';
+            $msg = get_class($adapter).' is not extends ';
             $msg .= 'Diggin_Scraper_Adapter_SimplexmlAbstract';
             throw new Diggin_Scraper_Strategy_Exception($msg);
         }
@@ -97,7 +97,7 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
     protected static function _xpathOrCss2Xpath($exp)
     {
-        if (preg_match('#^(?:\.*$|id\(|\./)#', $exp)) {
+        if (preg_match('#^(?:\.$|id\(|\./)#', $exp)) {
             return $exp;
         } else if (preg_match('!^/!', $exp)) {
             return '.'.$exp;
