@@ -23,6 +23,8 @@ abstract class Diggin_Scraper_Strategy_Abstract
      */
     private static $_response;
     
+    private $adaptedResource;
+    
     /**
      * Response Adapter
      *
@@ -38,7 +40,6 @@ abstract class Diggin_Scraper_Strategy_Abstract
      * construct
      * 
      * @param Zend_Http_Response
-     * @param Diggin_Scraper_Adapter_Interface
      */
     public function __construct($response)
     {
@@ -52,7 +53,10 @@ abstract class Diggin_Scraper_Strategy_Abstract
      */
     public function readResource()
     {
-        return $this->getAdapter()->readData($this->getResponse());
+        if (!$this->adaptedResource) {
+            $this->adaptedResource = $this->getAdapter()->readData($this->getResponse());
+        }
+        return $this->adaptedResource;
     }
 
     
