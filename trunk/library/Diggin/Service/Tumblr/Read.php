@@ -19,13 +19,14 @@
  */
 require_once 'Zend/Service/Abstract.php';
 
-
 /**
  * @category   Diggin
  * @package    Diggin_Service_Tumblr
- * @subpackage Tumblr
+ * @subpackage Tumblr_Read
  * @author     sasezaki
  * @see http://www.tumblr.com/api
+ *
+ * @todo readのモデル
  */
 
 class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
@@ -33,20 +34,17 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
     
     const API_URL = 'http://%s.tumblr.com/api/read';
     
+    const READ_NUM_MAX = 50;
+    
     /**
      * Zend_Http_Client Object
      *
      * @var Zend_Http_Client
      */
     protected $_client;
-    
-    /**
-     * target
-     *
-     * @var string
-     */
-    protected $_target;
 
+    private $_apiUrl;
+    
     /**
      * Microtime of last request
      *
@@ -57,53 +55,50 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
     /**
      * Constructs a new Tumblr Web Services Client
      *
-     * @param  string $target subdomain of tumblr OR Domain
+     * @param  string $target subdomain of tumblr OR url
      * @return null
      */
     public function __construct($target = null)
     {
-        $this->_target = $target;
+    
+        if (parse_url($target, PHP_URL_HOST)) {
+           $apiUrl = $target;
+        } else {
+            $apiUrl = sprintf(self::API_URL, $target);
+        }
+    
+        $this->_apiUrl = $apiUrl;
     }
 
     /**
      * Set target
      *
-     * @param  string $target subdomain,domain,URL
-     * @return Diggin_Service_Tumblr_Read
+     * @param  string $target subdomain
      */
     public function setTarget($target)
     {
-        $this->_target = (string) $target;
-        
-        return $this;
+        $this->_apiUrl = sprintf(self::API_URL, $target);
     }
     
-    /**
-     * Get target
-     *
-     * @return string $target
-     */
-    public function getTarget()
+    
+    public function setApiUrl($url)
     {
-        return $this->_target;    
+        $this->_apiUrl = $url;
     }
-        
+    
     public function getApiUrl()
     {
-    	if (parse_url($this->getTarget(), PHP_URL_HOST)) {
-    		$apiUrl = $this->getTarget();
-    	} else {
-            $apiUrl = sprintf(self::API_URL, $this->getTarget());
-    	}
-    	
-        return $apiUrl;
+        return $this->_apiUrl;
     }
 
     public function getTotal()
     {
-        $response = $this->makeRequest();
-        
-        $rootNode = $response->documentElement;
+        return $this->countTotal($this->makeRequest());
+    }
+    
+    public function countTotal(DOMDocument $dom)
+    {
+        $rootNode = $dom->documentElement;
 
         if ($rootNode->nodeName == 'tumblr') {
             $childNodes = $rootNode->childNodes;
@@ -131,10 +126,9 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
      * @param array $parms
      * @return array $posts
      */
-    public function getPosts ($parms = array())
+    public function getPosts ($parms = array(), $maxWidth = 500)
     {
         $start = 0;
-        $num = 50;
         $loop = 1;
         $postsArr = array();
         
@@ -142,15 +136,15 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
             $start = $parms['start'];
         }
         
-        if ($parms['num'] >= 50) {
-            $loop += floor($parms['num']/$num);
-            $parms['num'] = 50;
+        if ($parms['num'] > self::READ_NUM_MAX) {
+            $loop += floor($parms['num']/self::READ_NUM_MAX);
+            $parms['num'] = self::READ_NUM_MAX;
         }
         
         for ($i = 0; $i < $loop; $i++) {
-            $parms['start'] = $i * $num + $start;
+            $parms['start'] = $i * self::READ_NUM_MAX + $start;
             $response = $this->makeRequest($parms);
-            $postsArr = $postsArr + $this->_xmlResponseToPostArray($response);
+            $postsArr = $postsArr + $this->_xmlResponseToPostArray($response, $maxWidth);
         }
                     
         return $postsArr;
@@ -171,14 +165,15 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
         if ($parms['start']) {
             $start = $parms['start'];
         }
-        
-        if ($parms['num'] >= 50) {
-            $loop += floor($parms['num']/$num);
+        $paramNum = $parms['num'];
+        if ($paramNum >= 50) {
+            $loop += floor($parms['num']-1/$num);
             $parms['num'] = 50;
         }
         
         for ($i = 0; $i < $loop; $i++) {
             $parms['start'] = $i * $num + $start;
+            //if ($i + 1 == $loop and ($mod = fmod($parmNum, $num)) !== 0) $parms['num'] = $mod;
             $response = $this->makeRequest($parms);
             $response->save($path.$filePrefix.$i.'.xml');
         }
@@ -206,6 +201,7 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
      *
      * @param  array  $parms Array of GET parameters
      * @return mixed  decoded response from web service
+     * @throws Diggin_Service_Tumblr_Exception
      */
     public function makeRequest(array $parms = array())
     {
@@ -218,12 +214,12 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
 
         $this->_client = self::getHttpClient();
         $this->_client->setUri(self::getApiUrl());
-        if(isset($parms)){
+        if (isset($parms)) {
             $this->_client->setParameterGet($parms);
         }
         
         self::$_lastRequestTime = microtime(true);
-        $response = $this->_client->request('GET');
+        $response = $this->_client->request();
         
         if (!$response->isSuccessful()) {
              /**
@@ -235,7 +231,7 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
 
         $responseBody = $response->getBody();
         
-           $dom = new DOMDocument() ;
+        $dom = new DOMDocument() ;
     
            if (!@$dom->loadXML($responseBody)) {
                /**
@@ -280,11 +276,11 @@ class Diggin_Service_Tumblr_Read extends Zend_Service_Abstract
                         for ($m = 0; $m < $postNode->childNodes->length; $m++){
                            $postChildNode = $postNode->childNodes->item($m);
                            if ($postChildNode->nodeName == 'photo-url') {
-                               if($postChildNode->getAttribute('max-width') == $maxWidth){
-                                   $arrOut[$id][$postChildNode->nodeName] = $postChildNode->nodeValue;
+                               if ($postChildNode->getAttribute('max-width') == $maxWidth){
+                                    $arrOut[$id][$postChildNode->nodeName] = $postChildNode->nodeValue;
                                }
-                           } else  {
-                                   $arrOut[$id][$postChildNode->nodeName] = $postChildNode->nodeValue;
+                           } else {
+                               $arrOut[$id][$postChildNode->nodeName] = $postChildNode->nodeValue;
                            }
                         }
                     }
