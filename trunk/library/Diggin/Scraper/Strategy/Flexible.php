@@ -97,7 +97,9 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
     protected static function _xpathOrCss2Xpath($exp)
     {
-        if (preg_match('#^(?:\.$|id\(|\./)#', $exp)) {
+        if (preg_match('/^id\(/', $exp)) {
+            return preg_replace("/^id\(((?:'|\")(\w*)(?:'|\"))\)/", '//*[@id=$1]', $exp);
+        } else if (preg_match('#^(?:\.$|\./)#', $exp)) {
             return $exp;
         } else if (preg_match('!^/!', $exp)) {
             return '.'.$exp;

@@ -52,7 +52,11 @@ class Diggin_Scraper_Strategy_Flexible_XpathFlexible_Test extends PHPUnit_Framew
         return array(
                     //is xpath? all node
                     array('.','.'),
-                    array('id("hoge")', 'id("hoge")'),
+                    //array('id("hoge")', 'id("hoge")'),
+                    //
+                    array('id("hoge")', '//*[@id="hoge"]'),
+                    array('id("hoge")//table', '//*[@id="hoge"]//table'),
+                    array("id('hoge')", "//*[@id='hoge']"),
                     array('./a','./a'),
                         //is xpah with-start"/" set dot for Simplexml select 
                         //just only current node
