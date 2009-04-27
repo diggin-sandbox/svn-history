@@ -25,7 +25,7 @@ final class Diggin_Version
      * library version
      *
      */
-    const VERSION = '0.6.3';
+    const VERSION = '0.6.4';
 
     /**
      * Compare the specified library version string $version
