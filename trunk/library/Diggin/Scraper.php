@@ -22,7 +22,7 @@ require_once 'Diggin/Scraper/Context.php';
 /**
  * @category  Diggin
  * @package   Diggin_Scraper
- * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @copyright 2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license   http://diggin.musicrider.com/LICENSE     New BSD License
  */ 
 class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
@@ -43,16 +43,22 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     
     /**
      * strategy name to use for changing strategy
+     *
+     * @param string $_strategyName
      */
     private static $_strategyName;
     
     /**
      * adapter for response
+     *
+     * @param Diggin_Scraper_Adapter_Interface $_adapter
      */
     private static $_adapter;
 
     /**
      * strategy for scraping
+     *
+     * @param Diggin_Scraper_Strategy_Abstract $_strategy
      */
     protected $_strategy = null;
     
@@ -305,6 +311,12 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         return new $class($this->_strategy->readResource());
     }
 
+    /**
+     * call helper
+     *
+     * @param string $method
+     * @param array $args
+     */ 
     public function __call($method, $args)
     {
         return $this->getHelper($method)->setPreAmpFilter(true)->direct($args);
