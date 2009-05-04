@@ -1,22 +1,98 @@
 <?php
-require_once 'Zend/Loader.php';
-Zend_Loader::registerAutoload();
+require_once 'Zend/Loader/Autoloader.php';
+$loader = Zend_Loader_Autoloader::getInstance();
+$loader->registerNamespace('Diggin_');
+
+class Diggin_Http_Response extends Zend_Http_Response
+{
+    //5.2以前では遅延評価がないため単純にオーバーライド
+    public function getBody()
+    {
+        $body = '';
+ 
+        // Decode the body if it was transfer-encoded
+        switch ($this->getHeader('transfer-encoding')) {
+ 
+            // Handle chunked body
+            case 'chunked':
+                $body = self::decodeChunkedBody($this->body);
+                break;
+ 
+            // No transfer encoding, or unknown encoding extension:
+            // return body as is
+            default:
+                $body = $this->body;
+                break;
+        }
+ 
+        // Decode any content-encoding (gzip or deflate) if needed
+        switch (strtolower($this->getHeader('content-encoding'))) {
+ 
+            // Handle gzip encoding
+            case 'gzip':
+                $body = self::decodeGzip($body);
+                break;
+ 
+            // Handle deflate encoding
+            case 'deflate':
+                $body = self::decodeDeflate($body);
+                break;
+ 
+            default:
+                break;
+        }
+ 
+        return $body;
+    }
+ 
+    //override
+    public static function decodeDeflate($data)
+    {
+        if (!function_exists('gzuncompress')) {
+            throw new Diggin_Http_Response_Exception('Unable to decode body: gzip extension not available');
+        }
+ 
+        // copy HTTP_Request2_Response
+ 
+        // RFC 2616 defines 'deflate' encoding as zlib format from RFC 1950,
+        // while many applications send raw deflate stream from RFC 1951.
+        // We should check for presence of zlib header and use gzuncompress() or
+        // gzinflate() as needed. See bug #15305
+        $header = unpack('n', substr($data, 0, 2));
+        return (0 == $header[1] % 31)? gzuncompress($data): gzinflate($data);
+    }
+    
+    //
+    public static function fromString($response_str)
+    {
+        $code = self::extractCode($response_str);
+        $headers = self::extractHeaders($response_str);
+        $body = self::extractBody($response_str);
+        $version = self::extractVersion($response_str);
+        $message = self::extractMessage($response_str);
+ 
+        return new self($code, $headers, $body, $version, $message);
+    }
+}
+
+
 
 $console = new Zend_Console_Getopt(
     array(
-    'xpath|x=s' => 'expression xpath or css selector',
-    'type|v=s' => 'val type',
-    'referer|e=s' => 'referer',
-    'cookieJar|c=s' => 'cookie',
-    'agent|a=s' => 'useragent',
-    'nextlink|n=s' => 'nextlink',
-    'depth|d=i' => 'depth "if not set nextlink, using wedata"',
+     'xpath|x=s' => 'expression xpath or css selector',
+      'type|v=s' => 'val type',
+   'referer|e=s' => 'referer',
+ 'cookieJar|c=s' => 'cookie',
+     'agent|a=s' => 'useragent',
+  'nextlink|n=s' => 'nextlink',
+     'depth|d=i' => 'depth "if not set nextlink, using wedata"',
     //"s|as-source" => '$as_xml',
-    'basic|b=s' => 'basic auth "user/pass"',
-    'cache|h=s' => 'cache with Zend_Cache',
-    'wait|w=s' => 'sleep() :default 1',
+     'basic|b=s' => 'basic auth "user/pass"',
+     'cache|h=s' => 'cache with Zend_Cache',
+      'wait|w=s' => 'sleep() :default 1',
     'filter|f=s' => 'filter for Diggin_Scraper',
-    'out|o=i' => 'timeout',
+       'out|o=i' => 'timeout',
+    'helper|l=s' => 'helper'
       )
 );
 
@@ -80,7 +156,7 @@ FUNC
     }
 }
 
-for ($i = 0; $i < $depth; $i++) {
+for ($i = 1; $i <= $depth; $i++) {
 
     $client->setUri($url);
     
@@ -98,21 +174,42 @@ for ($i = 0; $i < $depth; $i++) {
        $nextLink = $console->nextlink;
     }
     
+//    $adapter = new Diggin_Scraper_Adapter_Htmlscraping();
+//    $adapter->setConfig(array('libxmloptions' => LIBXML_DTDATTR));
+//    Diggin_Scraper::changeStrategy('Diggin_Scraper_Strategy_Flexible', $adapter);
+    
     $scraper = new Diggin_Scraper();
     $scraper->setUrl($url);
-    $type = (isset($console->type))? $console->type : 'TEXT';
-    if(isset($filter)) {
+    
+    $type = (isset($console->type)) ? $console->type : 'TEXT';
+    $helper = (isset($console->helper)) ? $console->helper : null;
+
+    if (isset($filter)) {
         $scraper->process($console->xpath, "xpath[] => $type, ".$filter.']');
-    } else $scraper->process("$console->xpath", "xpath[] => $type");
-    if (isset($nextLink)) {
+    } else {
+        $scraper->process("$console->xpath", "xpath[] => $type");
+    }
+
+    if (isset($nextLink) && !($i == $depth)) {
         $scraper->process($nextLink, 'nextLink => "@href"');
     }
+
     $scraper->scrape($response);
   
-    echo implode(PHP_EOL, $scraper->xpath);
+    if ($helper) {
+        try {
+            $helperValue = $scraper->$helper();
+            echo (is_array($helperValue)) ? $helperValue[0]: $helperValue;
+        } catch (Exception $e){
+            die($e);
+        }
+    } else {
+        echo implode(PHP_EOL, $scraper->xpath);
+    }
 
-    if(!isset($console->depth)) exit;
-    if($scraper->nextLink === false) {
+    if(!isset($console->depth) or ($i == $depth)) exit;
+    
+    if ($scraper->nextLink === false) {
         Diggin_Debug::dump('next page not found');
         exit;
     } else {
@@ -121,6 +218,9 @@ for ($i = 0; $i < $depth; $i++) {
         sleep($stoptime);
     }
 }
+
+
+
 
 function getNextLinkFromWedata($url, $cache_dir = null)
 {
@@ -159,10 +259,11 @@ function getNextLinkFromWedata($url, $cache_dir = null)
  * @return mixed
  */
 function getNextlink($items, $url) {
+
     foreach ($items as $item) {
-    $pattern = '#'.$item['data']['url'].'#i';
+    
         //hAtom 対策
-        if ('^https?://.' != $item['data']['url'] && (preg_match($pattern, $url) == 1)) {
+        if ('^https?://.' != $item['data']['url'] && (preg_match('>'.$item['data']['url'].'>', $url) == 1)) {
             $nextLink = $item['data']['nextLink'];
             return $nextLink;
         }
