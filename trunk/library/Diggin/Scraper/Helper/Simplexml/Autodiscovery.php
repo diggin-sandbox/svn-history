@@ -64,7 +64,7 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
             $xpath = self::XPATH_BOTH; 
         }
         
-        if ($links = $this->resource->xpath($xpath)) {
+        if ($links = $this->getResource()->xpath($xpath)) {
             
             $ret = array();
             foreach ($links as $v) {

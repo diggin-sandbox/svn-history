@@ -17,14 +17,18 @@
 
 /**
  * Helper for Search Head-Base Tag
+ * ignore bad-scheme ,& resolve relative-path
  *
  * @package    Diggin_Scraper
  * @subpackage Helper
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
+
+/** Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract **/
 require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
-class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
+
+class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
     /**
      * Search Base Href
@@ -37,7 +41,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helpe
      */
     public function direct()
     {
-        if ($bases = $this->resource->xpath('//base[@href]')) {
+        if ($bases = $this->getResource()->xpath('//base[@href]')) {
             rsort($bases);
             require_once 'Zend/Uri.php';
             foreach ($bases as $base) {
