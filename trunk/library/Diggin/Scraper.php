@@ -325,7 +325,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      *
      * @return Zend_Loader_PluginLoader 
      */
-    public function getHelerLoader()
+    public function getHelperLoader()
     {
         return $this->_helperLoader;
     }
@@ -338,7 +338,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      */
     public function getHelper($name)
     {
-        $class = $this->getHelerLoader()->load($name);
+        $class = $this->getHelperLoader()->load($name);
 
         return new $class($this->_strategy->readResource());
     }
