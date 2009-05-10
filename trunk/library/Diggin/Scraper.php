@@ -19,6 +19,9 @@ require_once 'Diggin/Scraper/Process/Aggregate.php';
 /** Diggin_Scraper_Context */
 require_once 'Diggin/Scraper/Context.php';
 
+/** Zend_Loader_PluginLoader */
+require_once 'Zend/Loader/PluginLoader.php';
+
 /**
  * @category  Diggin
  * @package   Diggin_Scraper
@@ -63,6 +66,13 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     protected $_strategy = null;
     
     /**
+     * helper loader
+     *
+     * @var Zend_Loader_PluginLoader
+     */
+    protected $_helperLoader;
+
+    /**
      * Getting the URL for scraping
      * 
      * @return string $this->_url
@@ -98,6 +108,15 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     public function __get($var)
     {
         return $this->_results[$var];
+    }
+
+
+    public function __construct()
+    {
+        //initialize helper
+        $this->_helperLoader = 
+            new Zend_Loader_PluginLoader(array(
+            'Diggin_Scraper_Helper_Simplexml' => 'Diggin/Scraper/Helper/Simplexml'));
     }
 
     /**
@@ -300,13 +319,26 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         return $this->_results; 
     }
 
-    //incubator 
+
+    /**
+     * get this helper's plugin loader
+     *
+     * @return Zend_Loader_PluginLoader 
+     */
+    public function getHelerLoader()
+    {
+        return $this->_helperLoader;
+    }
+
+    /**
+     * getHelper() - get Helper by name
+     *
+     * @param string $name
+     * @return Diggin_Scraper_Helper_HelperAbstract
+     */
     public function getHelper($name)
     {
-        //$this->_strategy::EXTRACT_TYPE;
-        require_once 'Diggin/Scraper/Helper/Simplexml/'.ucfirst($name).'.php';
-
-        $class = "Diggin_Scraper_Helper_Simplexml_".ucfirst($name);
+        $class = $this->getHelerLoader()->load($name);
 
         return new $class($this->_strategy->readResource());
     }
