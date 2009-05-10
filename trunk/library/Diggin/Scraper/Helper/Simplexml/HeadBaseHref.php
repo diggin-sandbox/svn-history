@@ -23,8 +23,8 @@
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
-require_once 'Diggin/Scraper/Helper/Simplexml/Base.php';
-class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helper_Simplexml_Base
+require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
+class Diggin_Scraper_Helper_Simplexml_HeadBaseHref  extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
     /**
      * Search Base Href

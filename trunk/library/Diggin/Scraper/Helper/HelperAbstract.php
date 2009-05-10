@@ -1,5 +1,6 @@
 <?php
-abstract class Diggin_Scraper_Helper_Abstract
+
+abstract class Diggin_Scraper_Helper_HelperAbstract
 {
     public $resource;
 

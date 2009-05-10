@@ -16,9 +16,9 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-require_once 'Diggin/Scraper/Helper/Abstract.php';
+require_once 'Diggin/Scraper/Helper/HelperAbstract.php';
 
-abstract class Diggin_Scraper_Helper_Simplexml_Base extends Diggin_Scraper_Helper_Abstract
+abstract class Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract extends Diggin_Scraper_Helper_HelperAbstract
 {
     protected $preAmpFilter = false;
     

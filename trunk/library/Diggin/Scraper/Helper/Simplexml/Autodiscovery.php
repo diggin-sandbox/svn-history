@@ -24,9 +24,10 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-require_once 'Diggin/Scraper/Helper/Simplexml/Base.php';
+require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
+require_once 'Diggin/Uri/Http.php';
 
-class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helper_Simplexml_Base
+class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
 
     /**
