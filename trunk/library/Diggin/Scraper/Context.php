@@ -13,8 +13,14 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
+
 class Diggin_Scraper_Context
 {
+    /**
+     * scraper's strategy 
+     *
+     * @var Diggin_Scraper_Strategy_Abstract $_strategy
+     */
     private $_strategy;
     
     /**
@@ -27,6 +33,11 @@ class Diggin_Scraper_Context
         $this->_strategy = $strategy;
     }
 
+    /**
+     * Read adapted resource vi strategy->readResource
+     *
+     * @return mixed 
+     */
     public function read()
     {
         return $this->_strategy->readResource();

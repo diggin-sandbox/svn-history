@@ -14,14 +14,20 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
+/**
+ * Adapter Inteface
+ *
+ * @package    Diggin_Scraper
+ * @subpackage Adapter
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @license    http://diggin.musicrider.com/LICENSE     New BSD License
+ */
 interface Diggin_Scraper_Adapter_Interface
 {
     /**
-     * Set the configuration array for the adapter
+     * Read data (adapted response)
      *
-     * @param array $config
+     * @param mixed $response
      */
-    public function setConfig($config = array());
-
     public function readData($response);
 }
