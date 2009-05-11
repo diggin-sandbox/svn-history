@@ -89,6 +89,7 @@ $console = new Zend_Console_Getopt(
     //"s|as-source" => '$as_xml',
      'basic|b=s' => 'basic auth "user/pass"',
      'cache|h=s' => 'cache with Zend_Cache',
+   'noCache|r'   => 'no-cache-force',
       'wait|w=s' => 'sleep() :default 1',
     'filter|f=s' => 'filter for Diggin_Scraper',
        'out|o=i' => 'timeout',
@@ -136,7 +137,7 @@ $console = new Zend_Console_Getopt(
     if ($console->wait) {
         $stoptime = $console->wait;
     } else {
-        $stoptime = 1;
+        $stoptime = 1/10;
     }
 
     $depth = (isset($console->depth))? $console->depth : 1;
@@ -160,23 +161,19 @@ for ($i = 1; $i <= $depth; $i++) {
 
     $client->setUri($url);
     
-    if ($console->cache) {
+    if ($console->cache && !isset($console->noCache)) {
         $cache = getCacheCore($console->cache);
         $response = requestWithCache($client, $cache, $url);
     } else {
         $response = $client->request();
     }
 
-    if($console->depth && !isset($console->nextlink)){
+    if ($console->depth && !isset($console->nextlink)){
         //searching wedata
        $nextLink = getNextLinkFromWedata($url, $console->cache) ;
     } else if ($console->depth && isset($console->nextlink)) {
        $nextLink = $console->nextlink;
     }
-    
-//    $adapter = new Diggin_Scraper_Adapter_Htmlscraping();
-//    $adapter->setConfig(array('libxmloptions' => LIBXML_DTDATTR));
-//    Diggin_Scraper::changeStrategy('Diggin_Scraper_Strategy_Flexible', $adapter);
     
     $scraper = new Diggin_Scraper();
     $scraper->setUrl($url);
@@ -207,7 +204,7 @@ for ($i = 1; $i <= $depth; $i++) {
         echo implode(PHP_EOL, $scraper->xpath);
     }
 
-    if(!isset($console->depth) or ($i == $depth)) exit;
+    if (!isset($console->depth) or ($i == $depth)) exit;
     
     if ($scraper->nextLink === false) {
         Diggin_Debug::dump('next page not found');
