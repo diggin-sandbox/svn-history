@@ -15,6 +15,9 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
+/** Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract **/
+require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
+
 /**
  * Helper for Search Head-Base Tag
  * ignore bad-scheme ,& resolve relative-path
@@ -24,10 +27,6 @@
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
-
-/** Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract **/
-require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
-
 class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
     /**

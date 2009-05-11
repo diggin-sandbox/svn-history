@@ -340,7 +340,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     {
         $class = $this->getHelperLoader()->load($name);
 
-        return new $class($this->_strategy->readResource());
+        return new $class($this->_strategy->readResource(), array('url' => $this->_getUrl()));
     }
 
     /**
