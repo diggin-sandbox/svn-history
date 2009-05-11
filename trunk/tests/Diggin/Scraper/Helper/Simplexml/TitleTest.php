@@ -71,7 +71,7 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
     
 
     /**
-     * @todo Implement testDirect().
+     *
      */
     public function testDirect() {
         $expect = '<b>f<i>rs&t</b>';
@@ -85,9 +85,9 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
  
         $this->assertEquals($expect,$this->object1->direct());
         
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+//        $this->markTestIncomplete(
+//          'This test has not been implemented yet.'
+//        );
     }
 }
 ?>

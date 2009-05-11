@@ -253,7 +253,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     }
 
     /**
-     * incubator
+     * Get response via mixed pattern
      * 
      * @param mixed
      */
