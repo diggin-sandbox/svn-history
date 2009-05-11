@@ -70,9 +70,9 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
             foreach ($links as $v) {
                 
                 if (isset($baseUrl)) {
-                    $ret[] = Diggin_Uri_Http::getAbsoluteUrl((string)$v, $baseUrl);
+                    $ret[] = Diggin_Uri_Http::getAbsoluteUrl($this->asString($v[@href]), $baseUrl);
                 } else {
-                    $ret[] = (string)$v;
+                    $ret[] = $this->asString($v[@href]);
                 }
             }
             
