@@ -30,6 +30,31 @@ require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
 class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
     /**
+     * 
+     *
+     */
+    public function direct()
+    {
+        return $this->getHeadBaseUrl();
+    }
+
+    public function getBaseUrl($preferHeadBase = true)
+    {
+        if ($preferHeadBase) {
+            $headBaseUrl = $this->getHeadBaseUrl();
+            if ($headBaseUrl) {
+                return $headBaseUrl;
+            } 
+        }
+
+        if (array_key_exists('baseUrl',$this->_config)){
+            return $this->_config['baseUrl'];
+        }
+
+        return false;
+    }
+
+    /**
      * Search Base Href
      * 
      * firefoxではbaseタグが複数記述されていた場合は、最後のものを考慮する。
@@ -38,7 +63,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper
      *
      * @return mixed
      */
-    public function direct()
+    public function getHeadBaseUrl()
     {
         if ($bases = $this->getResource()->xpath('//base[@href]')) {
             rsort($bases);

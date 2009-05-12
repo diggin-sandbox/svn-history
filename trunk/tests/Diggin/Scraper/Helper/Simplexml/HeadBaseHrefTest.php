@@ -59,7 +59,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHrefTest extends PHPUnit_Framework
         $expect = 'http://www2.example.net/terumi/';
 
         $this->assertEquals(Zend_Uri_Http::fromString($expect),
-                            $this->object->direct());
+                            $this->object->getHeadBaseUrl());
                             
                             
         $expect = 'http://www2.example.net/terumi/';
@@ -78,7 +78,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHrefTest extends PHPUnit_Framework
         $object = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
         
         $this->assertEquals(false,
-                            $object->direct());
+                            $object->getHeadBaseUrl());
                             
                             
         ///////////////////////////////////////////////
@@ -99,14 +99,39 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHrefTest extends PHPUnit_Framework
 </html>
 HTML;
         //
-//        $responseBody= str_replace('&', '&amp;', $responseBody);
+        //$responseBody= str_replace('&', '&amp;', $responseBody);
         $simplexml = simplexml_load_string($responseBody);
         $object = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
-//        $object->setPreAmpFilter(true);
-        $t= $object->direct();
+        //$object->setPreAmpFilter(true);
+        $t= $object->getHeadBaseUrl();
 //        var_export((string)$t);
         $this->assertEquals($expect, (string)$t);
+ 
+
+
+        //str_replace('&',している場合は実態参照としてもどる
+        $expect = 'http://www.example.net/test.cgi?k=v&amp;t=a';
         
+        /////////////////////////
+        $responseBody = <<<HTML
+<html>
+    <head>
+    <title>TERUMI&amp;の部屋</title>
+    <base href="$expect" />
+    </head>
+<body>
+神戸では紫芋チップスが流行っています。
+</body>
+</html>
+HTML;
+        //
+        $responseBody= str_replace('&', '&amp;', $responseBody);
+        $simplexml = simplexml_load_string($responseBody);
+        $object = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
+        $object->setPreAmpFilter(true);
+        $t= $object->getHeadBaseUrl();
+
+
         //ブラウザ上でのexpect値
 $expect = "TERUMI&の部屋";
         
@@ -152,7 +177,7 @@ HTML;
         $object = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
         
         $this->assertEquals(false,
-                            $object->direct());
+                            $object->getHeadBaseUrl());
         
         $this->markTestIncomplete(
           'This test has not been implemented yet.'

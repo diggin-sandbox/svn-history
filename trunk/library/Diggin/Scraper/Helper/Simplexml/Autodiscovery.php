@@ -46,12 +46,8 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
      * 
      * @return mixed
      */
-    public function direct()
+    public function direct($type = null, $baseUrl = null)
     {
-        $args = func_get_arg(0);
-        $type = (isset($args[0]) ? $args[0]: null);
-        $baseUrl = (isset($args[1]) ? $args[1] : null);
-
         return $this->discovery($type, $baseUrl);
     }
     

@@ -20,18 +20,26 @@ require_once 'Diggin/Scraper/Helper/HelperAbstract.php';
 
 abstract class Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract extends Diggin_Scraper_Helper_HelperAbstract
 {
-    protected $preAmpFilter = false;
     
-    public function setPreAmpFilter($flg)
+    public function setPreAmpFilter($flag)
     {
-        $this->preAmpFilter = $flg;
+        $this->setConfig(array('preAmpFilter' => $flag));
         
         return $this;
+    }
+
+    public function getPreAmpFilter()
+    {
+        if (array_key_exists('preAmpFilter', $this->_config)) {
+            return $this->_config['preAmpFilter'];
+        }
+
+        return false;
     }
     
     protected function asString($sxml)
     {
-        if ($this->preAmpFilter === true) {
+        if ($this->getPreAmpFilter() === true) {
             if (!is_array($sxml)) {
                 return htmlspecialchars_decode($sxml->asXML(),
                             ENT_NOQUOTES);

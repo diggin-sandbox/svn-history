@@ -340,7 +340,10 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     {
         $class = $this->getHelperLoader()->load($name);
 
-        return new $class($this->_strategy->readResource(), array('url' => $this->_getUrl()));
+        return new $class($this->_strategy->readResource(), 
+                          array('baseUrl' => $this->_getUrl(),
+                                'preAmpFilter' => true)
+                          );
     }
 
     /**
@@ -351,6 +354,13 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      */ 
     public function __call($method, $args)
     {
-        return $this->getHelper($method)->setPreAmpFilter(true)->direct($args);
+        $helper = $this->getHelper($method);
+        if (!method_exists($helper, 'direct')) {
+            require_once 'Diggin/Scraper/Exception.php';
+            throw new Diggin_Scraper_Exception('Helper "'.$method.'" does not support overloading via direct()');
+        }
+
+        return call_user_func_array(array($helper, 'direct'), $args);
+        //return $this->getHelper($method)->setPreAmpFilter(true)->direct($args);
     }
 }

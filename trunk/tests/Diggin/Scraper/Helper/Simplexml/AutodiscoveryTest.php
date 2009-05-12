@@ -71,14 +71,41 @@ HTML;
     public function testDiscovery()
     {
 
+        //rss check
         $this->assertEquals(
                              array("http://d.hatena.ne.jp/sasezaki/rss", "http://d.hatena.ne.jp/sasezaki/rss2"),
                              $this->object->discovery());
 
+                             
+                 $html = <<<HTML
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="ja" xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>test</title>
+<body>body</body></html>
+HTML;
+
+        // no link rel
+        $dom = new DOMDocument();//DOMDocument::loadHTML($html);
+        $dom->loadHTML($html);
+        $object = new Diggin_Scraper_Helper_Simplexml_Autodiscovery(simplexml_import_dom($dom));
+        
+        $this->assertEquals(
+                             false,
+                             $object->discovery());
+        
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
+    }
+    
+    public function testDiscoveryParam()
+    {
+                $this->assertEquals(
+                             false,
+                             $this->object->discovery('atom'));
     }
 }
 ?>
