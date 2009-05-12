@@ -23,32 +23,26 @@ abstract class Diggin_Scraper_Helper_HelperAbstract
     private $_resource;
 
     /**
-     * scraper'param
+     * config
      * 
      * @var array
      */
-    protected $_param;
+    protected $_config;
+
     /**
      * Constructor
      *
      * Add resource
      *
      * @param mixed $resource
-     * @param array $param
+     * @param array $config
      * @return void
      */
-    public function __construct($resource, $param = array())
+    public function __construct($resource, $config = array())
     {
         $this->_resource = $resource;
-        $this->_param = $param;
+        $this->_config = $config;
     }
-    
-    /**
-     * Perform Helper when called as $scraper->helperClassname()
-     * 
-     * @return mixed
-     */
-    abstract public function direct();
 
     /**
      * get resource for scraping
@@ -58,6 +52,18 @@ abstract class Diggin_Scraper_Helper_HelperAbstract
     public function getResource()
     {
         return $this->_resource;
+    }
+
+    /**
+     * Set Configure
+     *
+     * @param array $config
+     */
+    public function setConfig(array $config)
+    {
+        foreach ($config as $k => $v) {
+            $this->_config[$k] = $v;
+        }
     }
 
     /**

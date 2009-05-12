@@ -107,5 +107,12 @@ HTML;
                              false,
                              $this->object->discovery('atom'));
     }
+    
+    
+    /**
+     * 
+     * <link rel="alternate" type="application/atom+xml" title="Atom" href="http://example.net/atom.xml" />
+     * <link rel="alternate" type="application/rss+xml" title="RSS" href="http://example.net/index.rdf" />
+     */
 }
 ?>

@@ -19,8 +19,7 @@
 require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
 
 /**
- * Helper for Search Head-Base Tag
- * ignore bad-scheme ,& resolve relative-path
+ * Helper for Search Head-Base Tag, ignore bad-scheme
  *
  * @package    Diggin_Scraper
  * @subpackage Helper

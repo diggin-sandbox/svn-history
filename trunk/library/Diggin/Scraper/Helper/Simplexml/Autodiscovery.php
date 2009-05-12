@@ -31,19 +31,15 @@ require_once 'Diggin/Uri/Http.php';
 class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
 {
 
-    /**
-     * 
-     * <link rel="alternate" type="application/atom+xml" title="Atom" href="http://example.net/atom.xml" />
-     * <link rel="alternate" type="application/rss+xml" title="RSS" href="http://example.net/index.rdf" />
-     */
-    
     const XPATH_BOTH = '//head//link[@rel="alternate" and (@type="application/rss+xml" or @type="application/atom+xml")]//@href';
     const XPATH_RSS = '//head/link[@rel="alternate" and @type="application/rss+xml" and contains(@title, "RSS")]/@href';
     const XPATH_ATOM = '//head/link[@rel="alternate" and @type="application/atom+xml" and contains(@title, "Atom")]/@href';
 
     /**
+     * Perform helper when called as $scraper->autodiscovery() from Diggin_Scraper object
      * 
-     * 
+     * @param string $type
+     * @param string|Zend_Uri_Http $baseUrl
      * @return mixed
      */
     public function direct($type = null, $baseUrl = null)
@@ -51,6 +47,13 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
         return $this->discovery($type, $baseUrl);
     }
     
+    /**
+     * discovery feed url
+     * 
+     * @param string $type
+     * @param string|Zend_Uri_Http $baseUrl
+     * @return mixed
+     */
     public function discovery($type = null, $baseUrl = null)
     {
         if ($type === 'rss') {
