@@ -347,7 +347,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     }
 
     /**
-     * call helper
+     * call helper direct
      *
      * @param string $method
      * @param array $args
@@ -361,6 +361,5 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         return call_user_func_array(array($helper, 'direct'), $args);
-        //return $this->getHelper($method)->setPreAmpFilter(true)->direct($args);
     }
 }

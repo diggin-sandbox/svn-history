@@ -97,12 +97,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
        if ($process->getType() instanceof Diggin_Scraper_Process_Aggregate) {
             $returns = false;
             foreach ($values as $count => $val) {
- 
-                //if ($process->getType()->getStrategyName()) {
-                    //var_dump(class_implements($process->getType()->getStrategyName()));
-                    //echo $process->getType()->;
-                //}
- 
+
                 foreach ($process->getType() as $proc) {
                     //@todo 値がとれなかったとき、格納しないかnullかどうかはconfigでやるべきかな
                     if (false !== $getval = $this->getValues($val, $proc)) {

@@ -42,7 +42,9 @@ class Diggin_VersionTest extends PHPUnit_Framework_TestCase
     public function testCompareVersion() {
         $expect = -1;
         
-        
+//        $this->markTestIncomplete(
+//          'This test has not been implemented yet.'
+//        );
         
         for ($i=0; $i <= 1; $i++) {
             for ($j=0; $j < 10; $j++) {
