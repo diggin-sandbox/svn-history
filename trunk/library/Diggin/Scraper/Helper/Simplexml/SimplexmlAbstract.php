@@ -23,15 +23,15 @@ abstract class Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract extends Diggin_
     
     public function setPreAmpFilter($flag)
     {
-        $this->setConfig(array('preAmpFilter' => $flag));
+        $this->setOption(array('preAmpFilter' => $flag));
         
         return $this;
     }
 
     public function getPreAmpFilter()
     {
-        if (array_key_exists('preAmpFilter', $this->_config)) {
-            return $this->_config['preAmpFilter'];
+        if (array_key_exists('preAmpFilter', $this->_option)) {
+            return $this->_option['preAmpFilter'];
         }
 
         return false;

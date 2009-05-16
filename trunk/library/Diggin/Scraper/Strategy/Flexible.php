@@ -86,6 +86,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     {
         $results = (array) $values->xpath(self::_xpathOrCss2Xpath($process->getExpression()));
 
+        // count($results) === 0 is not found by xpath-node
+        // $results[0] === false is not found by attributes
         if (count($results) === 0 or ($results[0] === false)) {
             require_once 'Diggin/Scraper/Strategy/Exception.php';
             $exp = self::_xpathOrCss2Xpath($process->getExpression());

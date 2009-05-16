@@ -23,11 +23,11 @@ abstract class Diggin_Scraper_Helper_HelperAbstract
     private $_resource;
 
     /**
-     * config
+     * option
      * 
      * @var array
      */
-    protected $_config;
+    protected $_option;
 
     /**
      * Constructor
@@ -35,13 +35,13 @@ abstract class Diggin_Scraper_Helper_HelperAbstract
      * Add resource
      *
      * @param mixed $resource
-     * @param array $config
+     * @param array $option
      * @return void
      */
-    public function __construct($resource, $config = array())
+    public function __construct($resource, $option = array())
     {
         $this->_resource = $resource;
-        $this->_config = $config;
+        $this->_option = $option;
     }
 
     /**
@@ -57,12 +57,12 @@ abstract class Diggin_Scraper_Helper_HelperAbstract
     /**
      * Set Configure
      *
-     * @param array $config
+     * @param array $option
      */
-    public function setConfig(array $config)
+    public function setOption(array $option)
     {
-        foreach ($config as $k => $v) {
-            $this->_config[$k] = $v;
+        foreach ($option as $k => $v) {
+            $this->_option[$k] = $v;
         }
     }
 
