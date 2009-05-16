@@ -38,6 +38,6 @@ class Diggin_Scraper_Helper_Simplexml_Title extends Diggin_Scraper_Helper_Simple
             return trim(preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value));
         }
 
-        return false;
+        return null;
     }
 }

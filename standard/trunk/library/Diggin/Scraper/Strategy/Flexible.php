@@ -193,10 +193,8 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
             $strings = array();
             
             $headBase = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref(current($values));
-            $base = $headBase->direct();
-            if ($base === false) {
-                $base = $this->getBaseUrl();
-            }
+            $headBase->setOption(array('baseUrl' => $this->getBaseUrl()));
+            $base = $headBase->getBaseUrl();
             foreach ($values as $k => $value) {
                 $attribute = $value[substr($process->getType(), 1)];
                 if ($attribute === null) continue;

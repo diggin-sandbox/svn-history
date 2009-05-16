@@ -79,6 +79,6 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
             return $ret;
         }
         
-        return false;
+        return null;
     }
 }

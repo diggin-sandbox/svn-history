@@ -47,10 +47,10 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper
         }
 
         if (array_key_exists('baseUrl',$this->_option)){
-            return $this->_config['baseUrl'];
+            return $this->_option['baseUrl'];
         }
 
-        return false;
+        return null;
     }
 
     /**
@@ -78,6 +78,6 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper
             }
         }
         
-        return false;
+        return null;
     }
 }
