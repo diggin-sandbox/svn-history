@@ -18,6 +18,9 @@ class DigginX_Controller_Plugin_ZFDebug_Plugin_Ref
         $this->setSourcePath('ZendX', 'http://framework.zend.com/code/browse/Extras_Library/trunk/library/', '?r=trunk');
         $this->setSourcePath('ZFDebug', 'http://code.google.com/p/zfdebug/source/browse/trunk/library/');
         
+
+        $this->setManualPath('Zend', 'http://framework.zend.com/manual/ja/');
+
         //$this->_sourcePath = array_merge($sourcePath, $options['source_path']);
     }
 
@@ -59,10 +62,8 @@ class DigginX_Controller_Plugin_ZFDebug_Plugin_Ref
 
     protected function getManualPath($file)
     {
-        if ($this->_manualPath = array()) {
-            return '';
-        }
-
+        //lazy return - each component's top page.
+        return strtolower(preg_replace('#(^/)(([A-Za-z]+)/([A-Za-z]+).*)#', '\3.\4', $file)).'.html';
     }
 
     public function getPanel()
@@ -93,18 +94,28 @@ class DigginX_Controller_Plugin_ZFDebug_Plugin_Ref
                 foreach ($this->_library as $key => $library)
                 {
                         if('' != $library && false !== strstr($file, $library)) {
+
+                                
                                 if (isset($this->_sourcePath[$library])) {
                                     
                                     // clear include_path 
                                     $path = str_replace('.', '', explode(PATH_SEPARATOR, get_include_path()));
-                                    $file = substr(str_replace($path, '' , $file), 1);
+                                    $relativefile = substr(str_replace($path, '' , $file), 1);
                                     $souceBase = $this->_sourcePath[$library]['src'];
                                     $suffix = $this->_sourcePath[$library]['suffix'];
 
-                                    $libraryFiles[$key] .= $file .' <a href="'.$souceBase.$file.$suffix.'">src</a>'.'<br />';
-                                } else {
-                                    $libraryFiles[$key] .= $file .'<br />';
+                                    $file .= ' <a href="'.$souceBase.$relativefile.$suffix.'">src</a>';
                                 }
+
+                                if (isset($this->_manualPath[$library])) {
+                                    
+                                    $path = str_replace('.', '', explode(PATH_SEPARATOR, get_include_path()));
+                                    $manpath = $this->getManualPath(str_replace($path, '', $file));
+
+                                    $file .= ' <a href="'.$this->_manualPath[$library].$manpath.'">doc</a>';
+                                }
+
+                                $libraryFiles[$key] .= $file.'<br>';
                                 $inUserLib = TRUE;
                         }
                 }
