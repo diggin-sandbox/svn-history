@@ -66,6 +66,12 @@ class DigginX_Controller_Plugin_ZFDebug_Plugin_Ref
         return strtolower(preg_replace('#(^/)(([A-Za-z]+)/([A-Za-z]+).*)#', '\3.\4', $file)).'.html';
     }
 
+    /**
+     * [ original code borrowed from ZFDebug]
+     * 
+     * License available at:
+     * http://zfdebug.googlecode.com/svn/trunk/license.txt
+     */
     public function getPanel()
     {
 
@@ -112,7 +118,7 @@ class DigginX_Controller_Plugin_ZFDebug_Plugin_Ref
                                     $path = str_replace('.', '', explode(PATH_SEPARATOR, get_include_path()));
                                     $manpath = $this->getManualPath(str_replace($path, '', $file));
 
-                                    $file .= ' <a href="'.$this->_manualPath[$library].$manpath.'">doc</a>';
+                                    $file .= ' <a href="'.$this->_manualPath[$library].$manpath.'">man</a>';
                                 }
 
                                 $libraryFiles[$key] .= $file.'<br>';
