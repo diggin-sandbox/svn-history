@@ -18,9 +18,6 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkWithCacheTest extends PHP
     protected function setUp()
     {
         $mysiteinfo = '[{"url":"http://example.com", "nextLink":"//a"},{"url":"http://test.org/", "nextLink":"//a"}]';
-        //if (!is_array($jsonarray = Zend_Json_Decoder::decode($json))) {
-        //if (!is_array($jsonarray = Zend_Json::decode('{"data":[1,2,3,4 ]}'))) {
-        //if (!is_array($jsonarray = Zend_Json_Decoder::decode('[{"url":"test"},{"url":"test2"}]'))) {
         if (!is_array($jsonarray = Zend_Json::decode($mysiteinfo))) {
             die($jsonarray);
         }
@@ -30,8 +27,8 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkWithCacheTest extends PHP
             $siteinfo = Diggin_Service_Wedata::getItems('AutoPagerize');
         }
 
-        Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo(new SiteInfo($siteinfo), 'wedata');
-        Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo(new SiteInfo($jsonarray), 'mine');
+        Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo('wedata', new SiteInfo($siteinfo));
+        Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo('mine',   new SiteInfo($jsonarray));
         $this->object = new Diggin_Scraper_Helper_Simplexml_Pagerize($this->getSimpleXml());
         $this->object->setOption(array('baseUrl' => 'http://example.com/test/'));
     }

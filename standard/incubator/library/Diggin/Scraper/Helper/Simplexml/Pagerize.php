@@ -15,7 +15,7 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-/** Diggin_Scraper_Helper_Simplexml_SimplexmlHeadBaseHref **/
+/** Diggin_Scraper_Helper_Simplexml_Simplexml_HeadBaseHref **/
 require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
 
 /**
@@ -44,6 +44,11 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
      * @var array
      */
     private static $_siteinfokeys = array(); 
+
+    public function direct($preferHeadBase = true, $preferhAtom = true)
+    {
+        return $this->getNextLink($preferHeadBase, $preferhAtom);
+    }
 
     /**
      * Sets a cache object
@@ -90,7 +95,7 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
     {
         $nextpageelement = $this->getResource()->xpath(self::HATOM_NEXTLINK);
         if (count($nextpageelement) !== 0) {
-            return $this->asString($nextpageelement[0][@href]);
+            return $nextpageelement[0][@href];
         }
 
         return null;
@@ -112,11 +117,6 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return getNextlinkFromSiteInfo($items, $this->getBaseUrl());        
     }
 
-    //shortcut
-    public function reqeustWedata()
-    {
-    }
-
     /**
      * Get next url from siteinfo
      *
@@ -126,17 +126,12 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
      */
     protected function getNextlinkFromSiteInfo($items, $url) 
     {
-
         foreach ($items as $item) {
-        
             //hAtom 対策
             if ('^https?://.' != $item['url'] && (preg_match('>'.$item['url'].'>', $url) == 1)) {
-                $nextXpath = $item['nextLink'];
-
-                $nextLinks = $this->getResource()->xpath($nextXpath);
-
-                if (count($nextLinks) !== 0){
-                    return $this->asString($nextLinks[0][@href]);
+                $nextLinks = $this->getResource()->xpath($item['nextLink']);
+                if (count($nextLinks) !== 0) {
+                    return $nextLinks[0][@href];
                 }
             }
         }
@@ -144,7 +139,7 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return null;
     }
 
-    public static function appendSiteinfo($siteinfo, $prefix)
+    public static function appendSiteinfo($prefix, $siteinfo)
     {
         $key = self::CACHE_TAG_PREFIX.$prefix;
 
