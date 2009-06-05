@@ -6,20 +6,23 @@ require_once 'Diggin/Scraper/Helper/Simplexml/Pagerize.php';
 /**
  * Test class for Diggin_Scraper_Helper_Simplexml_Pagerize
  */
-class Diggin_Scraper_Helper_Simplexml_Pagerize_HAtomTest extends PHPUnit_Framework_TestCase
+class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkTest extends PHPUnit_Framework_TestCase
 {
     protected $object;
+    protected $testBaseUrl;
     
     protected function setUp()
     {
+
+        $this->object = new Diggin_Scraper_Helper_Simplexml_Pagerize($this->getSimpleXml());
+        //$this->testBaseUrl = 
+        $this->object->setOption(array('baseUrl' => 'http://example.com/test/'));
+        
     }
     
-    public function testHAtomNextLink()
+    public function testGetNextLink()
     {
-        $this->object = new Diggin_Scraper_Helper_Simplexml_Pagerize($this->getSimpleXml());
-        $this->assertNotNull($this->object->hAtomNextLink());
-        $this->object = new Diggin_Scraper_Helper_Simplexml_Pagerize($this->getSimpleXml2());
-        $this->assertNull($this->object->hAtomNextLink());
+        $this->assertNotNull($this->object->getNextLink());
     }
     
     private function getSimpleXml()
