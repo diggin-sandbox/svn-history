@@ -177,10 +177,11 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      */
     private function _callStrategy($response, $strategyName, $adapter = null)
     {
-        require_once 'Zend/Loader.php';
-
         try {
-            Zend_Loader::loadClass($strategyName);
+            if (!class_exists($strategyName)) {
+                require_once 'Zend/Loader.php';
+                Zend_Loader::loadClass($strategyName);
+            }
         } catch (Zend_Exception $e) {
             require_once 'Diggin/Scraper/Exception.php';
             throw new Diggin_Scraper_Exception("Unable to load strategy '$strategyName': {$e->getMessage()}");
