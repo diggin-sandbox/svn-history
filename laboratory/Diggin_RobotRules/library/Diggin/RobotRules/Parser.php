@@ -2,41 +2,22 @@
 /** Diggin_RobotRules_Line **/
 require_once 'Line.php';
 /** Diggin_RobotRules_Record **/
-class Diggin_RobotRules_Record implements ArrayAccess
-{
-    private $_lines = array();
+require_once 'Record.php';
 
-    public function offsetSet($offset, $value) 
-    {
-        //$count = isset($this->_lines[$offset]) ? count($this->_lines[$offset]) : 0;
-        $this->_lines[$offset] = $value;
-    }
-    public function offsetExists($offset)
-    {
-        return isset($this->_lines[$offset]);
-    }
-    public function offsetUnset($offset)
-    {
-        unset($this->_lines[$offset]);
-    }
-    public function offsetGet($offset)
-    {
-        //$count = isset($this->_lines[$offset]) ? count($this->_lines[$offset]) : 0;
-        return isset($this->_lines[$offset]) ? $this->_lines[$offset] : '';
-    }
-
-    public function __toString()
-    {
-        return implode("\n", $this->_lines);
-    }
-}
-
-$line = new Diggin_RobotRules_Line();
-$line->setField('User-Agent');
-$line->setValue('Mozilla');
+$line1 = new Diggin_RobotRules_Line();
+$line1->setField('Disallow');
+$line1->setValue('/');
+$line2 = new Diggin_RobotRules_Line();
+$line2->setField('User-Agent');
+$line2->setValue('Mozilla');
+$line3 = new Diggin_RobotRules_Line();
+$line3->setField('Allow');
+$line3->setValue('/test');
 
 $record = new Diggin_RobotRules_Record();
-$record['agents'] = $line;
+$record->add($line1);
+$record->add($line2);
+$record->add($line3);
 
 var_dump($record);
 echo $record;

@@ -17,7 +17,11 @@ class Diggin_RobotRules_Line
     }
     public function getField()
     {
-        return $this->_field;
+        if (isset($this->_field)) {
+            return $this->_field;
+        } else {
+            return '';
+        }
     }
     public function setValue($value)
     {
