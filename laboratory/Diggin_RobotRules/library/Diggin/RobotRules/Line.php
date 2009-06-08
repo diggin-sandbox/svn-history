@@ -6,6 +6,21 @@ class Diggin_RobotRules_Line
     private $_value;
     private $_comment;
 
+    /**
+     *
+     * @string $line
+     * @return Diggin_RobotRules_Line
+     */
+    public static function parse($line)
+    {
+        //preg
+        
+        $robotsline = new self();
+        $self->setField($mathes[1]);
+
+        return $robotsline;
+    }
+
     public function __toString()
     {
         return $this->getField().':'.$this->getValue().
