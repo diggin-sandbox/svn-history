@@ -1,10 +1,33 @@
 <?php
 
-class Diggin_RobotRules_Record
+class Diggin_RobotRules_Record implements Iterator
 {
     //
- 
     private $_fields = array();
+
+    public function current()
+    {
+        current($this->_fields);
+    }
+
+    public function next()
+    {
+        next($this->_fields);
+    }
+
+    public function key()
+    {
+        key($this->_fields);
+    }
+
+    public function valid()
+    {
+    }
+
+    public function rewind()
+    {
+        uksort($this->_fields, array($this, '_fieldsort'));
+    }
 
     public function __get($field)
     {
