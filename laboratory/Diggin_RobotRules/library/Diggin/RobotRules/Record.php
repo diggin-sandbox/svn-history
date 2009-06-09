@@ -19,7 +19,7 @@ class Diggin_RobotRules_Record
     }
 
     /** Diggin_RobotRules_Line **/
-    public function add(Diggin_RobotRules_Line $line)
+    public function append(Diggin_RobotRules_Line $line)
     {
         if (array_key_exists($field = $line->getField(), $this->_fields)) {
             $this->_fields[$field][count($field)] = $line;
@@ -39,7 +39,7 @@ class Diggin_RobotRules_Record
     }
 
     /**
-     * note: User-Agent must firest. 
+     * note: User-Agent must first. 
      * but Allow & Disallow which not define sort
      * http://www.robotstxt.org/norobots-rfc.txt 3.2
      */
