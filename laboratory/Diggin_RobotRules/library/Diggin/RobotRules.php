@@ -6,5 +6,5 @@
 
 class Diggin_RobotRules
 {
-
+    static function import();
 }

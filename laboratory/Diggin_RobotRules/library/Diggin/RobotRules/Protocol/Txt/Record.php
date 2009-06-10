@@ -1,6 +1,6 @@
 <?php
 
-class Diggin_RobotRules_Record
+class Diggin_RobotRules_Protocol_Txt_Record
 {
     private $_fields = array();
 
@@ -13,13 +13,8 @@ class Diggin_RobotRules_Record
         }
     }
 
-    public function __set($field, $lines)
-    {
-        throw new Exception();
-    }
-
-    /** Diggin_RobotRules_Line **/
-    public function append(Diggin_RobotRules_Line $line)
+    /** Diggin_RobotRules_Protocol_Txt_line  **/
+    public function append(Diggin_RobotRules_Protocol_Txt_line $line)
     {
         if (array_key_exists($field = $line->getField(), $this->_fields)) {
             $this->_fields[$field][count($field)] = $line;

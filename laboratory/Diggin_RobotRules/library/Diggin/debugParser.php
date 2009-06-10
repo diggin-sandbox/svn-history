@@ -1,10 +1,10 @@
 <?php
-/** Diggin_RobotRules_Line **/
-require_once 'Line.php';
-/** Diggin_RobotRules_Record **/
-require_once 'Record.php';
-/** Diggin_RobotRules_Parser **/
-require_once 'Parser.php';
+/** Diggin_RobotRules_Protocol_Txt **/
+require_once 'RobotRules/Protocol/Txt.php';
+/** Diggin_RobotRules_Protocol_Txt_Line **/
+require_once 'RobotRules/Protocol/Txt/Line.php';
+/** Diggin_RobotRules_Protocol_Txt_Record **/
+require_once 'RobotRules/Protocol/Txt/Record.php';
 
 if (debug_backtrace()) return;
 
@@ -19,13 +19,18 @@ Disallow: /*.gif$
 
 User-agent: *
 Disallow: /     
+
 EOF;
 
-$robots = Diggin_RobotRules_Parser::parse($robots);
-//$robots = new Diggin_RobotRules();
-//$robots->set($parsed);
-var_dump($robots->current());
-var_dump($robots->next());
-var_dump($robots->current());
+//$robots = "";
+
+$robots = new Diggin_RobotRules_Protocol_Txt($robots);
+foreach ($robots as $key => $record)
+{
+    var_dump($key, $record);
+}
+//var_dump($robots->current());
+//var_dump($robots->next());
+//var_dump($robots->current());
 
 

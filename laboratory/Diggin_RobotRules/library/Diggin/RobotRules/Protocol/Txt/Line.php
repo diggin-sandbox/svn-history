@@ -1,5 +1,5 @@
 <?php
-class Diggin_RobotRules_Line
+class Diggin_RobotRules_Protocol_Txt_Line
 {
     private $_field;
     private $_value;
@@ -13,11 +13,17 @@ class Diggin_RobotRules_Line
     public static function parse($line)
     {
         //preg
+        //preg_match('!\s*(\w*):\s*(\w*)\s*#*(\s*(\w)*\s*)!i', 'User-Agent: Google #d#d', $match);
         
-        $robotsline = new self();
-        $self->setField($mathes[1]);
-
-        return $robotsline;
+        preg_match('!\s*([^:]*):\s*([^#]*)\s*#*\s*([^\z]*)!i', 
+                    $line, $match);
+                    
+        $line = new self;
+        $line->setField($match[1]);
+        $line->setValue($match[2]);
+        $line->setComment($match[3]);
+        
+        return $line;
     }
 
     public function __toString()
