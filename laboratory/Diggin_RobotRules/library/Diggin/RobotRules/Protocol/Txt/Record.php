@@ -1,16 +1,41 @@
 <?php
 
-class Diggin_RobotRules_Protocol_Txt_Record
+class Diggin_RobotRules_Protocol_Txt_Record implements ArrayAccess
 {
     private $_fields = array();
-
-    public function __get($field)
+    
+    public function offsetExists($offset)
     {
-        if (array_key_exists($this->_fields)) {
-            return $this->_fields[$field];
+        return isset($this->_fields[strtolower($offset)]);
+    }
+
+    public function offsetSet($offset, $lines)
+    {
+        // throw new ? use append!
+        //if (!is_array($)) {
+        //}
+        $this->_fields[$offset] = $lines;
+    }
+
+    public function offsetGet($offset)
+    {
+        //@todo not strtowloer,CamelUppder
+        
+        //var_dump($offset, $this->_fields, array_key_exists(strtolower($offset), $this->_fields));
+        if (array_key_exists(strtolower($offset), $this->_fields)) {
+            return $this->_fields[strtolower($offset)];
         } else {
             return null;
         }
+    }
+
+    public function offsetUnset($offset)
+    {
+        //if (strtolower[$field] == 'user-agent') {
+        //    throw new Exception;
+        //}
+
+        unset($this->_fields[$offset]);
     }
 
     /** Diggin_RobotRules_Protocol_Txt_line  **/

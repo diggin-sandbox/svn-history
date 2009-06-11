@@ -5,6 +5,11 @@ class Diggin_RobotRules_Protocol_Txt implements Iterator
     private $_line = 0;
     private $_key = 0;
 
+    public function isAllow($url)
+    {
+        
+    }
+    
     public function __construct($robotstxt = '')
     {
         if ($robotstxt){
@@ -28,10 +33,7 @@ class Diggin_RobotRules_Protocol_Txt implements Iterator
     {
         //@not_todoif none 'User-Agent: line' is handled as *
         // はgetRecordされたときにおこなう
-        //@not_todo discard not follow User-Agent_line
-        //@not_todo PHP_EOL+ replace single
         $record = new Diggin_RobotRules_Protocol_Txt_Record;
-        //$record = array(); 
         do {
             //$record[] = Diggin_RobotRules_Protocol_Txt_Line::parse($this->_robotstxt[$this->_line]);
             $record->append(Diggin_RobotRules_Protocol_Txt_Line::parse($this->_robotstxt[$this->_line]));

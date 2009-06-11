@@ -22,20 +22,11 @@ Disallow: /
 
 EOF;
 
-//$robots = "";
-
-
 $robots = new Diggin_RobotRules_Protocol_Txt($robots);
 
-//var_dump($robots);exit;
 
 foreach ($robots as $key => $record)
 {
     //var_dump($key, $record);
     var_dump($record['user-agent']);
 }
-//var_dump($robots->current());
-//var_dump($robots->next());
-//var_dump($robots->current());
-
-
