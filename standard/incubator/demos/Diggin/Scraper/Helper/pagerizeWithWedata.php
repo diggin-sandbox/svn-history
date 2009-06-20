@@ -7,16 +7,36 @@ set_include_path(implode(PATH_SEPARATOR, $path));
 
 $url = (isset($argv[1]) ? $argv[1]: 'http://d.hatena.ne.jp/sasezaki');
 
+
+require_once 'Diggin/Service/Wedata.php';
+$cache = getCache();
+if(!$items = $cache->load('wedata_items')) {
+    $items = Diggin_Service_Wedata::getItems('AutoPagerize');
+    $cache->save($items, 'wedata_items');
+}
+class Siteinfo extends ArrayIterator
+{
+    public function current()
+    {
+        $curerent = parent::current();
+        if (is_array($curerent) && array_key_exists('data', $curerent)){
+            return $curerent['data'];
+        }
+        return $curerent;
+    }
+}
+
 require_once 'Diggin/Scraper.php';
 require_once 'Diggin/Scraper/Helper/Simplexml/Pagerize.php';
 
 //1 Zend_Cache_Coreをセットします
 Diggin_Scraper_Helper_Simplexml_Pagerize::setCache(getCache());
 //2 キーを指定してsiteinfo配列をセットします
+Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo('wedata', new SiteInfo($items));
 Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo('mysiteinfo', 
                                 array(
                                      array('url' => 'http://d.hatena.ne.jp/sasezaki', 
-                                           'nextLink' => '//a[@class="prev" and last()]'),
+                                           'nextLink' => '//a'),
                                      array('url' => 'http://framework.zend.com/code/changelog/Standard_Library/',
                                            'nextLink' => '//div[@class="changesetList"][last()]/a')
                                           )

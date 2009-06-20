@@ -21,7 +21,7 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkWithCacheTest extends PHP
         if (!is_array($jsonarray = Zend_Json::decode($mysiteinfo))) {
             die($jsonarray);
         }
-        Diggin_Scraper_Helper_Simplexml_Pagerize::setCache($cache = $this->getCacheCore('_files/'));
+        Diggin_Scraper_Helper_Simplexml_Pagerize::setCache($cache = $this->getCacheCore(dirname(__FILE__).'/_files/'));
 
         if (!$siteinfo = $cache->load(Diggin_Scraper_Helper_Simplexml_Pagerize::CACHE_TAG_PREFIX.'wedata')) {
             $siteinfo = Diggin_Service_Wedata::getItems('AutoPagerize');
