@@ -214,7 +214,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
             $strategy->setBaseUrl($this->_getUrl());
-            $strategy->getAdapter()->setConfig(array('url' => $this->_url));
+            $strategy->getAdapter()->setConfig(array('url' => $this->_url,
+                                                     'pre_ampersand_escape' => true));
             
             $this->_strategy = $strategy;
         }

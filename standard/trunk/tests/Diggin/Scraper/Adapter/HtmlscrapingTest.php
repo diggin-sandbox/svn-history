@@ -41,7 +41,7 @@ class Diggin_Scraper_Adapter_HtmlscrapingTest extends PHPUnit_Framework_TestCase
         $responseBody = '<html lang="ja">'.PHP_EOL.
                            '<head>'.PHP_EOL.
                            '<body>'.PHP_EOL.
-                           'this is testplus<br />'.PHP_EOL.
+                           'this is test&amp;test<br />'.PHP_EOL.
                            '</body>'.PHP_EOL.
                            '</html>';
         $response_str = "$responseHeader\r\n\r\n$responseBody";
@@ -90,6 +90,24 @@ class Diggin_Scraper_Adapter_HtmlscrapingTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testAmpasandEscape()
+    {
+    	$this->object->setConfig(array('url' => 'http://test.org/',
+    	                               'pre_ampersand_escape' => true));
+    	$asxml = $this->object->getSimplexml($this->response)->asXML();
+        $asx = explode('test', $asxml);
+        
+        $this->assertEquals('&amp;amp;', $asx[1]);
+        
+        
+        $this->object->setConfig(array('url' => 'http://test.org/',
+                                       'pre_ampersand_escape' => false));
+        $asxml = $this->object->getSimplexml($this->response)->asXML();
+        $asx = explode('test', $asxml);
+        
+        $this->assertEquals('&amp;', $asx[1]);
+    }
+    
     /**
      * 
      */
@@ -111,8 +129,9 @@ class Diggin_Scraper_Adapter_HtmlscrapingTest extends PHPUnit_Framework_TestCase
         
         $this->assertAttributeEquals(
         array('url' => 'http://test.org/', 
-              'tidy' => array('output-xhtml' => true, 'wrap' => 0)),
-         'config', $obj);
+              'tidy' => array('output-xhtml' => true, 'wrap' => 0),
+              'pre_ampersand_escape' => false),
+         'config', $obj); 
     }
     
     public function testSetConfigThrowException() {
