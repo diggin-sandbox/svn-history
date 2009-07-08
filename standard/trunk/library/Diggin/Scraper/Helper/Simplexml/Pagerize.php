@@ -101,22 +101,6 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return null;
     }
 
-    public function getNextLinkFromWedata()
-    {
-        require_once 'Diggin/Service/Wedata.php';
-
-        if (self::$_cache) {
-            if(!$items = self::$_cache->load(self::CACHE_TAG_PREFIX.'wedata_items')) {
-                $items = Diggin_Service_Wedata::getItems('AutoPagerize');
-                self::$_cache->save($items, self::CACHE_TAG_PREFIX.'wedata_items');
-            }
-        } else {
-            $items = Diggin_Service_Wedata::getItems('AutoPagerize');
-        }
-    
-        return $this->getNextlinkFromSiteInfo($items, $this->getBaseUrl());        
-    }
-
     /**
      * Get next url from siteinfo
      *
@@ -129,6 +113,10 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         foreach ($items as $item) {
             //hAtom 対策
             if ('^https?://.' != $item['url'] && (preg_match('>'.$item['url'].'>', $url) == 1)) {
+                if (preg_match('/^id\(/', $item['nextLink'])) {
+                    $item['nextLink'] = preg_replace("/^id\(((?:'|\")(\w*)(?:'|\"))\)/", '//*[@id=$1]', $item['nextLink']);
+                }
+
                 $nextLinks = $this->getResource()->xpath($item['nextLink']);
                 if (count($nextLinks) !== 0) {
                     return $nextLinks[0][@href];
