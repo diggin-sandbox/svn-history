@@ -320,7 +320,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             try {
                 $values = $this->_strategy->getValues($context, $process);
             } catch (Diggin_Scraper_Exception $dse) {
-                if ($this->handleNothingExpression === self::NOTHINGPOINT_THROWSEXPRESSION) {
+                if (self::$handleNothingExpression === self::NOTHINGPOINT_THROWSEXPRESSION) {
                     throw $dse;
                 }
             }
