@@ -314,6 +314,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 
         if (!is_null(self::$_strategyName)) {
             $this->_callStrategy($resource, self::$_strategyName, self::$_adapter);
+        } else {
+            $this->_strategy = null;
         }
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
         foreach ($this as $process) {
