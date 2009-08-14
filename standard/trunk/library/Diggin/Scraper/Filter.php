@@ -42,9 +42,14 @@ class Diggin_Scraper_Filter
                     }
                 } elseif (!strstr($filter, '_')) {
                     require_once 'Zend/Filter.php';
+                    require_once 'Zend/Version.php';
                     try {
                         foreach ($values as $k => $value) {
-                            $return[$k] = Zend_Filter::get($value, $filter);
+                            if (Zend_Version::compareVersion('1.9.0') < 0) {
+                                $return[$k] = Zend_Filter::get($value, $filter);
+                            } else {
+                                $return[$k] = Zend_Filter::filterStatic($value, $filter);
+                            }
                         }
                     } catch (Zend_Exception $e) {
                         require_once 'Diggin/Scraper/Filter/Exception.php';
