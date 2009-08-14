@@ -70,7 +70,7 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         // LIFO
         if (count(self::$_siteinfokeys) !== 0) {
             foreach (array_reverse(self::$_siteinfokeys) as $key) {
-                $siteinfo = $this->getSiteinfo($key); 
+                $siteinfo = self::getSiteinfo($key); 
                 if ($next = $this->getNextLinkFromSiteinfo($siteinfo, $baseurl)) {
                     $nextLink = $next;
                     break;
@@ -127,18 +127,30 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return null;
     }
 
-    public static function appendSiteinfo($prefix, $siteinfo)
+    public static function appendSiteinfo($suffix, $siteinfo)
     {
-        $key = self::CACHE_TAG_PREFIX.$prefix;
+        $key = self::CACHE_TAG_PREFIX.$suffix;
 
-        self::$_cache->save($siteinfo, $key);
+        if (array_key_exists($key, self::$_siteinfokeys)) {
+            require_once 'Diggin/Scraper/Helper/Simplexml/Exception.php';
+            throw new Diggin_Scraper_Helper_Simplexml_Exception("$key is already used.");
+        }
+
+        if (!self::getSiteinfo($key)) {
+            self::$_cache->save($siteinfo, $key);
+        }
 
         array_push(self::$_siteinfokeys, $key);
     }
 
-    public function getSiteinfo($key)
+    protected static function getSiteinfo($key)
     {
         return self::$_cache->load($key);
+    }
+
+    public static function loadSiteinfo($suffix)
+    {
+        return self::$_cache->load(self::CACHE_TAG_PREFIX.$suffix);
     }
 
 }
