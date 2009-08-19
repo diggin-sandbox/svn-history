@@ -9,7 +9,7 @@
  *
  * @category   Diggin
  * @package    Diggin_Version
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
@@ -25,7 +25,7 @@ final class Diggin_Version
      * library version
      *
      */
-    const VERSION = '0.6.10';
+    const VERSION = '0.6.11';
 
     /**
      * Compare the specified library version string $version
