@@ -24,7 +24,6 @@ $protocol = new Diggin_RobotRules_Protocol_Txt($robots);
 
 class Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter extends FilterIterator
 {
-    //todoo handle if none user-agent
 
     private $_useragent = "";
     
@@ -36,20 +35,24 @@ class Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter extends FilterIterator
 
     public function accept()
     {
-       $record = $this->current();
-       foreach ($record['user-agent'] as $ua)
-       {
-            if ($this->_useragent == $ua->getValue()) {
+        $record = $this->current();
+
+       //todoo handle if none user-agent
+       //if (!array_key_exists('User-Agent', $record))
+        foreach ($record['user-agent'] as $ua)
+        {
+            if ($this->_useragent === $ua->getValue() or
+                '*' === $ua->getValue()) {
                 return true;
             }
-       }
+        }
 
-       return false;
+        return false;
     }
 }
 
 
-foreach (new Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter($protocol) as $key => $record)
+foreach (new Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter($protocol, 'Google') as $key => $record)
 {
-    var_dump($record['user-agent']);
+    var_dump($record);
 }
