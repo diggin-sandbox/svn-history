@@ -114,7 +114,7 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
             $items = Diggin_Service_Wedata::getItems('AutoPagerize');
         }
     
-        return getNextlinkFromSiteInfo($items, $this->getBaseUrl());        
+        return $this->getNextlinkFromSiteInfo($items, $this->getBaseUrl());        
     }
 
     /**
