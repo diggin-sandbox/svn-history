@@ -16,20 +16,18 @@
  */
 
 /**
- * @see Zend_Service_Abstract
- */
-require_once 'Zend/Service/Abstract.php';
-
-/**
  * Diggin_Service_Wedata
+ *
+ * @see http://wedata.net/help/api
  */
-class Diggin_Service_Wedata extends Zend_Service_Abstract
+class Diggin_Service_Wedata
 {
     const API_URL = 'http://wedata.net';
     
     //parameter keys
     const KEY_APIKEY = 'api_key';
     const KEY_PAGE = 'page';
+    const KEY_DATABASE = 'database';
     
     // path to acces database
     const PATH_GET_DATABASES = '/databases.json';
@@ -50,7 +48,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      *
      * @var Zend_Http_Client
      */
-    protected static $_client;
+    protected $_httpClient;
 
     /**
      * Request parameters
@@ -79,6 +77,21 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         $this->_decodetype = $decodetype;
     }
     
+    public function setHttpClient(Zend_Http_Client $client)
+    {
+        $this->_httpClient = $client;
+    }
+
+    public function getHttpClient()
+    {
+        if (!$this->_httpClient instanceof Zend_Http_Client) {
+            require_once 'Zend/Http/Client.php';
+            $this->_httpClient = new Zend_Http_Client();
+        }
+
+        return $this->_httpClient;
+    }
+
     /**
      * Decode Json Value
      *
@@ -150,7 +163,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     }
     
     /**
-     * adding parameter
+     * adding DATABASE's parameter
      * 
      * @param string $key
      * @param string $value
@@ -159,12 +172,22 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     {
         $this->_params['database'][$key] = $value;
     }
-        
+
+    /**
+     * Set Database's name
+     *
+     * @param string $databaseName
+     */    
     public function setDatabaseName($databaseName)
     {
         $this->_params['database']['name'] = $databaseName;
     }
 
+    /**
+     * Get Currently database's name
+     *
+     * @throws Diggin_Service_Exception
+     */
     public function getDatabaseName()
     {
         if (isset($this->_params['datanbase']['name'])) {
@@ -175,35 +198,37 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         throw new Diggin_Service_Exception('database name is not set');
     }
 
-    
     /**
      * Handles all requests to a web service
      * 
      * @param string path
      * @param string Prease,using Zend_Http_Client's const
+     * @param array parameter for wedata
      * @return mixed
+     * @throws Diggin_Service_Wedata_Exception
      */
-    protected function makeRequest($path, $method, array $params = null)
+    protected function makeRequest($path, $method, array $params = array())
     {
-        self::$_client = self::getHttpClient();
-        
-        require_once 'Zend/Uri/Http.php';
-        $uri = Zend_Uri_Http::factory(self::API_URL);
+        $client = $this->getHttpClient();
+
+        $client->resetParameters();
+
+        $uri = Zend_Uri::factory(self::API_URL);
         $uri->setPath($path);
 
-        if (!is_null($params)) {            
+        if (is_array($params) && count($params) > 0) {
             if ($method == Zend_Http_Client::GET) {
-                self::$_client->setParameterGet($params);
+                $client->setParameterGet($params);
             } elseif ($method == Zend_Http_Client::POST) {
-                self::$_client->setParameterPost($params);
+                $client->setParameterPost($params);
             } else {
                 $uri->setQuery($params);
             }
         }
 
-        self::$_client->setUri($uri->getUri());
+        $client->setUri($uri->getUri());
         
-        $response = self::$_client->request($method);
+        $response = $client->request($method);
         
         if (!$response->isSuccessful()) {
              /**
@@ -223,11 +248,9 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         }
     }
     
-    public function getDatabases(array $params = null)
+    public function getDatabases()
     {
-        $params = (isset($params)) ? $params : $this->getParams();
-
-        $responseBody = $this->makeRequest(self::PATH_GET_DATABASES, Zend_Http_Client::GET, $params);
+        $responseBody = $this->makeRequest(self::PATH_GET_DATABASES, Zend_Http_Client::GET);
         
         return $this->_decode($responseBody);
     }
@@ -235,11 +258,10 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     public function getDatabase($databaseName = null, $page = null)
     {
         $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
-        $params = $this->getParams();
 
-        if ($page) {
-            $params['page'] = $page;
-        } else if (!isset($params['page'])) {
+        if ($page or ($page = $this->getParam(self::KEY_PAGE))) {
+            $params = array(self::KEY_PAGE => $page);
+        } else {
             require_once 'Diggin/Service/Exception.php';
             throw new Diggin_Service_Exception("currently parameter not set 'page'");
         }
@@ -250,7 +272,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         return $this->_decode($responseBody);
     }
 
-    public function createDatabase(array $params = null)
+    public function createDatabase(array $params = array())
     {
         $params = (isset($params)) ? $params : $this->getParams();
         
@@ -270,8 +292,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         return $return;
     }
     
-    
-    public function udpateDatabase($databaseName = null, array $params = null)
+    public function udpateDatabase(array $params = null, $databaseName = null)
     {
         $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
         $params (isset($params)) ? $params : $this->getParams();
@@ -307,7 +328,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
     }
     
     //////item methods    
-    public function getItems($databaseName = null, $page = null)
+    public function getItems($page = null, $databaseName = null)
     {
         $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
 
@@ -352,7 +373,7 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         return $this->_decode($responseBody);
     }
     
-    public function insertItem($databaseName = null, array $params = null)
+    public function insertItem(array $params = array(), $databaseName = null)
     {
         $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
         
