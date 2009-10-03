@@ -7,7 +7,21 @@
 //http://www.google.com/support/webmasters/bin/answer.py?answer=35237&query=robots.txt&topic=&type=
 //http://web-tan.forum.impressrd.jp/e/2008/02/27/2710
 
-class Diggin_RobotRules
+class Diggin_RobotRules 
+    //implements Zend_Filter_Interface ?
 {
-    static function import();
+//    static function import()
+//    {
+//        return null;
+//    }
+
+	protected $config = array(
+	   'accepter' => 'a'
+	);
+	
+    public function __construct(Zend_Config $config){
+    }
+
+	
+//    public function setAccepter();
 }

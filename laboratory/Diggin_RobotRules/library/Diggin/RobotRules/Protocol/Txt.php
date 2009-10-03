@@ -5,10 +5,6 @@ class Diggin_RobotRules_Protocol_Txt implements Iterator
     private $_line = 0;
     private $_key = 0;
 
-    public function isAllow($url)
-    {
-        
-    }
     
     public function __construct($robotstxt = '')
     {
