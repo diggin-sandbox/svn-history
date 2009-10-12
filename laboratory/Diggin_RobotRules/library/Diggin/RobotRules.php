@@ -19,7 +19,8 @@ class Diggin_RobotRules
 	   'accepter' => 'a'
 	);
 	
-    public function __construct(Zend_Config $config){
+    public function __construct(Zend_Config $config)
+    {
     }
 
 	

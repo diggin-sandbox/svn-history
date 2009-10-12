@@ -1,16 +1,15 @@
 <?php
 class Diggin_RobotRules_Protocol_Txt implements Iterator
 {
-    private $_robotstxt = array();
+    private $_robotstxtstring = '';
+    private $_robotstxt = '';
     private $_line = 0;
     private $_key = 0;
 
     
     public function __construct($robotstxt = '')
     {
-        if ($robotstxt){
-            $this->_toArray($robotstxt);
-        }
+        $this->_robotstxtstring = $robotstxt;
     }
     
     protected function _toArray($robotstxt)
@@ -21,22 +20,34 @@ class Diggin_RobotRules_Protocol_Txt implements Iterator
 
         $robotstxt = explode(PHP_EOL, $robotstxt);
 
-        $this->_robotstxt = $robotstxt;
+        return $robotstxt;
     }
 
+    protected function _getRobotsTxtArray()
+    {
+        if ($this->_robotstxt == '') {
+            $this->_robotstxt = $this->_toArray($this->_robotstxtstring);
+        }
+
+        return $this->_robotstxt;
+    }
 
     public function current()
     {
+        //if $this->_robotstxt[$line] instanceof Diggin_RobotRules_Protocol_Txt_Line)
+        //
+
         //@not_todoif none 'User-Agent: line' is handled as *
         // はgetRecordされたときにおこなう
         $record = new Diggin_RobotRules_Protocol_Txt_Record;
         do {
             //$record[] = Diggin_RobotRules_Protocol_Txt_Line::parse($this->_robotstxt[$this->_line]);
-            $record->append(Diggin_RobotRules_Protocol_Txt_Line::parse($this->_robotstxt[$this->_line]));
-
-            $this->_line++;
-        } while (preg_match('!\w:!', $this->_robotstxt[$this->_line]));
-
+            //$this->_getRobotsTxtArray()->{$this->_line};
+            $ra = $this->_getRobotsTxtArray();
+            $record->append(Diggin_RobotRules_Protocol_Txt_Line::parse($ra[$this->_line]));
+            $this->_line++; 
+        } while (preg_match('!\w:!', $this->_robotstxt[$this->_line])); 
+        
         return $record;
     }
 

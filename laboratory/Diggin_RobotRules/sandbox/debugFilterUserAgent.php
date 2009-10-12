@@ -1,10 +1,9 @@
 <?php
-/** Diggin_RobotRules_Protocol_Txt **/
-require_once 'RobotRules/Protocol/Txt.php';
-/** Diggin_RobotRules_Protocol_Txt_Line **/
-require_once 'RobotRules/Protocol/Txt/Line.php';
-/** Diggin_RobotRules_Protocol_Txt_Record **/
-require_once 'RobotRules/Protocol/Txt/Record.php';
+
+set_include_path(dirname(dirname(__FILE__)) . '/library' . PATH_SEPARATOR . get_include_path());
+require_once 'Zend/Loader/Autoloader.php';
+Zend_Loader_Autoloader::getInstance()->setFallbackAutoloader(true);
+
 
 $robots = <<<EOF
 User-agent: Google
@@ -54,5 +53,5 @@ class Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter extends FilterIterator
 
 foreach (new Diggin_RobotRules_Accept_Txt_UserAgentSearchFilter($protocol, 'Google') as $key => $record)
 {
-    var_dump($record);
+    print_r($record);
 }

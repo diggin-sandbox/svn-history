@@ -1,12 +1,7 @@
 <?php
-/** Diggin_RobotRules_Protocol_Txt **/
-require_once 'RobotRules/Protocol/Txt.php';
-/** Diggin_RobotRules_Protocol_Txt_Line **/
-require_once 'RobotRules/Protocol/Txt/Line.php';
-/** Diggin_RobotRules_Protocol_Txt_Record **/
-require_once 'RobotRules/Protocol/Txt/Record.php';
-
-if (debug_backtrace()) return;
+set_include_path(dirname(dirname(__FILE__)) . '/library' . PATH_SEPARATOR . get_include_path());
+require_once 'Zend/Loader/Autoloader.php';
+Zend_Loader_Autoloader::getInstance()->setFallbackAutoloader(true);
 
 $robots = <<<EOF
 User-agent: Google
@@ -22,20 +17,15 @@ Disallow: /
 
 EOF;
 
-//$robots = "";
 
 
 $robots = new Diggin_RobotRules_Protocol_Txt($robots);
 
-//var_dump($robots);exit;
 
 foreach ($robots as $key => $record)
 {
-    //var_dump($key, $record);
     var_dump($record['user-agent']);
+    //var_dump($record);
 }
-//var_dump($robots->current());
-//var_dump($robots->next());
-//var_dump($robots->current());
 
 
