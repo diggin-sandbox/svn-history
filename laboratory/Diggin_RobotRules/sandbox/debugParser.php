@@ -24,7 +24,8 @@ $robots = new Diggin_RobotRules_Protocol_Txt($robots);
 
 foreach ($robots as $key => $record)
 {
-    var_dump($record['user-agent']);
+    echo 111;
+    var_dump($record);
     //var_dump($record);
 }
 
