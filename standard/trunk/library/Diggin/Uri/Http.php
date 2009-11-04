@@ -50,7 +50,7 @@ class Diggin_Uri_Http
     {
         //using pecl_http
         if (extension_loaded('http')) {
-            static $baseUrl;
+            //static $baseUrl;
             if (array_key_exists('host', parse_url($url))) {
                 return $url;
             } else {
