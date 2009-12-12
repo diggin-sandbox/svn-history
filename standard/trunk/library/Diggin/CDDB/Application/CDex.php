@@ -96,7 +96,7 @@ class Diggin_CDDB_Application_CDex
         
         //if not found
         require_once 'Diggin/CDDB/Application/Exception.php';
-        $errorMsg = sprintf('LocalCDDB Foramt text not found at %s',
+        $errorMsg = sprintf('LocalCDDB Format text not found at %s',
                              $this->getLocalCDDBDirPath());
         throw new Diggin_CDDB_Application_Exception($errorMsg);
     }
