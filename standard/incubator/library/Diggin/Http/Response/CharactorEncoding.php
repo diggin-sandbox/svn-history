@@ -1,11 +1,10 @@
 <?php
-/**
- * Base code is borrowd from HTMLScraping
- * 
- * @see http://www.rcdtokyo.com/etc/htmlscraping/
- */
 
 /**
+ * Original code borrowed from HTMLScraping
+ * 
+ * @see http://www.rcdtokyo.com/etc/htmlscraping/
+ *
  * ---------------------------------------------------------------------
  * HTMLScraping class
  * ---------------------------------------------------------------------
@@ -28,18 +27,19 @@
  * 
  * @category   Diggin
  * @package    Diggin_Http
- * @subpackage Response_CharactorEncoding
+ * @subpackage Response
  */
-
 class Diggin_Http_Response_CharactorEncoding
 {
-
     const DETECT_ORDER = 'ASCII, JIS, UTF-8, EUC-JP, SJIS';
-   
+
+    /**
+     * @var string $_detectOrder
+     */
     private static $_detectOrder = 'ASCII, JIS, UTF-8, EUC-JP, SJIS';
     
     /**
-     * set detect-order (static)
+     * Set detect-order (static)
      *
      * @param string $order
      */
@@ -63,7 +63,7 @@ class Diggin_Http_Response_CharactorEncoding
     }
 
     /**
-     * convert encoding - mbstring or iconv
+     * Convert character encoding - mbstring or iconv
      *
      * @param mixed $vars
      * @param string $encodingfrom
@@ -91,11 +91,11 @@ class Diggin_Http_Response_CharactorEncoding
     }
 
     /**
-     * get Wrapper class accoring param's Response Object
+     * Create Wrapper instance accoring param's Response Object
      *
      * @param Object $response
      * @param string $encodingto
-     * @return Object
+     * @return mixed
      */
     public static function createWrapper($response, $encodingto = 'UTF-8')
     {
@@ -110,7 +110,7 @@ class Diggin_Http_Response_CharactorEncoding
     }
     
     /**
-     * detect response encoding (html)
+     * Detect response's character code name
      *
      * @param string $responseBody
      * @param string $contentType
@@ -146,7 +146,6 @@ class Diggin_Http_Response_CharactorEncoding
             mb_detect_order($detectOrder);//restore
         }
         
-        //return self::_suggestEncoding($encoding);
         return $encoding;
     }
 
