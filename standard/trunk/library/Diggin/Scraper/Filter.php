@@ -10,7 +10,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 class Diggin_Scraper_Filter
@@ -82,6 +82,9 @@ class Diggin_Scraper_Filter
                     $filterds = new Diggin_Scraper_Filter_Iterator(new ArrayIterator($values), $filter, false);
                 } elseif ($prefix === '/' or $prefix === '#') {
                     $filterds = new RegexIterator(new ArrayIterator($values), $filter);
+                } elseif ($prefix === '$') {
+                    $filterds = new RegexIterator(new ArrayIterator($values), $filter);
+                    $filterds->setMode(RegexIterator::GET_MATCH);
                 } else {
                     require_once 'Diggin/Scraper/Filter/Exception.php';
                     throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix'");
