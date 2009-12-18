@@ -1,4 +1,5 @@
 <?php
+return;
 require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Http/Response/CharactorEncoding.php';
