@@ -45,7 +45,7 @@ class Diggin_Scraper_Filter
                     require_once 'Zend/Version.php';
                     try {
                         foreach ($values as $k => $value) {
-                            if (Zend_Version::compareVersion('1.9.0') < 0) {
+                            if (Zend_Version::compareVersion('1.9.0') >= 0) {
                                 $return[$k] = Zend_Filter::get($value, $filter);
                             } else {
                                 $return[$k] = Zend_Filter::filterStatic($value, $filter);
