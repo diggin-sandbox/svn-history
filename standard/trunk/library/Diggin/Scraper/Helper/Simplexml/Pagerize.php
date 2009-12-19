@@ -70,8 +70,8 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         // LIFO
         if (count(self::$_siteinfokeys) !== 0) {
             foreach (array_reverse(self::$_siteinfokeys) as $key) {
-                $siteinfo = self::getSiteinfo($key); 
-                if ($next = $this->getNextLinkFromSiteinfo($siteinfo, $baseurl)) {
+                $siteinfos = self::getSiteinfo($key); 
+                if ($next = $this->getNextLinkFromSiteinfo($siteinfos, $baseurl)) {
                     $nextLink = $next;
                     break;
                 }
