@@ -1,14 +1,11 @@
 #! /usr/bin/php
 <?php
-$librarypath = '/home/kazusuke/dev/workspace/trunk/library';
+$librarypath = '/home/kazusuke/dev/workspace/Diggin/standard/trunk/library';
 
 if(realpath($librarypath) === false) throw new Exception('invalid path');
 
-require_once 'Zend/Console/Getopt.php';
-$getopt = new Zend_Console_Getopt(array('class|c=s' => 'class name'));
-
-$class = $getopt->c;
-if($class == "") throw new Exception("invalid option, must use -c");
+$class = $argv[1];
+if(!isset($class)) throw new Exception("invalid option, must use -c");
 chdir($librarypath);
 exec("phpunit --skeleton $class");
 
