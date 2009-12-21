@@ -1,21 +1,19 @@
 <?php
+require_once 'Diggin/Scraper/Process.php';
 
-class Fil extends FilterIterator
+class Diggin_Scraper_Strategy_Callback extends ArrayIterator
 {
-    public function accept()
-    {
-        if ($this->current() == 2) {
-            return false;
-        }
-        return true;
-    }
-}
+    private $_process;
+    private $_strategy;
 
-class Diggin_Scraper_Strategy_Callback extends IteratorIterator
-{
-    public function __construct(array $values)
+    public function __construct(array $values, 
+                                Diggin_Scraper_Process $process, 
+                                Diggin_Scraper_Strategy_Abstract $strategy = null)
     {
-        return parent::__construct(new ArrayIterator($values));
+        $this->_process = $process;
+        $this->_strategy = $strategy;
+
+        return parent::__construct($values);
     }
 
     public function current()
@@ -24,15 +22,9 @@ class Diggin_Scraper_Strategy_Callback extends IteratorIterator
         return call_user_func(array($this, 'testCall'), parent::current());
     }
 
-    public function setCallback(Diggin_Scraper_Process $process, 
-                                Diggin_Scraper_Strategy_Abstract $strategy)
+    public function getProcess()
     {
-        $type = $process->getType();
-        //$type = preg_replace('/^@/', 'at_', $type);
-
-        //$this->_type = $type;
-        $this->_process = $process;
-        $this->_strategy = $strategy;
+        return $this->_process;
     }
 
     public function testCall($v)
@@ -41,7 +33,7 @@ class Diggin_Scraper_Strategy_Callback extends IteratorIterator
     }
 }
 
-class Diggin_Scraper_Strategy_CallbackIterator implements IteratorAggregate
+class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
 {
     private $_iterator;
 
@@ -49,27 +41,92 @@ class Diggin_Scraper_Strategy_CallbackIterator implements IteratorAggregate
     {
         $this->_iterator = $callback;
 
-        //init filters
-        //if ($filters = $callback->getProcess()->getFilters()) {
-        //  $this->unshiftIterator($filters);
-        //}
+        return parent::__construct($this->_iterator);
     }
 
-    public function getIterator()
+    public function getInnerIterator()
     {
+        if ($filters = $callback->getProcess()->getFilters()) {
+            $this->setFilters($filters);
+        }
+
         return $this->_iterator;
     }
-
-    public function unshiftIterator($iteratorName)
+    
+    public function setFilters($filters)
     {
-        $this->_iterator = new $iteratorName($this->_iterator);
+        foreach ($filters as $filter) {
+            $this->_iterator = $this->_getFilter($filter);
+        }
+    }
+
+    protected function _getFilter($filter)
+    {
+        if ( ($filter instanceof Zend_Filter_Interface) or 
+             (preg_match('/^[0-9a-zA-Z\0]/', $filter)) ) {
+            $iterator = new Diggin_Scraper_Filter($this->_iterator);
+            $iterator->setFilter($filter);
+        } else {
+            $prefix = $filter[0];
+
+            if ($prefix = '/') {
+                $iterator = new RegexIterator($this->_iterator, $filter);
+            } elseif ($prefix = '$') {
+                $iterator = new RegexIterator($this->_iterator, $filter);
+                $iterator->setMode(RegexIterator::GET_MATCH);
+            }
+        }
+
+        return $iterator;
+    }
+
+}
+
+class Diggin_Scraper_Filter extends IteratorIterator
+{
+    private $_filter = array();
+
+    public function setFilter($filter)
+    {
+        if (preg_match('/^[0-9a-zA-Z\0]/', $filter)) {
+            //user-func or lambda
+            if (function_exists($filter)) {
+                $this->_filter = $filter;
+            } else {
+                if (!strstr($filter, '_')) {
+                    $filter = "Zend_Filter_$filter";
+                }
+                require_once 'Zend/Loader.php';
+                try {
+                    Zend_Loader::loadClass($filter);
+                } catch (Zend_Exception $e) {
+                    require_once 'Diggin/Scraper/Filter/Exception.php';
+                    throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+                }
+                $filter = new $filter();
+                $this->_filter['filter'] = $filter;
+            }
+        }
+    }
+
+    public function current()
+    {
+        return call_user_func(is_array($this->_filter) ? 
+                                array(current($this->_filter), key($this->_filter)) : 
+                                $this->_filter, 
+                              parent::current());
     }
 }
 
-$c = new Diggin_Scraper_Strategy_Callback(array(1,2,3));
-//$c->setCallback();
+class Fil extends FilterIterator { public function accept() {return ($this->current() == 2 )?:false;}} 
+function fil(){return 1;}
+$process = new Diggin_Scraper_Process;
+$process->setFilters(array('$(a+).*$'));
+
+
+$c = new Diggin_Scraper_Strategy_Callback(array('1a','aaa2', '3', 'sss', '1a'), $process);
 $i = new Diggin_Scraper_Strategy_CallbackIterator($c);
-$i->unshiftIterator('Fil');
+//$i = new LimitIterator($i, 0, 2);
 var_dump($i);
 
 foreach ($i as $v) {
