@@ -1,37 +1,21 @@
 <?php
-require_once 'Diggin/Scraper/Process.php';
 
-class Diggin_Scraper_Strategy_Callback extends ArrayIterator
-{
-    private $_process;
-    private $_strategy;
+/**
+ * Diggin - Simplicity PHP Library
+ * 
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license.
+ * It is also available through the world-wide-web at this URL:
+ * http://diggin.musicrider.com/LICENSE
+ * 
+ * @category   Diggin
+ * @package    Diggin_Scraper
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @license    http://diggin.musicrider.com/LICENSE     New BSD License
+ */
 
-    public function __construct(array $values, 
-                                Diggin_Scraper_Process $process, 
-                                Diggin_Scraper_Strategy_Abstract $strategy = null)
-    {
-        $this->_process = $process;
-        $this->_strategy = $strategy;
-
-        return parent::__construct($values);
-    }
-
-    public function current()
-    {
-        //return call_user_func(array($this->_strategy, $this->_type), parent::current());
-        return call_user_func(array($this, 'testCall'), parent::current());
-    }
-
-    public function getProcess()
-    {
-        return $this->_process;
-    }
-
-    public function testCall($v)
-    {
-        return $v.'test';
-    }
-}
+require_once 'Diggin/Scraper/Filter.php';
 
 class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
 {
@@ -40,6 +24,7 @@ class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
     public function __construct(Diggin_Scraper_Strategy_Callback $callback)
     {
         $this->_iterator = $callback;
+
         if ($filters = $callback->getProcess()->getFilters()) {
             $this->setFilters($filters);
         }
@@ -47,10 +32,12 @@ class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
         return parent::__construct($this->_iterator);
     }
 
+    /*
     public function getInnerIterator()
     {
         return $this->_iterator;
     }
+    */
     
     public function setFilters($filters)
     {
@@ -68,9 +55,9 @@ class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
         } else {
             $prefix = $filter[0];
 
-            if ($prefix = '/') {
+            if ($prefix === '/' or $prefix === '#') {
                 $iterator = new RegexIterator($this->_iterator, $filter);
-            } elseif ($prefix = '$') {
+            } elseif ($prefix === '$') {
                 $iterator = new RegexIterator($this->_iterator, $filter);
                 $iterator->setMode(RegexIterator::GET_MATCH);
             }
@@ -79,55 +66,4 @@ class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
         return $iterator;
     }
 
-}
-
-class Diggin_Scraper_Filter extends IteratorIterator
-{
-    private $_filter = array();
-
-    public function setFilter($filter)
-    {
-        //user-func or lambda
-        if (is_callable($filter)) {
-            $this->_filter = $filter;
-        } else {
-            if (!strstr($filter, '_')) {
-                $filter = "Zend_Filter_$filter";
-            }
-
-            require_once 'Zend/Loader.php';
-            try {
-                Zend_Loader::loadClass($filter);
-                $filter = new $filter();
-            } catch (Zend_Exception $e) {
-                require_once 'Diggin/Scraper/Filter/Exception.php';
-                throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
-            }
-
-            $this->_filter['filter'] = $filter;
-        }
-    }
-
-    public function current()
-    {
-        return call_user_func(is_array($this->_filter) ? 
-                                array(current($this->_filter), key($this->_filter)) : 
-                                $this->_filter, 
-                              parent::current());
-    }
-}
-
-function fil($v){return $v.'a';}
-$process = new Diggin_Scraper_Process;
-$process->setFilters(array('/(a+).*/', 'fil', 'Digits'));
-//$process->setFilters(array('fil', '$[0-9]$'));
-
-
-$c = new Diggin_Scraper_Strategy_Callback(array('1a','aaa2', '3', 'sss', '1a'), $process);
-$i = new Diggin_Scraper_Strategy_CallbackIterator($c);
-$i = new LimitIterator($i, 0, 2);
-var_dump($i);
-
-foreach ($i as $v) {
-    var_dump($v);
 }

@@ -21,6 +21,7 @@ $path = explode(PATH_SEPARATOR, get_include_path());
 $digginRoot = dirname(dirname(dirname(__FILE__)));
 array_push($path, "$digginRoot/library");
 array_push($path, "$digginRoot/tests");
+krsort($path);
 set_include_path(implode(PATH_SEPARATOR, $path));
 
 //var_dump($path);

@@ -36,6 +36,11 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
     const CACHE_TAG_PREFIX = 'Diggin_Scraper_Helper_Simplexml_Pagerize_';
 
     /**
+     * @var string
+     */
+    //private static $_cacheTagPrefix = 'Diggin_Scraper_Helper_Simplexml_Pagerize_';
+
+    /**
      * @var Zend_Cache_Core
      */
     private static $_cache;
@@ -70,8 +75,8 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         // LIFO
         if (count(self::$_siteinfokeys) !== 0) {
             foreach (array_reverse(self::$_siteinfokeys) as $key) {
-                $siteinfo = $this->getSiteinfo($key); 
-                if ($next = $this->getNextLinkFromSiteinfo($siteinfo, $baseurl)) {
+                $siteinfos = self::getSiteinfo($key); 
+                if ($next = $this->getNextLinkFromSiteinfo($siteinfos, $baseurl)) {
                     $nextLink = $next;
                     break;
                 }
@@ -101,22 +106,6 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return null;
     }
 
-    public function getNextLinkFromWedata()
-    {
-        require_once 'Diggin/Service/Wedata.php';
-
-        if (self::$_cache) {
-            if(!$items = self::$_cache->load(self::CACHE_TAG_PREFIX.'wedata_items')) {
-                $items = Diggin_Service_Wedata::getItems('AutoPagerize');
-                self::$_cache->save($items, self::CACHE_TAG_PREFIX.'wedata_items');
-            }
-        } else {
-            $items = Diggin_Service_Wedata::getItems('AutoPagerize');
-        }
-    
-        return $this->getNextlinkFromSiteInfo($items, $this->getBaseUrl());        
-    }
-
     /**
      * Get next url from siteinfo
      *
@@ -129,6 +118,10 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         foreach ($items as $item) {
             //hAtom 対策
             if ('^https?://.' != $item['url'] && (preg_match('>'.$item['url'].'>', $url) == 1)) {
+                if (preg_match('/^id\(/', $item['nextLink'])) {
+                    $item['nextLink'] = preg_replace("/^id\(((?:'|\")(\w*)(?:'|\"))\)/", '//*[@id=$1]', $item['nextLink']);
+                }
+
                 $nextLinks = $this->getResource()->xpath($item['nextLink']);
                 if (count($nextLinks) !== 0) {
                     return $nextLinks[0][@href];
@@ -139,18 +132,38 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return null;
     }
 
-    public static function appendSiteinfo($prefix, $siteinfo)
+    public static function appendSiteinfo($suffix, $siteinfo)
     {
-        $key = self::CACHE_TAG_PREFIX.$prefix;
+        $key = self::CACHE_TAG_PREFIX.$suffix;
 
-        self::$_cache->save($siteinfo, $key);
+        if (array_key_exists($key, self::$_siteinfokeys)) {
+            require_once 'Diggin/Scraper/Helper/Simplexml/Exception.php';
+            throw new Diggin_Scraper_Helper_Simplexml_Exception("$key is already used.");
+        }
+
+        if (!self::getSiteinfo($key)) {
+            self::$_cache->save($siteinfo, $key);
+        }
 
         array_push(self::$_siteinfokeys, $key);
     }
 
-    public function getSiteinfo($key)
+    protected static function getSiteinfo($key)
     {
         return self::$_cache->load($key);
     }
+
+    public function hasSiteinfo($suffix)
+    {
+        $ids = self::$_cache->getIds();
+        //array_search()
+    }
+
+    public static function loadSiteinfo($suffix)
+    {
+        return self::$_cache->load(self::CACHE_TAG_PREFIX.$suffix);
+    }
+    
+    
 
 }

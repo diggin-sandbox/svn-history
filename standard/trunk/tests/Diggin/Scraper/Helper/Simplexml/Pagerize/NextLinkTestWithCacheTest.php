@@ -1,5 +1,4 @@
 <?php
-
 require_once dirname(__FILE__).'/../../../../TestHelper.php';
 require_once 'Diggin/Scraper/Helper/Simplexml/Pagerize.php';
 require_once 'Diggin/Service/Wedata.php';
@@ -24,7 +23,9 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkWithCacheTest extends PHP
         Diggin_Scraper_Helper_Simplexml_Pagerize::setCache($cache = $this->getCacheCore(dirname(__FILE__).'/_files/'));
 
         if (!$siteinfo = $cache->load(Diggin_Scraper_Helper_Simplexml_Pagerize::CACHE_TAG_PREFIX.'wedata')) {
-            $siteinfo = Diggin_Service_Wedata::getItems('AutoPagerize');
+            $wedata = new Diggin_Service_Wedata();
+            $wedata->setDatabaseName('AutoPagerize');
+            $siteinfo = $wedata->getItems();
         }
 
         Diggin_Scraper_Helper_Simplexml_Pagerize::appendSiteInfo('wedata', new SiteInfo($siteinfo));

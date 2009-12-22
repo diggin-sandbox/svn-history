@@ -15,6 +15,9 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
+/** Zend_Http_Client */
+require_once 'Zend/Http/Client.php';
+
 /**
  * Diggin_Service_Wedata
  *
@@ -85,7 +88,6 @@ class Diggin_Service_Wedata
     public function getHttpClient()
     {
         if (!$this->_httpClient instanceof Zend_Http_Client) {
-            require_once 'Zend/Http/Client.php';
             $this->_httpClient = new Zend_Http_Client();
         }
 
@@ -190,7 +192,7 @@ class Diggin_Service_Wedata
      */
     public function getDatabaseName()
     {
-        if (isset($this->_params['datanbase']['name'])) {
+        if (isset($this->_params['database']['name'])) {
             return $this->_params['database']['name'];
         }
 
@@ -334,7 +336,7 @@ class Diggin_Service_Wedata
 
         if (isset($page)) {
             $params = array(self::KEY_PAGE => $paget); 
-        } else if (!$this->getParam[self::KEY_PAGE]) {
+        } else if (!$this->getParam(self::KEY_PAGE)) {
             $params = array();
         } else {
             $params = array(self::KEY_PAGE => $this->getParam(self::KEY_PAGE));

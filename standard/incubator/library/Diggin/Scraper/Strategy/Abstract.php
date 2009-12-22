@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diggin - Simplicity PHP Library
  * 
@@ -13,6 +14,10 @@
  * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
+/** Diggin_Scraper_Strategy_Callback */
+require_once 'Diggin/Scraper/Strategy/Callback.php';
+/** Diggin_Scraper_Strategy_CallbackIterator */
+require_once 'Diggin/Scraper/Strategy/CallbackIterator.php';
 
 abstract class Diggin_Scraper_Strategy_Abstract
 {
@@ -23,14 +28,19 @@ abstract class Diggin_Scraper_Strategy_Abstract
      */
     private $_response;
     
-    private $adaptedResource;
-    
     /**
      * Response Adapter
      *
      * @var Diggin_Scraper_Adapter_Interface
      */
     protected $_adapter;
+
+    /**
+     * Adapted Resouce
+     *
+     * @var Diggin_Scraper_Adapter_Interface
+     */
+    private $_adaptedResource;
     
     protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
     
@@ -53,10 +63,10 @@ abstract class Diggin_Scraper_Strategy_Abstract
      */
     public function readResource()
     {
-        if (!$this->adaptedResource) {
-            $this->adaptedResource = $this->getAdapter()->readData($this->getResponse());
+        if (!$this->_adaptedResource) {
+            $this->_adaptedResource = $this->getAdapter()->readData($this->getResponse());
         }
-        return $this->adaptedResource;
+        return $this->_adaptedResource;
     }
 
     
@@ -65,7 +75,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         return $this->_response;
     }
 
-    protected abstract function getValue($values, $process);
+    protected abstract function getEvaluator();
     
     protected abstract function extract($values, $process);
 
@@ -101,28 +111,37 @@ abstract class Diggin_Scraper_Strategy_Abstract
                 foreach ($process->getType() as $proc) {
                     //@todo 値がとれなかったとき、格納しないかnullかどうかはconfigでやるべきかな
                     if (false !== $getval = $this->getValues($val, $proc)) {
+                        if (($process->getArrayFlag() === false) && $count === 0) {
+                            $returns[$proc->getName()] = $getval; break 2;
+                        }
                         $returns[$count][trim($proc->getName())] = $getval;
                     }
                 }
  
+                /*
                 if (($process->getArrayFlag() === false) && $count === 0) {
                     if(is_array($returns)) {
                         $returns = current($returns); break;
                     }
                 }
+                */
             }
  
             return $returns;
         }
 
-        //$callbackIterator = new Diggin_Scraper_Strategy_CallbackIterator($values);
-        //$callbackIterator->setCallback($process, $this);
+        $callback = new Diggin_Scraper_Strategy_Callback($values, $process, $this->getEvaluator());
+        $iterator = new Diggin_Scraper_Strategy_CallbackIterator($callback);
 
+        if ($process->getArrayFlag() === false) {
+            $iterator = new LimitIterator($iterator, 0, 1);
+        }
 
-        //foreach ()
+        //if
+        $values = iterator_to_array($iterator); 
+        if ($values === array()) return false;
 
- 
-        
+        /*
         $values = $this->getValue($values, $process);
  
         if ($values === array()) return false;
@@ -131,6 +150,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
             require_once 'Diggin/Scraper/Filter.php';
             $values = Diggin_Scraper_Filter::run($values, $process->getFilters());
         }
+        */
  
  
         if ($process->getArrayFlag() === false) {
