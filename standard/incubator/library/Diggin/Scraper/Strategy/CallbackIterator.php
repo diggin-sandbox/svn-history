@@ -19,48 +19,19 @@ require_once 'Diggin/Scraper/Filter.php';
 
 class Diggin_Scraper_Strategy_CallbackIterator extends IteratorIterator
 {
-    private $_iterator;
-
     public function __construct(Diggin_Scraper_Strategy_Callback $callback)
     {
-        $this->_iterator = $callback;
-
         if ($filters = $callback->getProcess()->getFilters()) {
-            $this->setFilters($filters);
+            $callback = $this->getFilters($callback, $filters);
         }
 
-        return parent::__construct($this->_iterator);
+        return parent::__construct($callback);
     }
-
-    /*
-    public function getInnerIterator()
-    {
-        return $this->_iterator;
-    }
-    */
     
-    public function setFilters($filters)
+    protected function getFilters($iterator, $filters)
     {
         foreach ($filters as $filter) {
-            $this->_iterator = $this->_getFilter($filter);
-        }
-    }
-
-    protected function _getFilter($filter)
-    {
-        if ( ($filter instanceof Zend_Filter_Interface) or 
-             (preg_match('/^[0-9a-zA-Z\0]/', $filter)) ) {
-            $iterator = new Diggin_Scraper_Filter($this->_iterator);
-            $iterator->setFilter($filter);
-        } else {
-            $prefix = $filter[0];
-
-            if ($prefix === '/' or $prefix === '#') {
-                $iterator = new RegexIterator($this->_iterator, $filter);
-            } elseif ($prefix === '$') {
-                $iterator = new RegexIterator($this->_iterator, $filter);
-                $iterator->setMode(RegexIterator::GET_MATCH);
-            }
+            $iterator = Diggin_Scraper_Filter::factory($iterator, $filter);
         }
 
         return $iterator;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diggin - Simplicity PHP Library
  * 
@@ -10,7 +11,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
@@ -22,16 +23,6 @@ require_once 'Diggin/Scraper/Strategy/Abstract.php';
  * @see Zend_Dom_Query_Css2Xpath
  */
 require_once 'Zend/Dom/Query/Css2Xpath.php';
-
-/**
- * @see Diggin_Uri_Http
- */
-require_once 'Diggin/Uri/Http.php';
-
-/**
- * @see Diggin_Scraper_Helper_HeadBase
- */
-require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {

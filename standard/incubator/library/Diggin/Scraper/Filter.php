@@ -19,23 +19,49 @@ class Diggin_Scraper_Filter extends IteratorIterator
 {
     private $_filter = array();
 
+    public static function factory(Iterator $iterator, $filter)
+    {
+        if ( ($filter instanceof Zend_Filter_Interface) or 
+             (preg_match('/^[0-9a-zA-Z\0]/', $filter)) ) {
+            $iterator = new self($iterator);
+            $iterator->setFilter($filter);
+        } else {
+            $prefix = $filter[0];
+
+            if ($prefix === '/' or $prefix === '#') {
+                $iterator = new RegexIterator($iterator, $filter);
+            } elseif ($prefix === '$') {
+                $iterator = new RegexIterator($iterator, $filter);
+                $iterator->setMode(RegexIterator::GET_MATCH);
+            }
+        }
+
+        return $iterator;
+    }
+
     public function setFilter($filter)
     {
         //user-func or lambda
         if (is_callable($filter)) {
             $this->_filter = $filter;
         } else {
-            if (!strstr($filter, '_')) {
-                $filter = "Zend_Filter_$filter";
-            }
+            if (is_string($filter)) {
+                if (!strstr($filter, '_')) {
+                    $filter = "Zend_Filter_$filter";
+                }
 
-            require_once 'Zend/Loader.php';
-            try {
-                Zend_Loader::loadClass($filter);
-                $filter = new $filter();
-            } catch (Zend_Exception $e) {
+                require_once 'Zend/Loader.php';
+                try {
+                    Zend_Loader::loadClass($filter);
+                    $filter = new $filter();
+                } catch (Zend_Exception $e) {
+                    require_once 'Diggin/Scraper/Filter/Exception.php';
+                    throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+                }
+            }
+            if (!$filter instanceof Zend_Filter_Interface) {
                 require_once 'Diggin/Scraper/Filter/Exception.php';
-                throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+                throw new Diggin_Scraper_Filter_Exception("Unable to load filter: {$e->getMessage()}");
             }
 
             $this->_filter['filter'] = $filter;

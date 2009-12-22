@@ -19,9 +19,14 @@
 /** Diggin_Scraper_Evaluator_Abstract */
 require_once 'Diggin/Scraper/Evaluator/Abstract.php';
 
+/**
+ * @see Diggin_Uri_Http
+ */
+require_once 'Diggin/Uri/Http.php';
+
 class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstract
 {
-    private $_baseUrl;
+    private $_baseUri;
 
     public function raw($simplexml)
     {
@@ -65,17 +70,19 @@ class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstra
             $value = $args[0];            
             
             if ($method== 'at_href' OR $method == 'at_src') {
-                if (!$this->_baseUrl) {
+                if (!$this->_baseUri) {
                     require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
                     $headBase = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($value);
                     $headBase->setOption(array('baseUrl' => $this->getConfig('baseUrl')));
-                    $this->_baseUrl = $headBase->getBaseUrl();
+                    require_once 'Diggin/Uri/Http.php';
+                    $this->_baseUri = new Diggin_Uri_Http;
+                    $this->_baseUri->setBaseUri($headBase->getBaseUrl());
                 }
                 $attribute = $value[substr($method, 3)];
                 if ($attribute === null) {
                     $value = false;
                 } else {
-                    $value = Diggin_Uri_Http::getAbsoluteUrl((string)$attribute, $this->_baseUrl);
+                    $value = $this->_baseUri->getAbsoluteUrl((string)$attribute);
                 }
             } else {
                 $attribute = $value[substr($method, 3)];
