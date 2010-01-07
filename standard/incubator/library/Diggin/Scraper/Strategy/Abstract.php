@@ -11,7 +11,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 /** Diggin_Scraper_Strategy_Callback */
@@ -99,62 +99,47 @@ abstract class Diggin_Scraper_Strategy_Abstract
             try {
                 $values = $this->extract($context, $process);
             } catch (Diggin_Scraper_Strategy_Exception $e) {
-                //@todo debug::dump('ERROR') vs E_USER_NOTICE vs $_error[]
                 return false;
             }
         }
- 
+
        if ($process->getType() instanceof Diggin_Scraper_Process_Aggregate) {
             $returns = false;
             foreach ($values as $count => $val) {
-
                 foreach ($process->getType() as $proc) {
-                    //@todo 値がとれなかったとき、格納しないかnullかどうかはconfigでやるべきかな
                     if (false !== $getval = $this->getValues($val, $proc)) {
-                        if (($process->getArrayFlag() === false) && $count === 0) {
-                            $returns[$proc->getName()] = $getval; break 2;
-                        }
                         $returns[$count][trim($proc->getName())] = $getval;
                     }
                 }
- 
-                /*
+
                 if (($process->getArrayFlag() === false) && $count === 0) {
                     if(is_array($returns)) {
                         $returns = current($returns); break;
                     }
                 }
-                */
             }
- 
+
             return $returns;
         }
 
         $callback = new Diggin_Scraper_Strategy_Callback($values, $process, $this->getEvaluator());
-        $iterator = new Diggin_Scraper_Strategy_CallbackIterator($callback);
+        $values = new Diggin_Scraper_Strategy_CallbackIterator($callback);
 
         if ($process->getArrayFlag() === false) {
-            $iterator = new LimitIterator($iterator, 0, 1);
+            $values = new LimitIterator($values, 0, 1);
         }
 
-        //if
-        $values = iterator_to_array($iterator); 
-        if ($values === array()) return false;
+        $iterator_to_array = true;
+        //$iterator_to_array = false;
 
-        /*
-        $values = $this->getValue($values, $process);
+        //$values = iterator_to_array($iterator); 
+        //if ($values === array()) return false;
  
-        if ($values === array()) return false;
- 
-        if ($process->getFilters()) {
-            require_once 'Diggin/Scraper/Filter.php';
-            $values = Diggin_Scraper_Filter::run($values, $process->getFilters());
-        }
-        */
- 
- 
-        if ($process->getArrayFlag() === false) {
-            $values = current($values);
+        if ($iterator_to_array === true) {
+            $values = iterator_to_array($values); 
+            if ($process->getArrayFlag() == false) {
+                return current($values);
+            }
         }
         
  
