@@ -15,7 +15,7 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-class Diggin_Scraper_Strategy_Callback extends FilterIterator
+class Diggin_Scraper_Strategy_Callback extends ArrayIterator
 {
     /**
      * Process
@@ -45,7 +45,7 @@ class Diggin_Scraper_Strategy_Callback extends FilterIterator
         $this->_process = $process;
         $this->_evaluator = $evaluator;
 
-        return parent::__construct(new ArrayIterator($values));
+        return parent::__construct($values);
     }
 
     /**
@@ -57,16 +57,6 @@ class Diggin_Scraper_Strategy_Callback extends FilterIterator
     public function current()
     {
         return call_user_func(array($this->_evaluator, $this->_process->getType()), parent::current());
-    }
-
-    /**
-     * inheritate FilterIterator
-     * 
-     * @return boolean
-     */
-    public function accept()
-    {
-        return ($this->current() === false) ? false : true;
     }
 
     /**

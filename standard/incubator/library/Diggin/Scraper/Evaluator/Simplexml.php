@@ -19,24 +19,30 @@
 /** Diggin_Scraper_Evaluator_Abstract */
 require_once 'Diggin/Scraper/Evaluator/Abstract.php';
 
-/**
- * @see Diggin_Uri_Http
- */
-require_once 'Diggin/Uri/Http.php';
-
 class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstract
 {
-    private $_baseUri;
-
+    /**
+     * Get 'RAW' 
+     *
+     * @param SimpleXMLElement
+     * @return SimpleXMLElement
+     */
     public function raw($simplexml)
     {
         return $simplexml;
     }
 
+    /**
+     * Get 'ASXML' via.SimpleXMLElement's asXML()
+     *
+     * @param SimpleXMLElement
+     * @return string
+     */
     public function asxml($simplexml)
     {
         return $simplexml->asXML();
     }
+
 
     public function text($simplexml)
     {
@@ -55,8 +61,24 @@ class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstra
     }
     
     /**
+     * Get "HTML"-type
+     * (Similar - Web::Scraper's "HTML")
+     *
+     * @param SimpleXMLElement
+     * @return string
+     */
+    public function html($simplexml)
+    {
+        $value = $simplexml->asXML();
+        $value = str_replace(array(chr(10), chr(13)), '', $value);
+
+        return preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
+    }
+    
+    /**
      * decode alias
      *
+     * @param SimpleXMLElement
      * @return string
      */ 
     public function disp($simplexml)
@@ -80,14 +102,14 @@ class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstra
                 }
                 $attribute = $value[substr($method, 3)];
                 if ($attribute === null) {
-                    $value = false;
+                    $value = null;
                 } else {
-                    $value = $this->_baseUri->getAbsoluteUrl((string)$attribute);
+                    $value = $this->_baseUri->getAbsoluteUrl($attribute);
                 }
             } else {
                 $attribute = $value[substr($method, 3)];
                 if ($attribute === null) {
-                    $value = false;
+                    $value = null;
                 } else {
                     $value = (string)$attribute;
                 }

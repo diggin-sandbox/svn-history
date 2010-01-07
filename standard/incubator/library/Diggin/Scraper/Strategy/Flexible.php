@@ -27,7 +27,6 @@ require_once 'Zend/Dom/Query/Css2Xpath.php';
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
     protected $_evaluator;
-    protected $_baseUrl = null;
     
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {

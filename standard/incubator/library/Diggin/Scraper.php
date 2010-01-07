@@ -31,10 +31,6 @@ require_once 'Zend/Loader/PluginLoader.php';
 class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 {
 
-    const NOTHINGPOINT_THROWSEXPRESSION = 0;
-    const NOTHINGPOINT_ASNULL = 1;
-    const NOTHINGPOINT_MERGEBLANK =2;
-
     /**
      * scraping results
      * 
@@ -52,10 +48,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     /**
      * exporessionでサーチ対象のものが無かった場合の
      * 挙動を決定する。
-     * strategと同様に、同一ブロック(ループ)内でのインスタンス複数
-     * 状態での設定を優先させるためstatic
      */
-    protected static $handleNothingExpression = 0;
+    protected $_throwTargetExceptionsOn = true;
 
     /**
      * strategy name to use for changing strategy
@@ -129,6 +123,11 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         $this->_helperLoader = 
             new Zend_Loader_PluginLoader(array(
             'Diggin_Scraper_Helper_Simplexml' => 'Diggin/Scraper/Helper/Simplexml'));
+    }
+
+    public function throwTargetExceptionsOn($flag)
+    {
+        $this->_throwTargetExceptionsOn = (boolean) $flag;
     }
 
     /**
@@ -321,7 +320,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
                 $values = $this->_strategy->getValues($context, $process);
                 $this->_results[$process->getName()] = $values;
             } catch (Diggin_Scraper_Exception $dse) {
-                if (self::$handleNothingExpression === self::NOTHINGPOINT_THROWSEXPRESSION) {
+                if ($this->_throwTargetExceptionsOn === true) {
                     throw $dse;
                 }
             }

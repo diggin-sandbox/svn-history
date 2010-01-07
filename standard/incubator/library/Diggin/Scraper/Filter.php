@@ -17,12 +17,15 @@
 
 class Diggin_Scraper_Filter extends IteratorIterator
 {
+    const REGISTRY_KEY = 'Diggin_Scraper_Filter';
+
     private $_filter = array();
 
     public static function factory(Iterator $iterator, $filter)
     {
         if ( ($filter instanceof Zend_Filter_Interface) or 
-             (preg_match('/^[0-9a-zA-Z\0]/', $filter)) ) {
+             (preg_match('/^[0-9a-zA-Z\0]/', $filter) or 
+              is_callable($filter)) ) {
             $iterator = new self($iterator);
             $iterator->setFilter($filter);
         } else {
@@ -33,6 +36,9 @@ class Diggin_Scraper_Filter extends IteratorIterator
             } elseif ($prefix === '$') {
                 $iterator = new RegexIterator($iterator, $filter);
                 $iterator->setMode(RegexIterator::GET_MATCH);
+            } else {
+                require_once 'Diggin/Scraper/Filter/Exception.php';
+                throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
             }
         }
 
@@ -46,6 +52,8 @@ class Diggin_Scraper_Filter extends IteratorIterator
             $this->_filter = $filter;
         } else {
             if (is_string($filter)) {
+                //if (Zend_Registry::isRegistered(self::REGISTRY_KEY)) {
+                //}
                 if (!strstr($filter, '_')) {
                     $filter = "Zend_Filter_$filter";
                 }
