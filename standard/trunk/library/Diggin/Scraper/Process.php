@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diggin - Simplicity PHP Library
  *
@@ -13,6 +14,7 @@
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
+
 class Diggin_Scraper_Process
 {
     private $_expression;
@@ -90,7 +92,7 @@ class Diggin_Scraper_Process
      */
     public function setName($name)
     {
-        $this->_name = $name;
+        $this->_name = strtolower($name);
     }
 
     /**
@@ -130,6 +132,9 @@ class Diggin_Scraper_Process
      */
     public function setType($type)
     {
+        if (is_string($type) && $type[0] === '@') {
+            $type = 'at_'.substr($type, 1);
+        }
         $this->_type = $type;
     }
 
