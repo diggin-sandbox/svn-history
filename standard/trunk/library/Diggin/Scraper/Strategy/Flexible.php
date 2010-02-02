@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diggin - Simplicity PHP Library
  * 
@@ -10,7 +11,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
@@ -23,29 +24,9 @@ require_once 'Diggin/Scraper/Strategy/Abstract.php';
  */
 require_once 'Zend/Dom/Query/Css2Xpath.php';
 
-/**
- * @see Diggin_Uri_Http
- */
-require_once 'Diggin/Uri/Http.php';
-
-/**
- * @see Diggin_Scraper_Helper_HeadBase
- */
-require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
-
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
-    protected $_baseUrl = null;
-    
-    public function setBaseUrl($url)
-    {
-        $this->_baseUrl = $url;
-    }
-
-    public function getBaseUrl()
-    {
-        return $this->_baseUrl;
-    }
+    protected $_evaluator;
     
     public function setAdapter(Diggin_Scraper_Adapter_Interface $adapter)
     {
@@ -59,7 +40,6 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
         $this->_adapter = $adapter;
     }
 
-
     public function getAdapter()
     {
         if (!isset($this->_adapter)) {
@@ -72,12 +52,11 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 
         return $this->_adapter;
     }
-
     
     /**
-     * Extarcting values according process
+     * Extarct values according process
      *
-     * @param SimpleXMLElement $values
+     * @param Diggin_Scraper_Wrapper_SimpleXMLElement $values
      * @param Diggin_Scraper_Process $process
      * @return array
      * @throws Diggin_Scraper_Strategy_Exception
@@ -115,103 +94,18 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
     }
 
     /**
-     * Getting Value
-     * 'RAW'----
-     *   just as SimpleXMlElement
-     * 'TEXT' ----  
-     *  step1: SimpleXMlElement->asXML
-     *  step2: convert special html entitiy
-     *  Htmlscaraping is "Replace every '&' with '&amp;'"
-     *  @see Diggin_Scraper_Adapter_Htmlscraping
-     *  @see http://www.rcdtokyo.com/etc/htmlscraping/#NOTE_ENTITY
-     *  step3: strip_tags
-     *  step4: triming (without space)
-     *   chr(9)  Tab
-     *   chr(10) Line Feed (LF) 
-     *   chr(13) Carriage Return(CR)
-     *   
-     *  @see http://en.wikipedia.org/wiki/ASCII
-     * 
-     * @param array
-     * @param Diggin_Scraper_Process
-     * @return array
-     * @throws Diggin_Scraper_Strategy_Exception
+     * Get Evaluator
+     *
+     * @return Diggin_Scraper_Evaluator_Simplexml
      */
-    public function getValue($values, $process)
+    public function getEvaluator()
     {
-        if (strtoupper(($process->getType())) === 'RAW') {
-            $strings = $values;
-        } elseif (strtoupper(($process->getType())) === 'ASXML') {
-            $strings = array();
-            foreach ($values as $value) {
-                array_push($strings, $value->asXML());
-            }
-        } elseif (strtoupper(($process->getType())) === 'TEXT') {
-            $strings = array();
-            foreach ($values as $value) {
-                $value = strip_tags(
-                        htmlspecialchars_decode($value->asXML(),
-                        ENT_NOQUOTES));
-                $value = str_replace(array(chr(9), chr(10), chr(13)),
-                                     '', $value);
-                array_push($strings, $value);
-            }
-        } elseif (strtoupper(($process->getType())) === 'DECODE' or 
-                  strtoupper(($process->getType())) === 'DISP') {
-            $strings = array();
-            foreach ($values as $value) {
-                $value = strip_tags(
-                        htmlspecialchars_decode($value->asXML(),
-                        ENT_NOQUOTES));
-                $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
-                $value = str_replace(array(chr(9), chr(10), chr(13)),
-                                     '', $value);
-                array_push($strings, $value);
-            }
-        } elseif (strtoupper(($process->getType())) === 'PLAIN') {
-            $strings = array();
-            foreach ($values as $value) {
-                $value = htmlspecialchars_decode($value->asXML(),
-                            ENT_NOQUOTES);
-                $value = str_replace(array(chr(10), chr(13)),
-                                     '', $value);
-                array_push($strings, $value);
-            }
-        } elseif (strtoupper(($process->getType())) === 'HTML') {
-            $strings = array();
-            foreach ($values as $value) {
-                $value = strip_tags(
-                        htmlspecialchars_decode($value->asXML(),
-                        ENT_NOQUOTES));
-                $value = str_replace(array(chr(10), chr(13)),
-                                     '', $value);
-                $value = preg_replace(array('#^<.*?>#', '#s*</\w+>\n*$#'), '', $value);
-                array_push($strings, $value);
-            }
-        } elseif ((strpos($process->getType(), '@') === 0) and 
-                  ($process->getType() == '@href' OR $process->getType() == '@src')) {
-            $strings = array();
-            
-            $headBase = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref(current($values));
-            $headBase->setOption(array('baseUrl' => $this->getBaseUrl()));
-            $base = $headBase->getBaseUrl();
-            foreach ($values as $k => $value) {
-                $attribute = $value[substr($process->getType(), 1)];
-                if ($attribute === null) continue;
-                $strings[$k] = Diggin_Uri_Http::getAbsoluteUrl((string)$attribute, $base);
-            }
-        } elseif (strpos($process->getType(), '@') === 0) {
-            $strings = array();
-            foreach ($values as $k => $value) {
-                $attribute = $value[substr($process->getType(), 1)];
-                if ($attribute === null) continue;
-                $strings[$k] = (string)$attribute;
-            }
-        } else {
-            require_once 'Diggin/Scraper/Strategy/Exception.php';
-            throw new Diggin_Scraper_Strategy_Exception("Unknown value type :".$process->getType());
+        if (!$this->_evaluator) {
+            require_once 'Diggin/Scraper/Evaluator/Simplexml.php';
+            $this->_evaluator = new Diggin_Scraper_Evaluator_Simplexml();
         }
-        
-        return $strings;
+
+        return $this->_evaluator;
     }
+
 }
