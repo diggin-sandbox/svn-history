@@ -9,7 +9,7 @@
  * 
  * @category   Diggin
  * @package    Diggin_Scraper
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
@@ -31,10 +31,6 @@ require_once 'Zend/Loader/PluginLoader.php';
 class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 {
 
-    const NOTHINGPOINT_THROWSEXPRESSION = 0;
-    const NOTHINGPOINT_ASNULL = 1;
-    const NOTHINGPOINT_MERGEBLANK =2;
-
     /**
      * scraping results
      * 
@@ -52,10 +48,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     /**
      * exporessionでサーチ対象のものが無かった場合の
      * 挙動を決定する。
-     * strategと同様に、同一ブロック(ループ)内でのインスタンス複数
-     * 状態での設定を優先させるためstatic
      */
-    protected static $handleNothingExpression = 0;
+    protected $_throwTargetExceptionsOn = true;
 
     /**
      * strategy name to use for changing strategy
@@ -123,13 +117,17 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         return $this->_results[$var];
     }
 
-
     public function __construct()
     {
         //initialize helper
         $this->_helperLoader = 
             new Zend_Loader_PluginLoader(array(
             'Diggin_Scraper_Helper_Simplexml' => 'Diggin/Scraper/Helper/Simplexml'));
+    }
+
+    public function throwTargetExceptionsOn($flag)
+    {
+        $this->_throwTargetExceptionsOn = (boolean) $flag;
     }
 
     /**
@@ -201,9 +199,9 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         $strategy = new $strategyName($response);
-        if (method_exists($strategy, 'setBaseUrl')) {
-            $strategy->setBaseUrl($this->_getUrl());
-        }
+        // stock baseUrl to Evaluator
+        $strategy->getEvaluator()->setConfig(array('baseUrl' => $this->_getUrl()));
+
         if ($adapter) $strategy->setAdapter($adapter);
         if (method_exists($strategy->getAdapter(), 'setConfig')) {
             $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl()));
@@ -226,9 +224,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
              */
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
-            $strategy->setBaseUrl($this->_getUrl());
-            $strategy->getAdapter()->setConfig(array('url' => $this->_url,
-                                                     'pre_ampersand_escape' => true));
+            $strategy->getEvaluator()->setConfig(array('baseUrl' => $this->_getUrl()));
+            $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl));
             
             $this->_strategy = $strategy;
         }
@@ -321,12 +318,12 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         foreach ($this as $process) {
             try {
                 $values = $this->_strategy->getValues($context, $process);
+                $this->_results[$process->getName()] = $values;
             } catch (Diggin_Scraper_Exception $dse) {
-                if (self::$handleNothingExpression === self::NOTHINGPOINT_THROWSEXPRESSION) {
+                if ($this->_throwTargetExceptionsOn === true) {
                     throw $dse;
                 }
             }
-                $this->_results[$process->getName()] = $values;
         }
 
         return $this->_results;
@@ -364,9 +361,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         $class = $this->getHelperLoader()->load($name);
 
         return new $class($this->_strategy->readResource(), 
-                          array('baseUrl' => $this->_getUrl(),
-                                'preAmpFilter' => true)
-                          );
+                          array('baseUrl' => $this->_getUrl()));
     }
 
     /**
