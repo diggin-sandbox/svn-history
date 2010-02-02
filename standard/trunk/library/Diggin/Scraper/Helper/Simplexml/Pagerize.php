@@ -36,6 +36,11 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
     const CACHE_TAG_PREFIX = 'Diggin_Scraper_Helper_Simplexml_Pagerize_';
 
     /**
+     * @var string
+     */
+    //private static $_cacheTagPrefix = 'Diggin_Scraper_Helper_Simplexml_Pagerize_';
+
+    /**
      * @var Zend_Cache_Core
      */
     private static $_cache;
@@ -87,7 +92,9 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         }
 
         require_once 'Diggin/Uri/Http.php';
-        return Diggin_Uri_Http::getAbsoluteUrl($nextLink, $baseurl);
+        $uri = new Diggin_Uri_Http();
+        $uri->setBaseUri($baseurl);
+        return $uri->getAbsoluteUrl($nextLink);
     }
     
     //checks, 
@@ -148,9 +155,17 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize
         return self::$_cache->load($key);
     }
 
+    public function hasSiteinfo($suffix)
+    {
+        $ids = self::$_cache->getIds();
+        //array_search()
+    }
+
     public static function loadSiteinfo($suffix)
     {
         return self::$_cache->load(self::CACHE_TAG_PREFIX.$suffix);
     }
+    
+    
 
 }
