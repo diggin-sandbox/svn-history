@@ -11,32 +11,35 @@
  * @category   Diggin
  * @package    Diggin_Service
  * @subpackage Wedata
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-/**
- * @see Zend_Service_Abstract
- */
-require_once 'Zend/Service/Abstract.php';
-require_once 'Diggin/Service/Exception.php';
+/** Zend_Http_Client */
+require_once 'Zend/Http/Client.php';
 
 /**
- * 
- * 
+ * Diggin_Service_Wedata
+ *
+ * @see http://wedata.net/help/api
  */
-class Diggin_Service_Wedata extends Zend_Service_Abstract
+class Diggin_Service_Wedata
 {
     const API_URL = 'http://wedata.net';
     
-    //database
+    //parameter keys
+    const KEY_APIKEY = 'api_key';
+    const KEY_PAGE = 'page';
+    const KEY_DATABASE = 'database';
+    
+    // path to acces database
     const PATH_GET_DATABASES = '/databases.json';
     const PATH_GET_DATABASE  = '/databases/%s.json';
     const PATH_CREATE_DATABASE = '/databases';
     const PATH_UPDATE_DATABASE = '/databases/%s';
     const PATH_DELETE_DATABASE = '/databases/%s';
     
-    //item
+    // path to acces item
     const PATH_GET_ITEMS = '/databases/%s/items.json';//dbname
     const PATH_GET_ITEM  = '/items/%s.json'; //item id
     const PATH_CREATE_ITEM = '/databases/%s/items'; //dbname
@@ -48,11 +51,21 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      *
      * @var Zend_Http_Client
      */
-    protected static $_client;
+    protected $_httpClient;
 
-    protected static $_params;
+    /**
+     * Request parameters
+     *
+     * @var array
+     */
+    protected $_params = array();
 
-    protected static $_decodetype;
+    /**
+     * Decode Type to handle Wedata's response
+     *
+     * @var int|null
+     */
+    protected $_decodetype = null;
 
     /**
      * Constructs a new Wedata Web Service Client
@@ -63,34 +76,69 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      */
     public function __construct(array $params = null, $decodetype = null)
     {
-        self::$_params = $params;
-        self::$_decodetype = $decodetype;
+        $this->_params = $params;
+        $this->_decodetype = $decodetype;
     }
     
-    protected static function _decode($value)
+    public function setHttpClient(Zend_Http_Client $client)
     {
-        if (self::$_decodetype === false) {
+        $this->_httpClient = $client;
+    }
+
+    public function getHttpClient()
+    {
+        if (!$this->_httpClient instanceof Zend_Http_Client) {
+            $this->_httpClient = new Zend_Http_Client();
+        }
+
+        return $this->_httpClient;
+    }
+
+    /**
+     * Decode Json Value
+     *
+     * @param string $value json
+     * @return mixed decoded json's value
+     */
+    protected function _decode($value)
+    {
+        if ($this->_decodetype === false) {
             //nothig to do
         } else {
             require_once 'Zend/Json.php';
-            if (self::$_decodetype === null) {
+            if ($this->_decodetype === null || $this->_decodetype === Zend_Json::TYPE_ARRAY) {
                 $value = Zend_Json::decode($value, Zend_Json::TYPE_ARRAY);
             } else {
-                $value = Zend_Json::decode($value, self::$_decodetype);
+                $value = Zend_Json::decode($value, $this->_decodetype);
             }    
         }
         
         return $value;
     }
     
-    public static function getParams()
+    /**
+     * Retrieve current object's parameters
+     *
+     * @return array
+     */
+    public function getParams()
     {
-        return self::$_params;
+        return $this->_params;
     }
-    
-    public static function getParam($key)
+
+    /**
+     * Retrieve param by key
+     *
+     * @param string $key
+     * @return mixed|null Null when not found
+     */
+    public function getParam($key)
     {
-        return self::$_params[$key];
+        if (array_key_exists($key, $this->_params)){
+            return $this->_params[$key];
+        }
+
+        return null;
     }
     
     /**
@@ -98,10 +146,10 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      * 
      * @param array $params
      */
-    public static function setParams(array $params)
+    public function setParams(array $params)
     {
         foreach ($params as $key => $value){
-            self::$_params[strtolower($key)] = $value;
+            $this->_params[strtolower($key)] = $value;
         }
     }
     
@@ -111,73 +159,78 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
      * @param string
      * @param string
      */
-    public static function setParam($key, $value)
+    public function setParam($key, $value)
     {
-        self::$_params[$key] = $value;
+        $this->_params[$key] = $value;
     }
     
     /**
-     * adding parameter
+     * adding DATABASE's parameter
      * 
      * @param string $key
      * @param string $value
      */
-    public static function setParamDatabase($key, $value)
+    public function setParamDatabase($key, $value)
     {
-        self::$_params['database'][$key] = $value;
-    }
-    
-    /**
-     * adding parameter
-     * 
-     * @param string
-     * @param string
-     */
-    public static function setApikey($key)
-    {
-        self::$_params['api_key'] = $key;
-    }
-        
-    /**
-     * adding parameter
-     * 
-     * @param string
-     * @param string
-     */
-    public static function setDatabaseName($databaseName)
-    {
-        self::$_params['database']['name'] = $databaseName;
+        $this->_params['database'][$key] = $value;
     }
 
-    
+    /**
+     * Set Database's name
+     *
+     * @param string $databaseName
+     */    
+    public function setDatabaseName($databaseName)
+    {
+        $this->_params['database']['name'] = $databaseName;
+    }
+
+    /**
+     * Get Currently database's name
+     *
+     * @throws Diggin_Service_Exception
+     */
+    public function getDatabaseName()
+    {
+        if (isset($this->_params['database']['name'])) {
+            return $this->_params['database']['name'];
+        }
+
+        require_once 'Diggin/Service/Exception.php';
+        throw new Diggin_Service_Exception('database name is not set');
+    }
+
     /**
      * Handles all requests to a web service
      * 
      * @param string path
      * @param string Prease,using Zend_Http_Client's const
+     * @param array parameter for wedata
      * @return mixed
+     * @throws Diggin_Service_Wedata_Exception
      */
-    public static function makeRequest($path, $method, array $params = null)
+    protected function makeRequest($path, $method, array $params = array())
     {
-        self::$_client = self::getHttpClient();
-        
-        require_once 'Zend/Uri/Http.php';
-        $uri = Zend_Uri_Http::factory(self::API_URL);
+        $client = $this->getHttpClient();
+
+        $client->resetParameters();
+
+        $uri = Zend_Uri::factory(self::API_URL);
         $uri->setPath($path);
 
-        if (!is_null($params)) {            
+        if (is_array($params) && count($params) > 0) {
             if ($method == Zend_Http_Client::GET) {
-                self::$_client->setParameterGet($params);
+                $client->setParameterGet($params);
             } elseif ($method == Zend_Http_Client::POST) {
-                self::$_client->setParameterPost($params);
+                $client->setParameterPost($params);
             } else {
                 $uri->setQuery($params);
             }
         }
 
-        self::$_client->setUri($uri->getUri());
+        $client->setUri($uri->getUri());
         
-        $response = self::$_client->request($method);
+        $response = $client->request($method);
         
         if (!$response->isSuccessful()) {
              /**
@@ -197,163 +250,167 @@ class Diggin_Service_Wedata extends Zend_Service_Abstract
         }
     }
     
-    public static function getDatabases(array $params = null)
+    public function getDatabases()
     {
-        if ($params) self::setParams($params);
+        $responseBody = $this->makeRequest(self::PATH_GET_DATABASES, Zend_Http_Client::GET);
         
-        $responseBody = self::makeRequest(self::PATH_GET_DATABASES, Zend_Http_Client::GET, self::$_params);
-        
-        return self::_decode($responseBody);
+        return $this->_decode($responseBody);
     }
 
-    public static function getDatabase($databaseName = null, $page = null)
+    public function getDatabase($databaseName = null, $page = null)
     {
-        if ($databaseName) self::setDatabaseName($databaseName);
-        if ($page) self::setParam('page', $page);
-        
-        $path = sprintf(self::PATH_GET_DATABASE, rawurlencode(self::$_params['database']['name']));
-        $responseBody = self::makeRequest($path, Zend_Http_Client::GET, self::$_params);
-        
-        return self::_decode($responseBody);
-    }
+        $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
 
-    public static function createDatabase(array $params = null)
-    {
-        if ($params) self::setParams($params);
-        
-        if(!isset(self::$_params['api_key'])){
-            throw new Diggin_Service_Exception('API key is not set ');
-        } elseif (!isset(self::$_params['database']['name'])) {
-            throw new Diggin_Service_Exception('Database name is not set ');
-        } elseif (!isset(self::$_params['database']['required_keys'])) {
-            throw new Diggin_Service_Exception('required_keys is not set');
-        }
-        
-        $return = self::makeRequest(self::PATH_CREATE_DATABASE, Zend_Http_Client::POST, self::$_params);
-        
-        return $return;
-    }
-    
-    
-    public static function udpateDatabase($databaseName = null, array $params = null)
-    {
-        if ($databaseName) self::setDatabaseName($databaseName);
-        if ($params) self::setParams($params);
-        
-        if(!isset(self::$_params['api_key'])){
-            throw new Diggin_Service_Exception('API key is not set ');
-        } elseif (!isset(self::$_params['database']['required_keys'])) {
-            throw new Diggin_Service_Exception('required_keys is not set');
-        }
-
-        $path = sprintf(self::PATH_UPDATE_DATABASE, rawurlencode(self::$_params['database']['name']));
-        $return = self::makeRequest($path, Zend_Http_Client::PUT, self::$_params);
-        
-        return $return;
-    }
-    
-    public static function deleteDatabase($databaseName = null, $apiKey = null)
-    {
-        if ($databaseName) self::setDatabaseName($databaseName);
-        if ($apiKey) self::setApikey($apiKey);
-        
-        if (!isset(self::$_params['database']['name'])) {
-            throw new Diggin_Service_Exception('Database name is not set ');
-        }
-        
-        if (isset(self::$_params['api_key'])) {
-            $params = array('api_key' => self::$_params['api_key']);
+        if ($page or ($page = $this->getParam(self::KEY_PAGE))) {
+            $params = array(self::KEY_PAGE => $page);
         } else {
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception("currently parameter not set 'page'");
+        }
+        
+        $path = sprintf(self::PATH_GET_DATABASE, rawurlencode($databaseName));
+        $responseBody = $this->makeRequest($path, Zend_Http_Client::GET, $params);
+        
+        return $this->_decode($responseBody);
+    }
+
+    public function createDatabase(array $params = array())
+    {
+        $params = (isset($params)) ? $params : $this->getParams();
+        
+        if (!isset($params['api_key'])){
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception('API key is not set ');
+        } elseif (!isset($params['database']['name'])) {
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception('Database name is not set ');
+        } elseif (!isset($params['database']['required_keys'])) {
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception('required_keys is not set');
+        }
+        
+        $return = $this->makeRequest($this->PATH_CREATE_DATABASE, Zend_Http_Client::POST, $params);
+        
+        return $return;
+    }
+    
+    public function udpateDatabase(array $params = null, $databaseName = null)
+    {
+        $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
+        $params (isset($params)) ? $params : $this->getParams();
+        
+        if(!isset($params['api_key'])){
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception('API key is not set ');
+        } elseif (!isset($params['database']['required_keys'])) {
+            require_once 'Diggin/Service/Exception.php';
+            throw new Diggin_Service_Exception('required_keys is not set');
+        }
+
+        $path = sprintf(self::PATH_UPDATE_DATABASE, rawurlencode($databaseName));
+        $return = $this->makeRequest($path, Zend_Http_Client::PUT, $params);
+        
+        return $return;
+    }
+    
+    public function deleteDatabase($databaseName = null, $apiKey = null)
+    {
+        $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
+        $params = isset($apiKey) ? array(self::KEY_APIKEY => $apiKey) : $this->getParams();
+        
+        if (!isset($params[self::KEY_APIKEY])) {
+            require_once 'Diggin/Service/Exception.php';
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
-        $path = sprintf(self::PATH_DELETE_DATABASE, rawurlencode(self::$_params['database']['name']));
-        $return = self::makeRequest($path, Zend_Http_Client::DELETE, $params);
+        $path = sprintf(self::PATH_DELETE_DATABASE, rawurlencode($databaseName));
+        $return = $this->makeRequest($path, Zend_Http_Client::DELETE, $params);
         
         return $return;
     }
     
     //////item methods    
-    public static function getItems($databaseName = null, $page = null)
+    public function getItems($page = null, $databaseName = null)
     {
-        if ($databaseName) self::setDatabaseName($databaseName);
-        if ($page) self::setParam('page', $page);
-        
-        if (isset(self::$_params['page'])) {
-            $params = array('page' => self::$_params['page']);
+        $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
+
+        if (isset($page)) {
+            $params = array(self::KEY_PAGE => $paget); 
+        } else if (!$this->getParam(self::KEY_PAGE)) {
+            $params = array();
         } else {
-            $params = null;
+            $params = array(self::KEY_PAGE => $this->getParam(self::KEY_PAGE));
         }
         
-        $path = sprintf(self::PATH_GET_ITEMS, rawurlencode(self::$_params['database']['name']));
-        $responseBody = self::makeRequest($path, Zend_Http_Client::GET, $params);
+        $path = sprintf(self::PATH_GET_ITEMS, rawurlencode($databaseName));
+        $responseBody = $this->makeRequest($path, Zend_Http_Client::GET, $params);
         
-        return self::_decode($responseBody);
+        return $this->_decode($responseBody);
     }
 
     /**
+     * Get Item
      * 
      * @param string $itemId
      * @param string $page
      * @return array Decording Result
      */
-    public static function getItem($itemId, $page = null)
+    public function getItem($itemId, $page = null)
     {
         //@todo if int set as itemid or string searching itemid by name
         //is_integer($item);
         //is_string($item) ;
         
-        if ($page) self::setParam('page', $page);
+        $page = isset($page) ? $page : $this->getParam(self::KEY_PAGE);
         
-        if (isset(self::$_params['page'])) {
-            $params = array('page' => self::$_params['page']);
+        if ($page) {
+            $params = array(self::KEY_PAGE => $page);
         } else {
-            $params = null;
+            $params = array();
         }
 
         $path = sprintf(self::PATH_GET_ITEM, $itemId);
-        $responseBody = self::makeRequest($path, Zend_Http_Client::GET, $params);
+        $responseBody = $this->makeRequest($path, Zend_Http_Client::GET, $params);
         
-        return self::_decode($responseBody);
+        return $this->_decode($responseBody);
     }
     
-    public static function insertItem($databaseName = null, array $params = null)
+    public function insertItem(array $params = array(), $databaseName = null)
     {
-        if ($databaseName) self::setDatabaseName($databaseName);
-        if ($params) self::setParams($params);
+        $databaseName = (isset($databaseName)) ? $databaseName : $this->getDatabaseName();
         
-        $path = sprintf(self::PATH_CREATE_ITEM, rawurlencode(self::$_params['database']['name']));
-        $return = self::makeRequest($path, Zend_Http_Client::POST, self::$_params);
+        $path = sprintf(self::PATH_CREATE_ITEM, rawurlencode($databaseName));
+        $return = $this->makeRequest($path, Zend_Http_Client::POST, $params);
         
         return $return;
     }
     
-    public static function updateItem($itemId, array $params = null)
+    public function updateItem($itemId, array $params = array())
     {
-        if ($params) self::setParams($params);
-        
-        if (!isset(self::$_params['api_key'])) {
+        if (!isset($params['api_key'])) {
+            require_once 'Diggin/Service/Exception.php';
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
         $path = sprintf(self::PATH_UPDATE_ITEM, $itemId);
-        $return = self::makeRequest($path, Zend_Http_Client::PUT, self::$_params);
+        $return = $this->makeRequest($path, Zend_Http_Client::PUT, $params);
         
         return $return;
     }
     
-    public static function deleteItem($itemId, $apiKey = null)
+    public function deleteItem($itemId, $apiKey = null)
     {
-        if ($apiKey) self::setApikey($apiKey);
+        $apiKey = isset($apiKey) ? $apiKey : $this->getParam(self::KEY_APIKEY);
         
-        if (isset(self::$_params['api_key'])) {
-            $params = array('api_key' => self::$_params['api_key']);
+        if ($apikey) {
+            $params = array('api_key' => $apiKey);
         } else {
+            require_once 'Diggin/Service/Exception.php';
             throw new Diggin_Service_Exception('API key is not set ');
         }
         
         $path = sprintf(self::PATH_DELETE_ITEM, $itemId);
-        $return = self::makeRequest($path, Zend_Http_Client::DELETE, $params);
+        $return = $this->makeRequest($path, Zend_Http_Client::DELETE, $params);
         
         return $return;
     }
