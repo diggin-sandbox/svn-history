@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Diggin - Simplicity PHP Library
  * 
@@ -13,89 +14,84 @@
  * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
-class Diggin_Scraper_Filter
-{  
+
+class Diggin_Scraper_Filter extends IteratorIterator
+{
     /**
-     * Run filter
+     * Filter - store
      *
-     * @param array $values
-     * @param array |  $filters
-     * @param array $filterParams
-     * @return array
-     * @throws Diggin_Scraper_Filter_Exception
+     * @var mixed
      */
-    public static function run($values, $filters, $filterParams = null)
+    private $_filter = array();
+
+    /**
+     * Factory (called via Diggin_Scraper_Callback_Filter)
+     *
+     * @param Iterator $iterator
+     * @param mixed $filter
+     * @return Iterator
+     */
+    public static function factory(Iterator $iterator, $filter)
     {
-        foreach ($filters as $filter) {
-            
-            $return = array();
+        if ( ($filter instanceof Zend_Filter_Interface) or 
+             (preg_match('/^[0-9a-zA-Z\0]/', $filter) or 
+              is_callable($filter)) ) {
+            $iterator = new self($iterator);
+            $iterator->setFilter($filter);
+        } else {
+            $prefix = $filter[0];
 
-
-            if ($filter instanceof Zend_Filter_Interface) {
-                foreach ($values as $k => $value) {
-                    $return[$k] = $filter->filter($value);
-                }
-            } else if (preg_match('/^[0-9a-zA-Z\0]/', $filter)) {
-                if (function_exists($filter)) {
-                    foreach ($values as $k => $value) {
-                        $return[$k] = call_user_func($filter, $value);
-                    }
-                } elseif (!strstr($filter, '_')) {
-                    require_once 'Zend/Filter.php';
-                    require_once 'Zend/Version.php';
-                    try {
-                        foreach ($values as $k => $value) {
-                            if (Zend_Version::compareVersion('1.9.0') >= 0) {
-                                $return[$k] = Zend_Filter::get($value, $filter);
-                            } else {
-                                $return[$k] = Zend_Filter::filterStatic($value, $filter);
-                            }
-                        }
-                    } catch (Zend_Exception $e) {
-                        require_once 'Diggin/Scraper/Filter/Exception.php';
-                        throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
-                    }
-                } else {
-                    require_once 'Zend/Loader.php';
-                    try {
-                        Zend_Loader::loadClass($filter);
-                    } catch (Zend_Exception $e) {
-                        require_once 'Diggin/Scraper/Filter/Exception.php';
-                        throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
-                    }
-                    $filter = new $filter();
-                    foreach ($values as $k => $value) {
-                        $return[$k] = $filter->filter($value);
-                    }
-                }
+            if ($prefix === '/' or $prefix === '#') {
+                $iterator = new RegexIterator($iterator, $filter);
+            } elseif ($prefix === '$') {
+                $iterator = new RegexIterator($iterator, $filter);
+                $iterator->setMode(RegexIterator::GET_MATCH);
             } else {
-                $prefix = substr($filter, 0, 1);
-                
-                //have
-                if ($prefix === '*') {
-                    require_once 'Diggin/Scraper/Filter/Iterator.php';
-                    $filter = substr($filter, 1);
-                    $filterds = new Diggin_Scraper_Filter_Iterator(new ArrayIterator($values), $filter, true);
-                //not have
-                } elseif ($prefix === '!') {
-                    $filter = substr($filter, 1);
-                    $filterds = new Diggin_Scraper_Filter_Iterator(new ArrayIterator($values), $filter, false);
-                } elseif ($prefix === '/' or $prefix === '#') {
-                    $filterds = new RegexIterator(new ArrayIterator($values), $filter);
-                } elseif ($prefix === '$') {
-                    $filterds = new RegexIterator(new ArrayIterator($values), $filter);
-                    $filterds->setMode(RegexIterator::GET_MATCH);
-                } else {
-                    require_once 'Diggin/Scraper/Filter/Exception.php';
-                    throw new Diggin_Scraper_Filter_Exception("Unkown prefix '$prefix'");
-                }
-                
-                foreach($filterds as $k => $filterd) $return[$k] = $filterd;
+                require_once 'Diggin/Scraper/Filter/Exception.php';
+                throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
             }
-            
-            $values = $return;
         }
 
-        return $return;
+        return $iterator;
+    }
+
+    public function setFilter($filter)
+    {
+        //user-func or lambda
+        if (is_callable($filter)) {
+            $this->_filter = $filter;
+        } else {
+            if (is_string($filter)) {
+                if (!strstr($filter, '_')) {
+                    $filter = "Zend_Filter_$filter";
+                }
+
+                require_once 'Zend/Loader.php';
+                try {
+                    Zend_Loader::loadClass($filter);
+                    $filter = new $filter();
+                } catch (Zend_Exception $e) {
+                    require_once 'Diggin/Scraper/Filter/Exception.php';
+                    throw new Diggin_Scraper_Filter_Exception("Unable to load filter '$filter': {$e->getMessage()}");
+                }
+            }
+            if (!$filter instanceof Zend_Filter_Interface) {
+                require_once 'Diggin/Scraper/Filter/Exception.php';
+                throw new Diggin_Scraper_Filter_Exception("Unable to load filter: {$e->getMessage()}");
+            }
+
+            $this->_filter['filter'] = $filter;
+        }
+    }
+
+    /**
+     * Override method & callback filter
+     */
+    public function current()
+    {
+        return call_user_func(is_array($this->_filter) ? 
+                                array(current($this->_filter), key($this->_filter)) : 
+                                $this->_filter, 
+                              parent::current());
     }
 }
