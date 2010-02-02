@@ -21,6 +21,12 @@ require_once 'Diggin/Scraper/Evaluator/Abstract.php';
 
 class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstract
 {
+
+    /**
+     * @var Diggin_Uri_Http
+     */
+    private $_baseUri;
+
     /**
      * Get 'RAW' 
      *
