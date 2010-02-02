@@ -17,10 +17,20 @@
 
 class Diggin_Scraper_Filter extends IteratorIterator
 {
-    const REGISTRY_KEY = 'Diggin_Scraper_Filter';
-
+    /**
+     * Filter - store
+     *
+     * @var mixed
+     */
     private $_filter = array();
 
+    /**
+     * Factory (called via Diggin_Scraper_Callback_Filter)
+     *
+     * @param Iterator $iterator
+     * @param mixed $filter
+     * @return Iterator
+     */
     public static function factory(Iterator $iterator, $filter)
     {
         if ( ($filter instanceof Zend_Filter_Interface) or 
@@ -52,8 +62,6 @@ class Diggin_Scraper_Filter extends IteratorIterator
             $this->_filter = $filter;
         } else {
             if (is_string($filter)) {
-                //if (Zend_Registry::isRegistered(self::REGISTRY_KEY)) {
-                //}
                 if (!strstr($filter, '_')) {
                     $filter = "Zend_Filter_$filter";
                 }
@@ -76,6 +84,9 @@ class Diggin_Scraper_Filter extends IteratorIterator
         }
     }
 
+    /**
+     * Override method & callback filter
+     */
     public function current()
     {
         return call_user_func(is_array($this->_filter) ? 

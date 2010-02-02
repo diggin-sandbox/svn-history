@@ -19,16 +19,28 @@ require_once 'Diggin/Scraper/Filter.php';
 
 class Diggin_Scraper_Callback_Filter extends IteratorIterator
 {
+    /**
+     * constructor
+     *
+     * @param Diggin_Scraper_Callback_Evaluator $callback
+     */
     public function __construct(Diggin_Scraper_Callback_Evaluator $callback)
     {
         if ($filters = $callback->getProcess()->getFilters()) {
-            $callback = $this->getFilters($callback, $filters);
+            $callback = $this->_apply($callback, $filters);
         }
 
         return parent::__construct($callback);
     }
     
-    protected function getFilters($iterator, $filters)
+    /**
+     * Apply Filter
+     *
+     * @param Iterator $iterator
+     * @param mixed $filters
+     * @return Iterator
+     */
+    protected function _apply($iterator, $filters)
     {
         foreach ($filters as $filter) {
             $iterator = Diggin_Scraper_Filter::factory($iterator, $filter);
