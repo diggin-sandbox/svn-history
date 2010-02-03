@@ -31,7 +31,7 @@ class Diggin_Scraper_Strategy_FlexibleTest extends PHPUnit_Framework_TestCase
 BODY;
         $response = Zend_Http_Response::fromstring("$responseHeader200\r\n\r\n$responseBody");
         $this->object = new Diggin_Scraper_Strategy_Flexible($response);
-        $this->object->setBaseUrl('http://base.example.net/test/');
+        $this->object->getEvaluator()->setConfig(array('baseUrl' => 'http://base.example.net/test/'));
         $this->object->getAdapter()->setConfig(array('url' => 'http://base.example.net/test/'));
     }
 
@@ -46,16 +46,6 @@ BODY;
     }
 
     /**
-     * @todo Implement test__destruct().
-     */
-    public function test__destruct() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
      * @todo Implement testSetAdapter().
      */
     public function testSetAdapter() {
@@ -65,30 +55,11 @@ BODY;
         );
     }
 
-    /**
-     * @todo Implement testSetAdapterConfig().
-     */
-    public function testSetAdapterConfig() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
 
     /**
      * @todo Implement testGetAdapter().
      */
     public function testGetAdapter() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @todo Implement testScrape().
-     */
-    public function testScrape() {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
@@ -105,40 +76,5 @@ BODY;
         );
     }
 
-    /**
-     * @todo Implement testGetValue().
-     */
-    public function testGetValue() {
-        $simplxml = simplexml_load_string('<html><body><a href="index.html" class="sample">test</a></body></html>');
-//        var_dump($simplxml->xpath('//a'));
-        $process01 = new Diggin_Scraper_Process();
-        $process01->setExpression('//a');
-        $process01->setName('attr');
-        $process01->setArrayFlag(true);
-        $process01->setType('@href');
-        //require_once 'Diggin/Uri/Http.php';var_dump(Diggin_Uri_Http::getAbsoluteUrl('index.html', 'http://test.org/'));
-        
-        $ret = $this->object->getValue((array)$simplxml->xpath($process01->getExpression()), $process01);
-        $this->assertEquals("http://base.example.net/test/index.html", $ret[0]);
-        
-        $process02 = new Diggin_Scraper_Process();
-        $process02->setExpression('//a');
-        $process02->setName('attr');
-        $process02->setArrayFlag(true);
-        $process02->setType('@class');
-        $ret = $this->object->getValue((array)$simplxml->xpath($process02->getExpression()), $process02);
-        $this->assertEquals("sample",$ret[0]);
-        
-        
-        //base 
-        $simplxml = simplexml_load_string('<html><head><base href="http://base.org/test/" /></head><body><a href="/index.html" class="sample">test</a></body></html>');
-        
-        $ret = $this->object->getValue((array)$simplxml->xpath($process01->getExpression()), $process01);
-        $this->assertEquals("http://base.org/index.html", $ret[0]);
-        
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
 }
 ?>
