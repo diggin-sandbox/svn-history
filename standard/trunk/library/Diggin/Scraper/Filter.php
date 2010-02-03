@@ -63,6 +63,7 @@ class Diggin_Scraper_Filter extends IteratorIterator
         } else {
             if (is_string($filter)) {
                 if (!strstr($filter, '_')) {
+                    $filter = ucfirst($filter);
                     $filter = "Zend_Filter_$filter";
                 }
 
@@ -77,7 +78,8 @@ class Diggin_Scraper_Filter extends IteratorIterator
             }
             if (!$filter instanceof Zend_Filter_Interface) {
                 require_once 'Diggin/Scraper/Filter/Exception.php';
-                throw new Diggin_Scraper_Filter_Exception("Unable to load filter: {$e->getMessage()}");
+                $className = get_class($filter);
+                throw new Diggin_Scraper_Filter_Exception("Unable to load filter: $className");
             }
 
             $this->_filter['filter'] = $filter;
