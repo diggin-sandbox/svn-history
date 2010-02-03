@@ -1,6 +1,6 @@
 <?php
-require_once 'Zend/Loader.php';
-Zend_Loader::registerAutoload();
+require_once 'Zend/Loader/Autoloader.php';
+Zend_Loader_Autoloader::getInstance()->setFallbackAutoloader(true);
 
 $html = <<<HTML
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
