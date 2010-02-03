@@ -29,8 +29,8 @@ class Diggin_Scraper_FilterTest extends PHPUnit_Framework_TestCase
     */
    protected $object;
 
+   protected $className;
 
-   public $filters;
 
    /**
     * Sets up the fixture, for example, opens a network connection.
@@ -40,16 +40,8 @@ class Diggin_Scraper_FilterTest extends PHPUnit_Framework_TestCase
     */
    protected function setUp()
    {
-$func1 = create_function('$var', <<<FUNC
-   return \$var.'a';
-FUNC
-);
-$func2 = create_function('$var', <<<FUNC
-   return \$var.'b';
-FUNC
-);
-           $this->object = new Diggin_Scraper_Filter;
-           $this->filters = array($func1, $func2);
+           $this->object = new Diggin_Scraper_Filter(new ArrayIterator(array()));
+           $this->className = "Diggin_Scraper_Filter";
 
    }
 
@@ -61,9 +53,6 @@ FUNC
     */
    protected function tearDown()
    {
-       foreach($this->filters as $func) {
-           $func = null;
-       }
    }
 
    function testRun() {
@@ -71,52 +60,72 @@ FUNC
        require_once 'Zend/Filter/PregReplace.php';
        $filter = new Zend_Filter_PregReplace('/[0-9]/', 'a');
 
-       // instanceof Zend_Fileter_Interface
-       $this->assertEquals(
-            array('xa', 'ay'),
-       $this->object->run(array('x1', '2y'), array($filter))
-       );
+       $obj = Diggin_Scraper_Filter::factory(new ArrayIterator(array('x1')), $filter);
 
-       //user_func 
-       $this->assertEquals(
-           array('xafter', 'yafter'),
-        $this->object->run(array('x', 'y'), array('digginScraperFilterTestFunc'))
-       );
-       //Zend_Filter
-       $this->assertEquals(
-           array('1', '2'),
-        $this->object->run(array('x1', 'y2'), array('digits'))
-       );
+       // instanceof Zend_Fileter_Interface
+
        
-       $this->assertEquals(
-           array('世の中には10種類の人間がいる、2進法理解できる人と(以下略)'),
-        $this->object->run(array('x1'), array('Gethna_Filter_Byte'))
-       );
+       $obj->rewind();
+       $this->assertEquals('xa', $obj->current());
+
+       
+       //user_func 
+       $obj = Diggin_Scraper_Filter::factory(new ArrayIterator(array('x', 'y')), 'digginScraperFilterTestFunc');
+
+       $exps = array('xafter', 'yafter');
+       foreach ($obj as $k => $v) {
+            $this->assertEquals($exps[$k], $obj->current());
+       }
+
+
+       //Zend_Filter
+       $obj = Diggin_Scraper_Filter::factory(new ArrayIterator(array('x1', 'y2')), 'digits');
+
+       $exps = array('1', '2');
+       foreach ($obj as $k => $v) {
+            $this->assertEquals($exps[$k], $obj->current());
+       }
+
+       //Userland Filter Class
+
+       $obj = Diggin_Scraper_Filter::factory(new ArrayIterator(array('x1')), 'Gethna_Filter_Byte');
+
+       $exps = array('世の中には10種類の人間がいる、2進法理解できる人と(以下略)');
+       foreach ($obj as $k => $v) {
+            $this->assertEquals($exps[$k], $obj->current());
+       }
    
    }
-   
    /**
+    *
     */
-   public function testRun_Lambda() {
+   public function testRunLambda() {
 
-       //global $func1;
-       //var_dump($func1);
-       //global $func2;
-
+$func1 = create_function('$var', <<<FUNC
+   return \$var.'a';
+FUNC
+);
        $values = array('x', 'y', 'z');
 
-       $filtered = $this->object->run($values, $this->filters);
+       $c = $this->className;
 
-       //var_dump($filtered);
+       $obj = Diggin_Scraper_Filter::factory(new ArrayIterator($values), $func1);
 
-       $this->assertEquals(array('xab', 'yab', 'zab'), $filtered);
-
+        foreach ($obj as $k => $v) {
+                $this->assertEquals($values[$k].'a', $v);
+        }
    }
-   
+
     public function testException() {
-        $sonzaishinaiClassmei = "sonzaishinaiClassmeisonzaishinaiClassmei";
-        $this->setExpectedException('Diggin_Scraper_Filter_Exception');
-        @$this->object->run(array('val'), array($sonzaishinaiClassmei));
+        $notFilterClass = "Diggin_Version";
+
+        try {    
+            $obj = Diggin_Scraper_Filter::factory(new ArrayIterator(array(1)), $notFilterClass);
+        } catch(Diggin_Scraper_Filter_Exception $expected) {
+          return;
+        }
+
+         $this->fail('not cause exception');
     }
 }
 ?>
