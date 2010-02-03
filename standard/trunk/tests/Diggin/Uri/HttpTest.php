@@ -37,73 +37,44 @@ class Diggin_Uri_HttpTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * check getting absoluteUrl
-     *
+     * @dataProvider checkUrlProvider
      */
-    public function testGetAbsoluteUrl()
+    public function testGetAbsoluteUrl($base, $path, $expected)
     {
-    	
-    	
-    	//if 
-    	$this->assertEquals('http://yahoo.com/test/', 
-                             $this->object->getAbsoluteUrl('http://yahoo.com/test/', 'http://www.rhaco.org/'));
-    	
-    	// import from rhaco's doc-test
-     	// @see http://rhaco.googlecode.com/svn/trunk/1_6_1/network/Url.php
-        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                             $this->object->getAbsoluteUrl('/doc/ja/index.html', 'http://www.rhaco.org/'));
-        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                             $this->object->getAbsoluteUrl('../doc/ja/index.html', 'http://www.rhaco.org/'));
-        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                             $this->object->getAbsoluteUrl('./doc/ja/index.html', 'http://www.rhaco.org/'));
-        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                             $this->object->getAbsoluteUrl('./index.html', 'http://www.rhaco.org/doc/ja/'));
-        $this->assertEquals('http://www.rhaco.org/doc/index.html', 
-                             $this->object->getAbsoluteUrl('../index.html', 'http://www.rhaco.org/doc/ja/'));
-        $this->assertEquals('http://www.rhaco.org/index.html', 
-                             $this->object->getAbsoluteUrl('../../index.html', 'http://www.rhaco.org/doc/ja/'));
-        $this->assertEquals('http://www.rhaco.org/index.html', 
-                             $this->object->getAbsoluteUrl('../././.././index.html', 'http://www.rhaco.org/doc/ja/')); 
-        //$this->assertEquals('/www.rhaco.org/doc/index.html', 
-        //                     $this->object->getAbsoluteUrl('../index.html', '/www.rhaco.org/doc/ja/'));
-        //$this->assertEquals('/www.rhaco.org/index.html', 
-        //                     $this->object->getAbsoluteUrl('../../index.html','/www.rhaco.org/doc/ja/'));
-        //$this->assertEquals('/www.rhaco.org/index.html', 
-        //                     $this->object->getAbsoluteUrl('../././.././index.html', '/www.rhaco.org/doc/ja/'));
-        //$this->assertEquals('c:/www.rhaco.org/doc/index.html', 
-        //                     $this->object->getAbsoluteUrl('../index.html', 'c:/www.rhaco.org/doc/ja/'));
-        $this->assertEquals('http://www.rhaco.org/index.html', 
-                             $this->object->getAbsoluteUrl('/index.html', 'http://www.rhaco.org/doc/ja'));
-        $this->assertEquals('http://www.rhaco.org/doc/ja/index.html', 
-                             $this->object->getAbsoluteUrl('index.html', 'http://www.rhaco.org/doc/ja/action.html'));
-                             
-        //@see http://d.hatena.ne.jp/kitamomonga/20080410/ruby_mechanize_percent_url_bug
-        $this->assertEquals('http://www.rhaco.org/doc/ja/sample.cgi?param=test', 
-                             $this->object->getAbsoluteUrl('?param=test', 'http://www.rhaco.org/doc/ja/sample.cgi?query=key'));
-        $this->assertEquals('http://test.org/index.php?param=hoge', 
-                             $this->object->getAbsoluteUrl('?param=hoge', 'http://test.org/index.php'));		
-        //if space,
-        $this->assertEquals('http://www.rhaco.org/doc/ja/'.rawurlencode('test space.html'),
-                             $this->object->getAbsoluteUrl('test space.html', 'http://www.rhaco.org/doc/ja/'));
+        $this->object->setBaseUri($base);
+        $this->assertEquals($expected, $this->object->getAbsoluteUrl($path));
 
-        ////htmlspecialcharsの場合もある
+        
+        ////htmlspecialcharsの場合
         //@see http://nkst.jp/vote2/novel.php?auther=20080001&page=2
         //<center><a href="/vote2/novel.php?auther=20080001&amp;page=2" accesskey="#" title="next">[次ﾍﾟｰｼﾞ(#)]</a><br></center>
         //<a href="/vote2/novel.php?auther=20080001&amp;page=429" accesskey="" title="last">[最後へ]</a><br>
-        
+    }
 
-    }
-    
-    public function testGetAbsoluteUrl2()
+    public function checkUrlProvider()
     {
-        
-        $this->object->setBaseUrl('http://test.org/index.php');
-        //if 
-        $this->assertEquals('http://test.org/index.php?param=hoge', 
-                             $this->object->getAbsoluteUrl2('?param=hoge'));
-        
-                             
-                             
+        //base, path, expected 
+        return array(
+        array('http://www.rhaco.org/', 'http://yahoo.com/test/', 'http://yahoo.com/test/'),
+    	// import from rhaco's doc-test
+     	// @see http://rhaco.googlecode.com/svn/rhaco_1_x/trunk/network/Url.php
+        array('http://www.rhaco.org/', '/doc/ja/index.html', 'http://www.rhaco.org/doc/ja/index.html'),
+        array('http://www.rhaco.org/', '../doc/ja/index.html', 'http://www.rhaco.org/doc/ja/index.html'),
+        array('http://www.rhaco.org/', './doc/ja/index.html', 'http://www.rhaco.org/doc/ja/index.html'),
+        array('http://www.rhaco.org/doc/ja/', './index.html', 'http://www.rhaco.org/doc/ja/index.html'),
+        array('http://www.rhaco.org/doc/ja/', '../index.html', 'http://www.rhaco.org/doc/index.html'),
+        array('http://www.rhaco.org/doc/ja/', '../../index.html', 'http://www.rhaco.org/index.html'),
+        array('http://www.rhaco.org/doc/ja/', '../././.././index.html', 'http://www.rhaco.org/index.html'),
+        array('http://www.rhaco.org/doc/ja', '/index.html', 'http://www.rhaco.org/index.html'),
+        array('http://www.rhaco.org/doc/ja/action.html', 'index.html', 'http://www.rhaco.org/doc/ja/index.html'),
+        //@see http://d.hatena.ne.jp/kitamomonga/20080410/ruby_mechanize_percent_url_bug
+        array('http://www.rhaco.org/doc/ja/sample.cgi?query=key', '?param=test', 'http://www.rhaco.org/doc/ja/sample.cgi?param=test'),
+        array('http://test.org/index.php', '?param=hoge', 'http://test.org/index.php?param=hoge'),
+        // handleing space 
+        //array('http://www.rhaco.org/doc/ja/', 'test space.html', 'http://www.rhaco.org/doc/ja/'.rawurlencode('test space.html'))
+               
+        );
     }
+
 }
 ?>
