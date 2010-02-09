@@ -92,7 +92,7 @@ class Diggin_Scraper_Process
      */
     public function setName($name)
     {
-        $this->_name = strtolower($name);
+        $this->_name = trim(strtolower($name));
     }
 
     /**

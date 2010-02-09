@@ -108,7 +108,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
             foreach ($values as $count => $val) {
                 foreach ($process->getType() as $proc) {
                     if (false !== $getval = $this->getValues($val, $proc)) {
-                        $returns[$count][trim($proc->getName())] = $getval;
+                        $returns[$count][$proc->getName()] = $getval;
                     }
                 }
 
