@@ -116,7 +116,7 @@ for ($i = 1; $i <= $depth; $i++) {
         $scraper->process($nextLink, 'nextLink => "@href"');
     }
 
-    $scraper->scrape($response);
+    $ret =  $scraper->scrape($response);
   
     if ($helper) {
         try {
@@ -126,16 +126,16 @@ for ($i = 1; $i <= $depth; $i++) {
             die($e);
         }
     } else {
-        echo implode("\n", $scraper->xpath);
+        echo implode("\n", $ret['xpath']);
     }
 
     if (!isset($console->depth) or ($i == $depth)) exit;
     
-    if ($scraper->nextLink === false) {
+    if ($ret['nextLink'] === false) {
         Diggin_Debug::dump('next page not found');
         exit;
     } else {
-        $url = $scraper->nextLink;
+        $url = $ret['nextLink'];
         echo PHP_EOL;
         sleep($stoptime);
     }
@@ -157,12 +157,16 @@ function getNextLinkFromWedata($url, $cache_dir = null)
         
         $cache = getCacheCore($cache_dir, $frontendOptions);
         if(!$items = $cache->load('wedata_items')) {
-            $items = Diggin_Service_Wedata::getItems('AutoPagerize');
+            $wedata = new Diggin_Service_Wedata;
+            $wedata->setDatabaseName('AutoPagerize');
+            $items = $wedata->getItems();
             $cache->save($items, 'wedata_items');
         }
     } else {
-        //@todo e_notice
-        $items = Diggin_Service_Wedata::getItems('AutoPagerize');
+        //@todo E_NOTICE
+        $wedata = new Diggin_Service_Wedata;
+        $wedata->setDatabaseName('AutoPagerize');
+        $items = $wedata->getItems();
     }
     
     $nextLink = getNextlink($items, $url);
