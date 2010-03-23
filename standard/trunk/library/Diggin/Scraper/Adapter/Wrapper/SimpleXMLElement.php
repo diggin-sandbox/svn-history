@@ -16,7 +16,7 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
-class Diggin_Scraper_Wrapper_SimpleXMLElement extends SimpleXMLElement
+class Diggin_Scraper_Adapter_Wrapper_SimpleXMLElement extends SimpleXMLElement
 {
     public function asXML()
     {
