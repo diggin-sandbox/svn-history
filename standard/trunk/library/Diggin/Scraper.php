@@ -19,9 +19,6 @@ require_once 'Diggin/Scraper/Process/Aggregate.php';
 /** Diggin_Scraper_Context */
 require_once 'Diggin/Scraper/Context.php';
 
-/** Zend_Loader_PluginLoader */
-require_once 'Zend/Loader/PluginLoader.php';
-
 /**
  * @category  Diggin
  * @package   Diggin_Scraper
@@ -101,10 +98,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 
     public function __construct()
     {
-        //initialize helper
-        $this->_helperLoader = 
-            new Zend_Loader_PluginLoader(array(
-            'Diggin_Scraper_Helper_Simplexml' => 'Diggin/Scraper/Helper/Simplexml'));
     }
 
     public function throwTargetExceptionsOn($flag)
@@ -319,6 +312,14 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      */
     public function getHelperLoader()
     {
+        if (!$this->_helperLoader) {
+            require_once 'Zend/Loader/PluginLoader.php';
+            //initialize helper
+            $this->_helperLoader = 
+                new Zend_Loader_PluginLoader(array(
+                'Diggin_Scraper_Helper_Simplexml' => 'Diggin/Scraper/Helper/Simplexml'));
+        }
+
         return $this->_helperLoader;
     }
 
