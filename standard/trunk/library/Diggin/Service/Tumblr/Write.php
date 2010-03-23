@@ -19,17 +19,8 @@
  * $tumblr->writeRegular('title', 'body messages');
  */
 
-
-/**
- * @see Zend_Http_Client
- */
+/** Zend_Service_Abstract */
 require_once 'Zend/Service/Abstract.php';
-
-
-/**
- * @see Zend_Http_Client_Exception
- */
-require_once 'Zend/Service/Exception.php';
 
 /**
  * @category   Diggin
