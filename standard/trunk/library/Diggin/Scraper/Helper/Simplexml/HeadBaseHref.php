@@ -11,7 +11,7 @@
  * @category   Diggin
  * @package    Diggin_Scraper
  * @subpackage Helper
- * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2010 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
@@ -23,7 +23,7 @@ require_once 'Diggin/Scraper/Helper/Simplexml/SimplexmlAbstract.php';
  *
  * @package    Diggin_Scraper
  * @subpackage Helper
- * @copyright  2006-2009 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2010 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract
