@@ -32,13 +32,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
 {
 
     /**
-     * scraping results
-     * 
-     * @var array 
-     */
-    protected $_results;
-    
-    /**
      * target url of scraping
      * 
      * @var string 
@@ -105,17 +98,6 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      * @var Zend_Http_Client
      */
     protected static $_httpClient = null;
-
-    /**
-     * Read only properties accessor
-     *
-     * @param  string $var property to read
-     * @return mixed
-     */
-    public function __get($var)
-    {
-        return $this->_results[$var];
-    }
 
     public function __construct()
     {
@@ -225,7 +207,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
             $strategy->getEvaluator()->setConfig(array('baseUrl' => $this->_getUrl()));
-            $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl));
+            $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl()));
             
             $this->_strategy = $strategy;
         }
@@ -315,10 +297,11 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             $this->_strategy = null;
         }
         $context = new Diggin_Scraper_Context($this->getStrategy($resource));
+        $results = array(); //
         foreach ($this as $process) {
             try {
                 $values = $this->_strategy->getValues($context, $process);
-                $this->_results[$process->getName()] = $values;
+                $results[$process->getName()] = $values;
             } catch (Diggin_Scraper_Exception $dse) {
                 if ($this->_throwTargetExceptionsOn === true) {
                     throw $dse;
@@ -326,19 +309,8 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             }
         }
 
-        return $this->_results;
+        return $results;
     }
-    
-    /**
-     * Get scraping results
-     * 
-     * @return mixed
-     */
-    public function getResults()
-    {
-        return $this->_results; 
-    }
-
 
     /**
      * get this helper's plugin loader
