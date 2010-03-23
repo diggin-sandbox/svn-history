@@ -40,7 +40,7 @@ class Diggin_Scraper_Callback_Evaluator extends ArrayIterator
      */
     public function __construct(array $values, 
                                 Diggin_Scraper_Process $process, 
-                                Diggin_Scraper_Evaluator_Abstract $evaluator = null)
+                                Diggin_Scraper_Evaluator_Abstract $evaluator)
     {
         $this->_process = $process;
         $this->_evaluator = $evaluator;
