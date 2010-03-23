@@ -79,12 +79,22 @@ class Diggin_Service_Wedata
         $this->_params = $params;
         $this->_decodetype = $decodetype;
     }
-    
+ 
+    /**
+     * Set Zend_Http_Client
+     *
+     * @param Zend_Http_Client $client
+     */   
     public function setHttpClient(Zend_Http_Client $client)
     {
         $this->_httpClient = $client;
     }
 
+    /**
+     * Get Http Client - lazy load
+     *
+     * @return Zend_Http_Client
+     */
     public function getHttpClient()
     {
         if (!$this->_httpClient instanceof Zend_Http_Client) {
@@ -103,7 +113,7 @@ class Diggin_Service_Wedata
     protected function _decode($value)
     {
         if ($this->_decodetype === false) {
-            //nothig to do
+            //nothing to do
         } else {
             require_once 'Zend/Json.php';
             if ($this->_decodetype === null || $this->_decodetype === Zend_Json::TYPE_ARRAY) {
@@ -240,7 +250,7 @@ class Diggin_Service_Wedata
              throw new Diggin_Service_Exception("Http client reported an error: '{$response->getMessage()}'");
         }
         
-        //returning response switching by Reqest Method
+        //return response switching by Reqest Method
         if ($method == Zend_Http_Client::GET) {
             return $response->getBody();
         } else {
@@ -353,7 +363,7 @@ class Diggin_Service_Wedata
      * 
      * @param string $itemId
      * @param string $page
-     * @return array Decording Result
+     * @return array Decorded Result
      */
     public function getItem($itemId, $page = null)
     {
