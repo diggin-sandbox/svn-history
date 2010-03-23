@@ -127,13 +127,11 @@ abstract class Diggin_Scraper_Strategy_Abstract
 
         if ($process->getArrayFlag() === false) {
             $values = new LimitIterator($values, 0, 1);
+        } else if (is_array($a = $process->getArrayFlag())) {
+            $values = new LimitIterator($values, $a['offset'], $a['count']);
         }
 
         $iterator_to_array = true;
-        //$iterator_to_array = false;
-
-        //$values = iterator_to_array($iterator); 
-        //if ($values === array()) return false;
  
         if ($iterator_to_array === true) {
             $values = iterator_to_array($values); 
