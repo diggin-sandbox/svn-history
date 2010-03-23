@@ -10,7 +10,7 @@
  * @category   Diggin
  * @package    Diggin_Http
  * @subpackage Client_Adapter
- * @copyright  2006-2008 sasezaki (http://diggin.musicrider.com)
+ * @copyright  2006-2010 sasezaki (http://diggin.musicrider.com)
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 
