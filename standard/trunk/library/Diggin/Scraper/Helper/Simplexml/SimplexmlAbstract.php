@@ -37,8 +37,15 @@ abstract class Diggin_Scraper_Helper_Simplexml_SimplexmlAbstract extends Diggin_
         return false;
     }
     
+    /**
+     * Notes: array-parameter not support since ver 0.7
+     */
     protected function asString($sxml)
     {
+        if ($sxml instanceof Diggin_Scraper_Adapter_Wrapper_SimpleXMLElement) {
+            return $sxml->asXML();
+        }
+
         if ($this->getPreAmpFilter() === true) {
             if (!is_array($sxml)) {
                 return htmlspecialchars_decode($sxml->asXML(),
