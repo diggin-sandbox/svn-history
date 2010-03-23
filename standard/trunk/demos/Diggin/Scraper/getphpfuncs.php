@@ -10,10 +10,10 @@ function replace($val) {
 }
 
 $scraper = new Diggin_Scraper();
-$scraper->process('//dd[@class="indexentry"]//a', 'funcs[] => "TEXT", /^(?!.*(::|->)).*$/, replace')
+$ret =  $scraper->process('//dd[@class="indexentry"]//a', 'funcs[] => "TEXT", /^(?!.*(::|->)).*$/, replace')
         ->scrape('http://jp2.php.net/manual/ja/indexes.php');
         
-print_r($scraper->funcs);
+print_r($ret['funcs']);
 
 
 /**

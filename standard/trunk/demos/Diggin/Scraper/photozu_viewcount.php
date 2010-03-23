@@ -9,8 +9,8 @@ try {
                ->process('a', 'link => @href')
                ->process('span.photolist_view','view => TEXT');
      $scraper = new Diggin_Scraper();
-     $scraper->process('//li[@class="thumbnail"]', array('thumbnail[]' => $thumbnail))
-             ->scrape($url);
+     $results = $scraper->process('//li[@class="thumbnail"]', array('thumbnail[]' => $thumbnail))
+                        ->scrape($url);
 } catch (Diggin_Scraper_Exception $e) {
     die($e->getMessage());
 }
@@ -32,8 +32,8 @@ try {
   }
     といった配列が取得できるので、、、以下
  */
-$data = $scraper->thumbnail;
-foreach ($scraper->thumbnail as $k => $tumb) {
+$data = $results['thumbnail'];
+foreach ($results['thumbnail'] as $k => $tumb) {
     $title[$k] = $tumb['title'];
     $view[$k] = (isset($tumb['view'])) ? $tumb['view'] : 0;
 }
