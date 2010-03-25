@@ -56,7 +56,7 @@ class Diggin_Uri_Http
             }
         //Net_URL2 ver 0.2.0
         } else {
-            if (is_string($this->_baseUri)) {
+            if (!$this->_baseUri instanceof Net_URL2) {
                 require_once 'Net/URL2.php';
                 $this->_baseUri = new Net_URL2($this->_baseUri);
             }
