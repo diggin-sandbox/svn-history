@@ -32,7 +32,7 @@ class Diggin_Debug
     /**
      * @var string
      */
-    protected static $_os = null;
+    protected static $_config = array();
 
     /**
      * Get the current value of the debug output environment.
@@ -45,6 +45,7 @@ class Diggin_Debug
         if (self::$_sapi === null) {
             self::$_sapi = PHP_SAPI;
         }
+
         return self::$_sapi;
     }
 
@@ -60,58 +61,79 @@ class Diggin_Debug
         self::$_sapi = $sapi;
     }
 
-    public static function getOs()
+    public static function setConfig($config)
     {
-        if (self::$_os === null) {
-            self::$_os = PHP_OS;
+        //
+        self::getConfig();
+
+        foreach ($config as $conf => $setting) {
+            self::$_config[strtolower($conf)] = $setting;
         }
-        return self::$_os;
+
     }
-    
-    
-    public static function dump($var, $configs = array())
+
+    protected static function getConfig()
     {
-        if (self::getOs() === 'WINNT') {
-        
+
+        if (!self::$_config) {
+            if (PHP_OS === 'WINNT') {
             $config = array(
                         'label'        => null,
                         'echo'         => TRUE,
-                        'toEncoding'   => 'sjis',
-                        'fromEncoding' => 'utf-8',
+                        'to_encoding'   => 'sjis',
+                        'from_encoding' => 'utf-8',
                         'start'        => 0,
                         'length'       => 80000,
-            );
-        } else {
-             $config = array(
+                );
+            } else {
+            $config = array(
                         'label'        => null,
                         'echo'         => TRUE,
                         'start'        => 0,
                         'length'       => 80000,
-            );
+                );
+            }
+
+            self::$_config = $config;
         }
 
-        foreach ($configs as $conf => $setting) {
-            $config[strtolower($conf)] = $setting;
-        }
+        return self::$_config;
+    }
+    
+    /**
+     * dump args
+     *
+     * @param mixed $var 
+     */
+    public static function dump($var)
+    {
+
+        $config = self::getConfig();
 
         // format the label
-        $label = ($config['label']===null) ? '' : rtrim($config['label']) . ' ';
+        $label = ($config['label'] === null) ? '' : rtrim($config['label']) . ' ';
+        
+        $vars = func_get_args();
 
-        // var_dump the variable into a buffer and keep the output
-        ob_start();
-        var_dump($var);
-        $output = ob_get_clean();
-        if (isset($config['toEncoding']) and isset($config['fromEncoding'])) {
-            $output = mb_convert_encoding($output, $config['toEncoding'], $config['fromEncoding']);
-        }
+        array_walk($vars, function ($var, $config) use (&$output) {
+            // var_dump the variable into a buffer and keep the output
+            ob_start();
+            var_dump($var);
+            $out = ob_get_clean();
+            if (isset($config['to_encoding']) and isset($config['from_encoding'])) {
+                $out = mb_convert_encoding($out, $config['to_encoding'], $config['from_encoding']);
+            }
+
+            $output .= $out . PHP_EOL;
+        });
+
         $output= substr($output, $config['start'], $config['length']);
 
         // neaten the newlines and indents
         $output = preg_replace("/\]\=\>\n(\s+)/m", "] => ", $output);
         if (self::getSapi() == 'cli') {
-            $output = PHP_EOL . $label
-                    . PHP_EOL . $output
-                    . PHP_EOL;
+            $output = $label
+                    . PHP_EOL . $output;
         } else {
             $output = '<pre>'
                     . $label
@@ -119,10 +141,11 @@ class Diggin_Debug
                     . '</pre>';
         }
 
-        if ($config['echo'] === TRUE) {
+        if ($config['echo'] === true) {
             echo($output);
         }
+
         return $output;
     }
-
 }
+
