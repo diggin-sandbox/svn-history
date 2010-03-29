@@ -1,0 +1,7 @@
+#Japanese_Comment
+
+= Introduction =
+日本語コメント用 (Japanese)
+
+
+= Details =
