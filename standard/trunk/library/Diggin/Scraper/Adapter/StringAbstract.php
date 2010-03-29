@@ -25,10 +25,10 @@ abstract class Diggin_Scraper_Adapter_StringAbstract implements Diggin_Scraper_A
     protected abstract function getString($response);
 
     /**
-     * Reading Response as SimpleXmlElement
+     * Reading Response as String
      * 
      * @param object $response
-     * @return SimplXmlElement
+     * @return string
      */
     final public function readData($response)
     {
