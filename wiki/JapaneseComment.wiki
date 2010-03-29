@@ -1,7 +1,2 @@
-#Japanese_Comment
-
-= Introduction =
-日本語コメント用 (Japanese)
-
-
-= Details =
+#日本語コメント用
+コメントするにはgoogleアカウントが必要です。
