@@ -132,10 +132,7 @@ class Diggin_Scraper_Process
      */
     public function setType($type)
     {
-        if (is_string($type) && $type[0] === '@') {
-            $type = 'at_'.substr($type, 1);
-        }
-        $this->_type = $type;
+        $this->_type = strtolower($type);
     }
 
     /**

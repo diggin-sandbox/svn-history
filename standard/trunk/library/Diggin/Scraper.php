@@ -199,7 +199,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
              */
             require_once 'Diggin/Scraper/Strategy/Flexible.php';
             $strategy = new Diggin_Scraper_Strategy_Flexible($response);
-            $strategy->getEvaluator()->setConfig(array('baseUrl' => $this->_getUrl()));
+            $strategy->setBaseUri($this->_getUrl());
             $strategy->getAdapter()->setConfig(array('url' => $this->_getUrl()));
             
             $this->_strategy = $strategy;

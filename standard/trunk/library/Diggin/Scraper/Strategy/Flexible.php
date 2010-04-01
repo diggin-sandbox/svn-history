@@ -23,6 +23,11 @@ require_once 'Diggin/Scraper/Strategy/Abstract.php';
  * @see Zend_Dom_Query_Css2Xpath
  */
 require_once 'Zend/Dom/Query/Css2Xpath.php';
+ 
+/**
+ * @see Diggin_Scraper_Evaluator_Simplexml
+ */
+require_once 'Diggin/Scraper/Evaluator/Simplexml.php';
 
 class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
 {
@@ -98,14 +103,33 @@ class Diggin_Scraper_Strategy_Flexible extends Diggin_Scraper_Strategy_Abstract
      *
      * @return Diggin_Scraper_Evaluator_Simplexml
      */
-    public function getEvaluator()
+    public function getEvaluator($values, $process)
     {
-        if (!$this->_evaluator) {
-            require_once 'Diggin/Scraper/Evaluator/Simplexml.php';
-            $this->_evaluator = new Diggin_Scraper_Evaluator_Simplexml();
+        $evaluator = new Diggin_Scraper_Evaluator_Simplexml($values, $process);
+        $evaluator->setBaseUri($this->_getBaseUri());
+        return $evaluator;
+    }
+
+    /**
+     * Get Base Uri object
+     * 
+     * 
+     * @return Diggin_Uri_Http
+     */
+    protected function _getBaseuri()
+    {
+        if (!$this->_baseUri instanceof Diggin_Uri_Http) {
+            $simplexml = $this->readResource();
+            require_once 'Diggin/Scraper/Helper/Simplexml/HeadBaseHref.php';
+            $headBase = new Diggin_Scraper_Helper_Simplexml_HeadBaseHref($simplexml);
+            $headBase->setOption(array('baseUrl' => $this->_baseUri));
+            require_once 'Diggin/Uri/Http.php';
+            $this->_baseUri = new Diggin_Uri_Http;
+            $this->_baseUri->setBaseUri($headBase->getBaseUrl());
+
         }
 
-        return $this->_evaluator;
+        return $this->_baseUri;
     }
 
 }

@@ -1,34 +1,26 @@
 <?php
 
-/**
- * Diggin - Simplicity PHP Library
- * 
- * LICENSE
- *
- * This source file is subject to the new BSD license.
- * It is also available through the world-wide-web at this URL:
- * http://diggin.musicrider.com/LICENSE
- * 
- * @category   Diggin
- * @package    Diggin_Scraper
- * @subpackage Evaluator
- * @copyright  2006-2010 sasezaki (http://diggin.musicrider.com)
- * @license    http://diggin.musicrider.com/LICENSE     New BSD License
- */
-
-abstract class Diggin_Scraper_Evaluator_Abstract
+abstract class Diggin_Scraper_Evaluator_Abstract extends ArrayIterator
 {
-    private $_config = array();
+    private $_process;
 
-    public function setConfig($config = array())
+    public function __construct(array $values, Diggin_Scraper_Process $process)
     {
-        foreach ($config as $k => $v) {
-            $this->_config[$k] = $v;
-        }
+        $this->_process = $process;
+
+        return parent::__construct($values);
     }
 
-    public function getConfig($key)
+    public function getProcess()
     {
-        return $this->_config[$key];
+        return $this->_process;
     }
+
+    public function current()
+    {
+        return $this->_eval(parent::current());
+    }
+
+    abstract protected function _eval($value);
 }
+

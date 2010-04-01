@@ -15,9 +15,9 @@
  * @license    http://diggin.musicrider.com/LICENSE     New BSD License
  */
 /** Diggin_Scraper_Callback_Evaluator */
-require_once 'Diggin/Scraper/Callback/Evaluator.php';
-/** Diggin_Scraper_Callback_Filter */
-require_once 'Diggin/Scraper/Callback/Filter.php';
+//require_once 'Diggin/Scraper/Callback/Evaluator.php';
+/** Diggin_Scraper_Filter_Iterator */
+require_once 'Diggin/Scraper/Filter/Iterator.php';
 
 abstract class Diggin_Scraper_Strategy_Abstract
 {
@@ -41,7 +41,18 @@ abstract class Diggin_Scraper_Strategy_Abstract
      * @var Diggin_Scraper_Adapter_Interface
      */
     private $_adaptedResource;
+
+    /**
+     * base uri
+     *
+     * @var Zend_Uri
+     */
+    protected $_baseUri;
     
+    /**
+     * set 
+     * 
+     */
     protected abstract function setAdapter(Diggin_Scraper_Adapter_Interface $adapter);
     
     protected abstract function getAdapter();
@@ -54,6 +65,11 @@ abstract class Diggin_Scraper_Strategy_Abstract
     public function __construct($response)
     {
         $this->_response = $response;
+    }
+
+    public function setBaseUri($uri)
+    {
+        $this->_baseUri = $uri;
     }
     
     /**
@@ -75,7 +91,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         return $this->_response;
     }
 
-    protected abstract function getEvaluator();
+    protected abstract function getEvaluator($values, $process);
     
     protected abstract function extract($values, $process);
 
@@ -122,24 +138,24 @@ abstract class Diggin_Scraper_Strategy_Abstract
             return $returns;
         }
 
-        $callback = new Diggin_Scraper_Callback_Evaluator($values, $process, $this->getEvaluator());
-        $values = new Diggin_Scraper_Callback_Filter($callback);
+        $values = $this->getEvaluator($values, $process);
+        if ($process->getFilters()) {
+            $values = new Diggin_Scraper_Filter_Iterator($values);
+        }
 
-        if ($process->getArrayFlag() === false) {
+        $arrayflag = $process->getArrayFlag();
+
+        if ($arrayflag === false) {
             $values = new LimitIterator($values, 0, 1);
-        } else if (is_array($a = $process->getArrayFlag())) {
+        } else if (is_array($arrayflag)) {
             $values = new LimitIterator($values, $a['offset'], $a['count']);
         }
-
-        $iterator_to_array = true;
  
-        if ($iterator_to_array === true) {
-            $values = iterator_to_array($values); 
-            if ($process->getArrayFlag() == false) {
-                return current($values);
-            }
+        //@todo using iterator option
+        $values = iterator_to_array($values); 
+        if (false === $arrayflag) {
+            return current($values);
         }
-        
  
         return $values;
     }
