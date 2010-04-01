@@ -144,7 +144,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
      */
     public static function changeStrategy($strategyName, $adapter = null)
     {
-        if ($strategyName === false) {
+        if ($strategyName === false or $strategyName === null) {
             self::$_strategyName = null;
             self::$_adapter = null;
         } else {

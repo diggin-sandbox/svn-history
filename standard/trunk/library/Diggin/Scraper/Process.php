@@ -128,11 +128,11 @@ class Diggin_Scraper_Process
     /**
      * set type
      *
-     * @param string
+     * @param mixed string|Diggin_Scraper_Process_Aggregate
      */
     public function setType($type)
     {
-        $this->_type = strtolower($type);
+        $this->_type = $type;
     }
 
     /**

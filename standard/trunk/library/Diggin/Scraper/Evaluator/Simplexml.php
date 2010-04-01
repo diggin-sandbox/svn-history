@@ -40,7 +40,7 @@ class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstra
     {
         $type = $this->getProcess()->getType();
 
-        switch ($type) {
+        switch (strtolower($type)) {
             case 'raw' :
                 return $simplexml;
             case 'asxml' :
