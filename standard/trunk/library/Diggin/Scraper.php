@@ -174,8 +174,7 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         $strategy = new $strategyName($response);
-        // stock baseUrl to Evaluator
-        $strategy->getEvaluator()->setConfig(array('baseUrl' => $this->_getUrl()));
+        $strategy->setBaseUri($this->_getUrl());
 
         if ($adapter) $strategy->setAdapter($adapter);
         if (method_exists($strategy->getAdapter(), 'setConfig')) {
