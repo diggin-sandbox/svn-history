@@ -21,22 +21,22 @@ require_once 'Diggin/Scraper/Evaluator/Abstract.php';
 
 class Diggin_Scraper_Evaluator_String extends Diggin_Scraper_Evaluator_Abstract
 {
-    /**
-     * Get 'RAW' 
-     *
-     * @param string $string
-     * @return string
-     */
-    public function raw($string)
-    {
-        return $string;
-    }
 
-    public function text($string)
+    protected function _eval($string)
     {
-        $value = strip_tags($string);
-        $value = str_replace(array(chr(9), chr(10), chr(13)), '', $value);
-        return $value;
-    }
+        $type = $this->getProcess()->getType();
 
+        switch (strtolower($type)) {
+            case 'raw' :
+                return $string;
+            case 'text' :
+                $value = strip_tags($string);
+                $value = str_replace(array(chr(9), chr(10), chr(13)), '', $value);
+                return $value;
+        }
+
+        require_once 'Diggin/Scraper/Evaluator/Exception.php';
+        $process = $this->getProcess();
+        throw new Diggin_Scraper_Evaluator_Exception($type." is unknown type ($process)");
+    }
 }

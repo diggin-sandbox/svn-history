@@ -24,7 +24,8 @@ class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
 
     private $_processes = array();
 
-    public function getProcesses() {
+    public function getProcesses() 
+    {
         return $this->_processes;
     }
     

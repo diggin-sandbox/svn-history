@@ -21,6 +21,8 @@
  */
 require_once 'Diggin/Scraper/Strategy/Abstract.php';
 
+require_once 'Diggin/Scraper/Evaluator/String.php';
+
 class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract 
 {
     protected $_evaluator;
@@ -86,14 +88,10 @@ class Diggin_Scraper_Strategy_Preg extends Diggin_Scraper_Strategy_Abstract
      *
      * @return Diggin_Scraper_Evaluator_String
      */
-    public function getEvaluator()
+    public function getEvaluator($values, $process)
     {
-        if (!$this->_evaluator) {
-            require_once 'Diggin/Scraper/Evaluator/String.php';
-            $this->_evaluator = new Diggin_Scraper_Evaluator_String();
-        }
-
-        return $this->_evaluator;
+        $evaluator = new Diggin_Scraper_Evaluator_String($values, $process);
+        return $evaluator;
     }
 
 }
