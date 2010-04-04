@@ -1,6 +1,9 @@
 <?php
 class Diggin_RobotRules_Protocol_Txt_Line
 {
+    //@see http://www.robotstxt.org/norobots-rfc.txt
+    const EOL = "\r\n";
+
     private $_field;
     private $_value;
     private $_comment;
@@ -19,18 +22,21 @@ class Diggin_RobotRules_Protocol_Txt_Line
                     $line, $match);
                     
         $line = new self;
-        $line->setField(strtolower($match[1]));
+        $line->setField(strtolower(trim($match[1])));
         $line->setValue($match[2]);
         $line->setComment($match[3]);
         
         return $line;
     }
 
+    // line separetor is CRLF
+    //
     public function __toString()
     {
         return $this->getField().':'.$this->getValue().
-            (isset($this->_comment) ? ' # '.$this->getComment(): '')."\n";
+            (isset($this->_comment) ? ' # '.$this->getComment(): '').self::EOL;
     }
+
     public function setField($field)
     {
         $this->_field = $field;
