@@ -141,6 +141,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         $values = $this->getEvaluator($values, $process);
         if ($process->getFilters()) {
             $values = new Diggin_Scraper_Filter_Iterator($values);
+            //$values = Diggin_Scraper_Filter::factory($values, $process->getFilters());
         }
 
         $arrayflag = $process->getArrayFlag();
@@ -148,7 +149,7 @@ abstract class Diggin_Scraper_Strategy_Abstract
         if ($arrayflag === false) {
             $values = new LimitIterator($values, 0, 1);
         } else if (is_array($arrayflag)) {
-            $values = new LimitIterator($values, $a['offset'], $a['count']);
+            $values = new LimitIterator($values, $arrayflag['offset'], $arrayflag['count']);
         }
  
         //@todo using iterator option

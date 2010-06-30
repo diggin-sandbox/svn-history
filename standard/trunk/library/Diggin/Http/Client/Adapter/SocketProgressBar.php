@@ -4,15 +4,15 @@ require_once 'Zend/Http/Client/Adapter/Socket.php';
 class Diggin_Http_Client_Adapter_SocketProgressBar
         extends Zend_Http_Client_Adapter_Socket
 {
-    private $_max = 100;
+    private $_max = 0;
     private $_progressBar;
 
-    private function setMax($max)
+    public function setMax($max)
     {
         $this->_max = $max;
     }
 
-    private function getMax()
+    public function getMax()
     {
         return $this->_max;
     }
@@ -42,6 +42,7 @@ class Diggin_Http_Client_Adapter_SocketProgressBar
         // First, read headers only
         $response = '';
         $gotStatus = false;
+        $stream = !empty($this->config['stream']);
 
         while (($line = @fgets($this->socket)) !== false) {
             $gotStatus = $gotStatus || (strpos($line, 'HTTP') !== false);
@@ -50,7 +51,7 @@ class Diggin_Http_Client_Adapter_SocketProgressBar
                 if (rtrim($line) === '') break;
             }
         }
-
+        
         $this->_checkSocketReadTimeout();
 
         $statusCode = Zend_Http_Response::extractCode($response);
@@ -77,7 +78,7 @@ class Diggin_Http_Client_Adapter_SocketProgressBar
 
         // If we got a 'transfer-encoding: chunked' header
         if (isset($headers['transfer-encoding'])) {
-
+            
             if (strtolower($headers['transfer-encoding']) == 'chunked') {
 
                 do {
@@ -105,70 +106,113 @@ class Diggin_Http_Client_Adapter_SocketProgressBar
                         $current_pos = ftell($this->socket);
                         if ($current_pos >= $read_to) break;
 
-                        $line = @fread($this->socket, $read_to - $current_pos);
-                        if ($line === false || strlen($line) === 0) {
-                            $this->_checkSocketReadTimeout();
-                            break;
+                        if($this->out_stream) {
+                            if(stream_copy_to_stream($this->socket, $this->out_stream, $read_to - $current_pos) == 0) {
+                              $this->_checkSocketReadTimeout();
+                              break;   
+                             }
                         } else {
-                            $chunk .= $line;
+                            $line = @fread($this->socket, $read_to - $current_pos);
+                            if ($line === false || strlen($line) === 0) {
+                                $this->_checkSocketReadTimeout();
+                                break;
+                            }
+                                    $chunk .= $line;
                         }
-
                     } while (! feof($this->socket));
 
                     $chunk .= @fgets($this->socket);
                     $this->_checkSocketReadTimeout();
 
-                    $response .= $chunk;
+                    if(!$this->out_stream) {
+                        $response .= $chunk;
+                    }
                 } while ($chunksize > 0);
-
             } else {
                 $this->close();
                 throw new Zend_Http_Client_Adapter_Exception('Cannot handle "' .
                     $headers['transfer-encoding'] . '" transfer encoding');
             }
-
+            
+            // We automatically decode chunked-messages when writing to a stream
+            // this means we have to disallow the Zend_Http_Response to do it again
+            if ($this->out_stream) {
+                $response = str_ireplace("Transfer-Encoding: chunked\r\n", '', $response);
+            }
         // Else, if we got the content-length header, read this number of bytes
         } elseif (isset($headers['content-length'])) {
 
-            $this->setMax($headers['content-length']);
+            // If we got more than one Content-Length header (see ZF-9404) use
+            // the last value sent
+            if (is_array($headers['content-length'])) {
+                $contentLength = $headers['content-length'][count($headers['content-length']) - 1]; 
+            } else {
+                $contentLength = $headers['content-length'];
+            }
 
-            /** start  Zend_ProgressBar **/
-            echo 'Content-length:', $headers['content-length']. PHP_EOL;
-            $this->getProgressBar();
-
+            if ($contentLength != 0) $this->setMax($contentLength);
+            
             $current_pos = ftell($this->socket);
             $chunk = '';
 
-            for ($read_to = $current_pos + $headers['content-length'];
+            $startProgressBar = false;
+            for ($read_to = $current_pos + $contentLength;
                  $read_to > $current_pos;
                  $current_pos = ftell($this->socket)) {
 
-                $this->getProgressBar()->update($current_pos);
+                 if ($startProgressBar === false) {
+                     $this->setMax($read_to);
+                     $startProgressBar = true;
+                 }
+                 $this->getProgressBar()->update($current_pos);
 
-                $chunk = @fread($this->socket, $read_to - $current_pos);
-                if ($chunk === false || strlen($chunk) === 0) {
-                    $this->_checkSocketReadTimeout();
-                    break;
-                }
+                 //if($this->out_stream) {
+                    
+                     /*
+                     if(@stream_copy_to_stream($this->socket, $this->out_stream, $read_to - $current_pos) == 0) {
+                          $this->_checkSocketReadTimeout();
+                          break;   
+                     }
+                     */
+                 //} else {
+                    $chunk = @fread($this->socket, $read_to - $current_pos);
+                    if ($chunk === false || strlen($chunk) === 0) {
+                        $this->_checkSocketReadTimeout();
+                        break;
+                    }
 
-                $response .= $chunk;
+                    if ($this->out_stream) {
+                         $fwrite = fwrite($this->out_stream, $chunk);
+                         if ($fwrite === false) {
+                             throw new Exception();
+                         }
+                    } else {
+                        $response .= $chunk;
+                    }
+                //}
 
                 // Break if the connection ended prematurely
                 if (feof($this->socket)) break;
             }
-
-            $this->getProgressBar()->finish();
+            if ($startProgressBar) $this->getProgressBar()->finish();
 
         // Fallback: just read the response until EOF
         } else {
 
             do {
-                $buff = @fread($this->socket, 8192);
-                if ($buff === false || strlen($buff) === 0) {
-                    $this->_checkSocketReadTimeout();
-                    break;
-                } else {
-                    $response .= $buff;
+                if($this->out_stream) {
+                    if(@stream_copy_to_stream($this->socket, $this->out_stream) == 0) {
+                          $this->_checkSocketReadTimeout();
+                          break;   
+                     }
+                }  else {
+                    $buff = @fread($this->socket, 8192);
+                    if ($buff === false || strlen($buff) === 0) {
+                        $this->_checkSocketReadTimeout();
+                        break;
+                    } else {
+                        $response .= $buff;
+                    }
                 }
 
             } while (feof($this->socket) === false);

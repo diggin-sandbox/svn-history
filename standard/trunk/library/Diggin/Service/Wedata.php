@@ -424,4 +424,6 @@ class Diggin_Service_Wedata
         
         return $return;
     }
+
+    //public function __callStatic()
 }

@@ -34,7 +34,7 @@ class Diggin_Scraper_Filter extends IteratorIterator
     public static function factory(Iterator $iterator, $filter)
     {
         if ( ($filter instanceof Zend_Filter_Interface) or 
-             (preg_match('/^[0-9a-zA-Z\0]/', $filter) or 
+              (is_string($filter) and (preg_match('/^[0-9a-zA-Z\0]/', $filter)) or 
               is_callable($filter)) ) {
             $iterator = new self($iterator);
             $iterator->setFilter($filter);

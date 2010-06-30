@@ -265,6 +265,76 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
     }
     
     /**
+     * $scraper->process($expression, $key, $value_type, $filter1, $filter2,,,)
+     */
+    public function process($args)
+    {
+        $args = func_get_args();
+        
+        if ($args[0] instanceof Diggin_Scraper_Process) {
+            $this->_processes[] = $args[0];
+            return $this;
+        }
+
+        // Validate, process arguments
+        if (1 === count($args)) {
+            require_once 'Diggin/Scraper/Process/Exception.php';
+            throw new Diggin_Scraper_Process_Exception("Process requires over 2 arguments");
+        } elseif (2 === count($args)) {
+            if (is_array($args[1]) and (! current($args[1]) instanceof Diggin_Scraper_Process_Aggregate)) {
+                require_once 'Diggin/Scraper/Process/Exception.php';
+                throw new Diggin_Scraper_Process_Exception("Child Process's value shold be instanceof Diggin_Scraper_Process_Aggregate");
+            }
+        }
+
+        $expression = array_shift($args);
+        
+        // check child process
+        if (is_array($args[0])) {
+            $name = key($args[0]);
+
+            if ((substr($name, -2) == '[]')) {
+                $name = substr($name, 0, -2);
+                $arrayflag = true;
+            } else {
+                $arrayflag = false;
+            }
+            $childprocess = current($args[0]);
+
+            $process = new Diggin_Scraper_Process();
+            $process->setExpression($expression);
+            $process->setName($name);
+            $process->setArrayflag($arrayflag);
+            $process->setType($childprocess);
+            $process->setFilters(false);
+            $this->_processes[] = $process;
+        } else {
+
+            $name = array_shift($args);
+            $types = array_shift($args);
+            $filters = (count($args > 0)) ? $args : false;
+
+            if ((substr($name, -2) == '[]')) {
+                $name = substr($name, 0, -2);
+                $arrayflag = true;
+            } else {
+                $arrayflag = false;
+            }
+            
+            $process = new Diggin_Scraper_Process();
+            $process->setExpression($expression);
+            $process->setName(trim($name));
+            $process->setArrayflag($arrayflag);
+            $process->setType($types);
+            $process->setFilters($filters);
+            $this->_processes[] = $process;
+        }
+
+        return $this;
+    }
+
+
+    /**
      * scraping
      * 
      * @param (string | Zend_Http_Response | array) $resource

@@ -22,7 +22,7 @@ require_once 'Diggin/Scraper/Process.php';
 class Diggin_Scraper_Process_Aggregate implements IteratorAggregate
 {
 
-    private $_processes = array();
+    protected $_processes = array();
 
     public function getProcesses() 
     {

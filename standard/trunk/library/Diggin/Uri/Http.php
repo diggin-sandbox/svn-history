@@ -42,6 +42,7 @@ class Diggin_Uri_Http
     public function getAbsoluteUrl($target)
     {
         //using pecl_http
+        /*bug!!!!!!!!!
         if (extension_loaded('http')) {
             if (array_key_exists('host', parse_url($target))) {
                 return $target;
@@ -56,11 +57,12 @@ class Diggin_Uri_Http
             }
         //Net_URL2 ver 0.2.0
         } else {
+        */
             if (!$this->_baseUri instanceof Net_URL2) {
                 require_once 'Net/URL2.php';
                 $this->_baseUri = new Net_URL2((string)$this->_baseUri);
             }
             return $this->_baseUri->resolve($target)->getUrl();
-        } 
+        //} 
     }
 }
