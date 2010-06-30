@@ -2,6 +2,7 @@
 require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Scraper/Helper/Simplexml/Title.php';
+require_once 'Diggin/Scraper/Adapter/Wrapper/SimpleXMLElement.php';
 
 /**
  * Test class for Diggin_Scraper_Helper_Simplexml_Title.
@@ -50,9 +51,10 @@ class Diggin_Scraper_Helper_Simplexml_TitleTest extends PHPUnit_Framework_TestCa
 //        $simplexml = Diggin_Scrpaer_Adapter_Htmlscraping($responseBodyWithHeadTag1);
         
         $responseBody2 = str_replace('&', '&amp;', $responseBody);
-         $simplexml = simplexml_load_string($responseBody2);
+         //$simplexml = simplexml_load_string($responseBody2);
+    
+         $simplexml = new Diggin_Scraper_Adapter_Wrapper_SimpleXMLElement($responseBody2);
          $this->object = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);
-        $this->object->setPreAmpFilter(true);
         
         $simplexml = simplexml_load_string($responseBody);
          $this->object1 = new Diggin_Scraper_Helper_Simplexml_Title($simplexml);

@@ -46,7 +46,6 @@ class Diggin_Scraper_ProcessTest extends PHPUnit_Framework_TestCase
         $this->object->setType($val = 'val');
         $this->object->setFilters($filter = array('filter'));
         
-  //      $filter = implode(', ', $filter);
         $process = "'$exp', "."'$key => [\"$val\", \"$filter[0]\"]'";
 
         

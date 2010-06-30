@@ -23,6 +23,9 @@ class Diggin_Scraper_Helper_Simplexml_Pagerize_NextLinkWithCacheTest extends PHP
         Diggin_Scraper_Helper_Simplexml_Pagerize::setCache($cache = $this->getCacheCore(dirname(__FILE__).'/_files/'));
 
         if (!$siteinfo = $cache->load(Diggin_Scraper_Helper_Simplexml_Pagerize::CACHE_TAG_PREFIX.'wedata')) {
+            // @todo
+            $this->markTestIncomplete();
+
             $wedata = new Diggin_Service_Wedata();
             $wedata->setDatabaseName('AutoPagerize');
             $siteinfo = $wedata->getItems();

@@ -54,17 +54,16 @@ BODY;
         $this->object->setHttpClient($client);
 
         $lambda = create_function('$var', "return \$var.'a';");
+        $lambda = function($var) {return $var.'a';};
         
-        //var_dump($lambda);
         
-        
-        $this->object->process('//body', "digit => TEXT, digits");
-        $this->object->process('//body', "lambda => TEXT, digits, $lambda");
+        //$this->object->process('//body', "digit => TEXT, digits");
+        $this->object->process('//body', "digit", "TEXT", "digits");
+        //$this->object->process('//body', "lambda => TEXT, digits, $lambda");
+        $this->object->process('//body', "lambda", 'TEXT', 'digits', $lambda);
+        //$this->object->process('//body', "lambda", 'TEXT', 'alnum', 'digits');
 
-        
         $results = $this->object->scrape('http://test.org');
-        
-        //var_dumP($results);
         
         $this->assertEquals('123', $results['digit']);
         $this->assertEquals('123a', $results['lambda']);

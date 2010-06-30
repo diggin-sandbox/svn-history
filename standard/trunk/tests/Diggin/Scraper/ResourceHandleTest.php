@@ -56,15 +56,10 @@ bb
 </html>
 HTML;
 
-        $this->object->process('//title', 'keyww => TEXT');
-        $this->object->scrape(array($html));
+        $this->object->process('//title', 'keyww', 'TEXT');
+        $results = $this->object->scrape(array($html));
         
-        $this->assertEquals($expected, $this->object->keyww);
-        
-        
-        
-        
-        
+        $this->assertEquals($expected, $results['keyww']);
         
         $expected2 = 'title';
         $html = <<<HTML
@@ -79,9 +74,9 @@ aa
 </html>
 HTML;
         $this->object = new Diggin_Scraper;
-        $this->object->process('//title', 'key => TEXT');
-        $this->object->scrape(array($html));
-        $this->assertEquals($expected2, $this->object->key);
+        $this->object->process('//title', 'key', 'TEXT');
+        $results = $this->object->scrape(array($html));
+        $this->assertEquals($expected2, $results['key']);
     }
 }
 ?>

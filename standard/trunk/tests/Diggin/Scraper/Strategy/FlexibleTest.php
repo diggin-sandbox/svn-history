@@ -31,7 +31,8 @@ class Diggin_Scraper_Strategy_FlexibleTest extends PHPUnit_Framework_TestCase
 BODY;
         $response = Zend_Http_Response::fromstring("$responseHeader200\r\n\r\n$responseBody");
         $this->object = new Diggin_Scraper_Strategy_Flexible($response);
-        $this->object->getEvaluator()->setConfig(array('baseUrl' => 'http://base.example.net/test/'));
+        //$this->object->getEvaluator()->setConfig(array('baseUrl' => 'http://base.example.net/test/'));
+        $this->object->setBaseUri('http://base.example.net/test/');
         $this->object->getAdapter()->setConfig(array('url' => 'http://base.example.net/test/'));
     }
 
@@ -46,25 +47,27 @@ BODY;
     }
 
     /**
-     * @todo Implement testSetAdapter().
      */
     public function testSetAdapter() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+
+        $strategy = $this->object;
+        
+        require_once 'Diggin/Scraper/Adapter/Loadhtml.php';
+        $loadhtml = new Diggin_Scraper_Adapter_Loadhtml();
+        $strategy->setAdapter($loadhtml);
+
+        $this->assertTrue($strategy->getAdapter() instanceof Diggin_Scraper_Adapter_Loadhtml);
+
+        try {
+            require_once 'Diggin/Scraper/Adapter/Normal.php';
+
+            $strategy->setAdapter(new Diggin_Scraper_Adapter_Normal);
+            $this->fail("Should not be able setStdClass");
+        } catch (Diggin_Scraper_Strategy_Exception $e) {
+        }
+
     }
 
-
-    /**
-     * @todo Implement testGetAdapter().
-     */
-    public function testGetAdapter() {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
 
     /**
      * @todo Implement testExtract().

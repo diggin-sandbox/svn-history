@@ -72,7 +72,7 @@ require_once 'Zend/Http/Client/Adapter/Test.php';
 $adapter = new Zend_Http_Client_Adapter_Test();
 $adapter->setResponse(
     "HTTP/1.1 200 OK"        . "\r\n" .
-    "Content-type: text/xml" . "\r\n" .
+    "Content-type: text/html" . "\r\n" .
                                "\r\n" .
     $html);
 $test = new Zend_Http_Client($url = 'http://www.yahoo.jp', array('adapter' => $adapter));
@@ -83,7 +83,11 @@ $scraper = new Diggin_Scraper();
 $scraper->setHttpClient($test);
 
 $items = new Diggin_Scraper();
-$items->process("a", "title => 'TEXT'", "link => '@href'");
+//$items->process("a", "title => 'TEXT'", "link => '@href'");
+$items->process("a", 'title','TEXT')
+      ->process('a', 'link', '@href');
+//var_dump($scraper->process('.', 'v', 'asxml')->scrape('http://test.org/'));
+
 
 $results = $scraper->process("ul.news>li", array('result[]' => $items))
                    ->scrape("http://localhost/~tobe/news_sample.html");

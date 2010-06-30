@@ -16,10 +16,13 @@ error_reporting( E_ALL | E_STRICT );
 
 
 //
-$digginRoot = dirname(__FILE__)."../../";
-$digginCoreLibrary = "$digginRoot/library";
-$digginCoreTests = "$digginRoot/tests";
-$path = array($digginCoreLibrary, $digginCoreTests, get_include_path());
+$digginRoot = dirname(__FILE__)."/../../";
+$digginCoreLibrary = realpath("$digginRoot/library/");
+//$digginCoreTests = realpath("$digginRoot/tests");
+$digginHttpResponseCharset = realpath("$digginRoot/../../../Diggin_Http_Response_Charset/library");
+//$digginScraperAdapterHtmlscraping = realpath("$digginRoot/../../../Diggin_Scraper_Adapter_Htmlscraping/trunk/library");
+//$path = array($digginCoreLibrary, $digginHttpResponseCharset, $digginScraperAdapterHtmlscraping, get_include_path());
+$path = array($digginCoreLibrary, $digginHttpResponseCharset, get_include_path());
 set_include_path(implode(PATH_SEPARATOR, $path));
 
 
