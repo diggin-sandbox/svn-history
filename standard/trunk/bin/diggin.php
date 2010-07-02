@@ -623,13 +623,7 @@ EOS;
 	    //$configOptions['classesToLoad'] = 'Zend_Tool_Project_Provider_Manifest';
 	    
 	    //$console = new Zend_Tool_Framework_Client_Console($configOptions);
-        if (extension_loaded('readline')) {
-            //@todo
-            require_once 'DigginX/Tool/Framework/Client/Console.php';
-            $console = new DigginX_Tool_Framework_Client_Console($configOptions);
-        } else {
-            $console = new Diggin_Tool_Framework_Client_Console($configOptions);
-        }
+        $console = new Diggin_Tool_Framework_Client_Console($configOptions);
         $console->setShName($this->_shName);
 	    $console->dispatch();
 		return null;
