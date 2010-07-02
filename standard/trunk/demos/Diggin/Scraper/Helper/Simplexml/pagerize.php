@@ -1,9 +1,4 @@
 <?php
-$path = explode(PATH_SEPARATOR, get_include_path());
-array_push($path, '/home/kazusuke/dev/workspace/Diggin/standard/incubator/library/');
-set_include_path(implode(PATH_SEPARATOR, $path));
-
-
 
 $url = (isset($argv[1]) ? $argv[1]: 'http://d.hatena.ne.jp/sasezaki');
 

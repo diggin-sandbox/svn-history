@@ -1,9 +1,4 @@
 <?php
-$path = explode(PATH_SEPARATOR, get_include_path());
-array_push($path, '/home/kazusuke/dev/workspace/Diggin/standard/incubator/library/');
-set_include_path(implode(PATH_SEPARATOR, $path));
-
-
 
 $url = (isset($argv[1]) ? $argv[1]: 'http://d.hatena.ne.jp/sasezaki');
 
@@ -11,7 +6,9 @@ $url = (isset($argv[1]) ? $argv[1]: 'http://d.hatena.ne.jp/sasezaki');
 require_once 'Diggin/Service/Wedata.php';
 $cache = getCache();
 if(!$items = $cache->load('wedata_items')) {
-    $items = Diggin_Service_Wedata::getItems('AutoPagerize');
+    $wedata = new Diggin_Service_Wedata();
+    $wedata->setDatabaseName('AutoPagerize');
+    $items = $wedata->getItems();
     $cache->save($items, 'wedata_items');
 }
 class Siteinfo extends ArrayIterator
