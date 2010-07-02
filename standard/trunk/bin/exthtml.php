@@ -22,6 +22,7 @@ $console = new Zend_Console_Getopt(
       )
 );
 
+try{
     if(!$console->xpath) {
         throw new InvalidArgumentException('"now" must xpath: -x //html/body'.$console->getUsageMessage());
     }
@@ -141,7 +142,9 @@ for ($i = 1; $i <= $depth; $i++) {
     }
 }
 
-
+} catch (Exception $e) {
+    die($e->getMessage());
+}
 
 
 function getNextLinkFromWedata($url, $cache_dir = null)
