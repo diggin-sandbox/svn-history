@@ -3,12 +3,15 @@ require_once 'Diggin/Scraper.php';
 
 try {
     $scraper = new Diggin_Scraper();
-    $scraper->process('a.title', "title => 'TEXT'", "url => '@href'")
-            ->process('span.furigana', "furigana => 'TEXT'")
-            ->process('span.category > a', "category => 'TEXT'")
-            ->scrape('http://d.hatena.ne.jp/keyword/%BA%B0%CC%EE%A4%A2%A4%B5%C8%FE');
-    print_r($scraper->getResults());
+    $results = $scraper->process('a.title', 'title', 'TEXT')
+                       ->process('a.title', 'url', '@href')
+                       ->process('span.furigana', 'furigana', 'TEXT')
+                       ->process('span.category > a', 'category', 'TEXT')
+                       ->scrape('http://d.hatena.ne.jp/keyword/%BA%B0%CC%EE%A4%A2%A4%B5%C8%FE');
+    var_dump($results);
     
+    
+
 } catch (Exception $e) {
     die($e);
 }

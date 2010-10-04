@@ -5,9 +5,9 @@ $url = 'http://photozou.jp/photo/list/144383/all';
 
 try {
      $thumbnail = new Diggin_Scraper();
-     $thumbnail->process('p.photolist_title', 'title => TEXT')
-               ->process('a', 'link => @href')
-               ->process('span.photolist_view','view => TEXT');
+     $thumbnail->process('p.photolist_title', 'title', 'TEXT')
+               ->process('a', 'link', '@href')
+               ->process('span.photolist_view','view', 'TEXT');
      $scraper = new Diggin_Scraper();
      $results = $scraper->process('//li[@class="thumbnail"]', array('thumbnail[]' => $thumbnail))
                         ->scrape($url);
