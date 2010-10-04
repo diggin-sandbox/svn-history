@@ -275,6 +275,10 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             $this->_processes[] = $args[0];
             return $this;
         }
+        //
+        if ((2 < count($args)) and preg_match('#.+=>.*#', $args[2])) {
+            //call_user_func_array();
+        }
 
         // Validate, process arguments
         if (1 === count($args)) {

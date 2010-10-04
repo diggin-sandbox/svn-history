@@ -51,7 +51,7 @@ class Diggin_Scraper_Evaluator_Simplexml extends Diggin_Scraper_Evaluator_Abstra
                 return $value;
             case 'decode' :
             case 'disp' :
-                $value = strip_tags($value->asXML());
+                $value = strip_tags($simplexml->asXML());
                 $value = html_entity_decode(strip_tags($value), ENT_NOQUOTES, 'UTF-8');
                 $value = str_replace(array(chr(9), chr(10), chr(13)), '', $value);
                 return $value;

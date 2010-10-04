@@ -41,13 +41,15 @@ class Diggin_Scraper_Process
                "'".$this->getName().' => " '.$ret.'"';
         }
 
-        if ($this->getFilters() !== false) {
+        if ($this->getFilters()) {
             if (count($this->getFilters()) !== 1) {
                $filters= implode(', ', $this->getFilters());
             } else {
                $filters = current($this->getFilters());
-        }
-        return '\''.$this->getExpression().'\', '.
+            }
+            $filters = ($filters instanceof Closure) ? 'closure' : $filters ;
+
+            return '\''.$this->getExpression().'\', '.
               "'".$this->getName().' => ["'. $this->getType(). '", "'.$filters.'"]\'';
         }
 
@@ -154,4 +156,8 @@ class Diggin_Scraper_Process
     {
         $this->_filters = $filters;
     }
+
+    //Processes::image('//img', '@href')->filter(,)
+    //public static function __callStatic()
 }
+
