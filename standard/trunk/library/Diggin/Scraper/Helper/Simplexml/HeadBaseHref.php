@@ -69,7 +69,7 @@ class Diggin_Scraper_Helper_Simplexml_HeadBaseHref extends Diggin_Scraper_Helper
             require_once 'Zend/Uri.php';
             foreach ($bases as $base) {
                 try {
-                    $base = $this->asString($base[@href]);
+                    $base = current($base->attributes()->href);
                     $uri = Zend_Uri::factory($base);
                     return $uri;
                 } catch (Zend_Uri_Exception $e) {

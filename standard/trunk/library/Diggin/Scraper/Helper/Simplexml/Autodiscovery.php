@@ -72,9 +72,9 @@ class Diggin_Scraper_Helper_Simplexml_Autodiscovery extends Diggin_Scraper_Helpe
                 if (isset($baseUrl)) {
                     $uri = new Diggin_Uri_Http();
                     $uri->setBaseUri($baseUrl);
-                    $ret[] = $uri->getAbsoluteUrl($this->asString($v[@href]));
+                    $ret[] = $uri->getAbsoluteUrl(current($v->href));
                 } else {
-                    $ret[] = $this->asString($v[@href]);
+                    $ret[] = current($v->href);
                 }
             }
             
