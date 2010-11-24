@@ -275,9 +275,10 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
             $this->_processes[] = $args[0];
             return $this;
         }
-        //
-        if ((2 < count($args)) and preg_match('#.+=>.*#', $args[2])) {
-            //call_user_func_array();
+
+        // fallback old-style process passed
+        if ((count($args) >= 2) and is_string($args[1]) and preg_match('#.+=>.*#', $args[1])) {
+            return call_user_func_array(array('parent', 'process'), $args);
         }
 
         // Validate, process arguments
@@ -425,5 +426,15 @@ class Diggin_Scraper extends Diggin_Scraper_Process_Aggregate
         }
 
         return call_user_func_array(array($helper, 'direct'), $args);
+    }
+
+    /**
+     * Magic Method __callStatic
+     */
+    public static function __callStatic($method, $args)
+    {
+        $self = new self;
+        $self->scrape(array_shift($args));
+        return $self->__call($method, $args);
     }
 }
