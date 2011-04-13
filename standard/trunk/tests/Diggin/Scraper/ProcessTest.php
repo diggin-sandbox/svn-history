@@ -1,5 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Scraper/Process.php';
 
@@ -37,7 +36,6 @@ class Diggin_Scraper_ProcessTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement test__toString().
      */
     public function test__toString() {
         

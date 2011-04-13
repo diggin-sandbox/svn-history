@@ -1,5 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework.php';
 
 require_once 'Diggin/Version.php';
 
@@ -80,4 +79,3 @@ class Diggin_VersionTest extends PHPUnit_Framework_TestCase
 
     }
 }
-?>
