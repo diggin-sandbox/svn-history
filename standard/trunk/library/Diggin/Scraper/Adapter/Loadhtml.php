@@ -27,6 +27,11 @@ class Diggin_Scraper_Adapter_Loadhtml extends Diggin_Scraper_Adapter_SimplexmlAb
     );
     
     /**
+     * @var Diggin_Http_Response_Charset_Front_EncodeInterface
+     */
+    private $_charsetFront;
+
+    /**
      * Casts a SimpleXMLElement
      * 
      * @param Zend_Htp_Response 
@@ -35,8 +40,10 @@ class Diggin_Scraper_Adapter_Loadhtml extends Diggin_Scraper_Adapter_SimplexmlAb
     public function getSimplexml($response)
     {
         if ($this->config['auto_encoding']) {
-            require_once 'Diggin/Http/Response/Encoding.php';
-            $responseBody = Diggin_Http_Response_Encoding::encodeResponseObject($response);
+            $document = array('url' => $this->config['url'], 
+                          'content' => array('body' => $response->getBody(), 'content-type' => $response->getHeader('content-type')));
+            $responseBody = $this->getCharsetFront()->convert($document);
+            
         } else {
             $responseBody = $response->getBody();
         }
@@ -110,6 +117,21 @@ class Diggin_Scraper_Adapter_Loadhtml extends Diggin_Scraper_Adapter_SimplexmlAb
     public function getConfig($key)
     {
         return $this->config[strtolower($key)];
+    }
+
+    public function setCharsetFront(Diggin_Http_Response_Charset_Front_EncodeInterface $charseFront)
+    {
+        $this->_charsetFront = $charsetFront;
+    }
+
+    public function getCharsetFront()
+    {
+        if (!$this->_charsetFront) {
+            require_once 'Diggin/Http/Response/Charset/Front/UrlRegex.php';
+            $this->_charsetFront = new Diggin_Http_Response_Charset_Front_UrlRegex;
+        }
+
+        return $this->_charsetFront;
     }
 }
 
