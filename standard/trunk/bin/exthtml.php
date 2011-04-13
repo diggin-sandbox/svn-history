@@ -2,6 +2,7 @@
 require_once 'Zend/Loader/Autoloader.php';
 $loader = Zend_Loader_Autoloader::getInstance();
 $loader->registerNamespace('Diggin_');
+$loader->registerNamespace('S1200_');
 
 $console = new Zend_Console_Getopt(
     array(
@@ -24,7 +25,7 @@ $console = new Zend_Console_Getopt(
 
 try{
     if(!$console->xpath) {
-        throw new InvalidArgumentException('"now" must xpath: -x //html/body'.$console->getUsageMessage());
+        throw new InvalidArgumentException('currently, should use xpath: -x //html/body'.$console->getUsageMessage());
     }
     if(count($console->getRemainingArgs()) === 0) {
         throw new InvalidArgumentException('URL is not set'.$console->getUsageMessage());
@@ -78,9 +79,8 @@ return preg_replace('/'.preg_quote("$regex", '/').'/', "$after", \$var);
 FUNC
 );
 
-} else {
-        $filter = $console->filter;
-    }
+}
+
 }
 
 for ($i = 1; $i <= $depth; $i++) {
@@ -107,14 +107,27 @@ for ($i = 1; $i <= $depth; $i++) {
     $type = (isset($console->type)) ? $console->type : 'TEXT';
     $helper = (isset($console->helper)) ? $console->helper : null;
 
+    $process = new Diggin_Scraper_Process;
+    $process->setExpression($console->xpath);
+    $process->setName('xpath');
+    $process->setArrayFlag(true);
+    $process->setType($type);
     if (isset($filter)) {
-        $scraper->process($console->xpath, "xpath[] => $type, ".$filter.']');
-    } else {
-        $scraper->process("$console->xpath", "xpath[] => $type");
+        $process->setFilters(array($filter));
     }
+    $scraper->process($process);
 
     if (isset($nextLink) && !($i == $depth)) {
-        $scraper->process($nextLink, 'nextLink => "@href"');
+        $nextlink = new Diggin_Scraper_Process;
+        $nextLink->setName('nextLink');
+        $nextLink->setType('@href');
+        $nextLink->setArrayFlag(false);
+        $scraper->process($nextLink);
+    }
+
+    $debug = false;
+    if ($debug) {
+        echo PHP_EOL, Zend_Date::now();
     }
 
     $ret =  $scraper->scrape($response);
