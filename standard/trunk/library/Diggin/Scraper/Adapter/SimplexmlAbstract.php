@@ -32,13 +32,7 @@ abstract class Diggin_Scraper_Adapter_SimplexmlAbstract implements Diggin_Scrape
      */
     final public function readData($response)
     {
-        
-        try {
-            $simplexml = $this->getSimplexml($response);
-        } catch (Exception $e){
-            require_once 'Diggin/Scraper/Adapter/Exception.php';
-            throw new Diggin_Scraper_Adapter_Exception($e);
-        }
+        $simplexml = $this->getSimplexml($response);
         
         if (!$simplexml instanceof SimpleXMLElement) {
             require_once 'Diggin/Scraper/Adapter/Exception.php';
