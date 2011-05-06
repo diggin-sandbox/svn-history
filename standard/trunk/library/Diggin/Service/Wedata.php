@@ -299,7 +299,7 @@ class Diggin_Service_Wedata
             throw new Diggin_Service_Exception('required_keys is not set');
         }
         
-        $return = $this->makeRequest($this->PATH_CREATE_DATABASE, Zend_Http_Client::POST, $params);
+        $return = $this->makeRequest(self::PATH_CREATE_DATABASE, Zend_Http_Client::POST, $params);
         
         return $return;
     }
